@@ -1,0 +1,6 @@
+[submodule "src/backend"]
+	path = src/backend
+	url = git@github.com:RUC-MSc-CS-CIT-2024/portfolio_subproject_2.git
+[submodule "src/database"]
+	path = src/database
+	url = git@github.com:RUC-MSc-CS-CIT-2024/portfolio_subproject_1.git

@@ -1,10 +1,14 @@
-import Button from 'react-bootstrap/Button';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   return (
-    <>
-      <h1>Movie Application</h1>
-      <Button variant="primary">Primary</Button>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
   );
 }

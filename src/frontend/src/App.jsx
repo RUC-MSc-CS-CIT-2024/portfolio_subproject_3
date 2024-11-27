@@ -1,14 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter } from 'react-router-dom';
+import Router from './pages/router';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

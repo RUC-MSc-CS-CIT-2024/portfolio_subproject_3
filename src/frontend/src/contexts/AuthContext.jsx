@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
-import { login as loginService } from '../services/authService';
-import { setCookie, getCookie, deleteCookie } from '../utils/cookie';
+import { login as loginService } from '@/services/authService';
+import { setCookie, getCookie, deleteCookie } from '@/utils/cookie';
 
 export const AuthContext = createContext();
 

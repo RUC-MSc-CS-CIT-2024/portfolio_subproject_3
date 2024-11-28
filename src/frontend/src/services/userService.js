@@ -1,5 +1,28 @@
-/* import { API_BASE_URL } from '@/utils/constants';
+import { API_BASE_URL } from '@/utils/constants';
 
+export const updateUserById = async (data, token) => {
+  try {
+    const response = await fetch(API_BASE_URL + '/api/users/1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+/* 
 export const createUserBookmark = async (userId, data) => {};
 
 export const fetchUserBookmarks = async (userId) => {};
@@ -23,8 +46,6 @@ export const fetchUserSearchHistory = async (userId) => {};
 export const deleteUserSearchHistory = async (userId) => {};
 
 export const fetchUserById = async (userId) => {};
-
-export const updateUserById = async (userId, data) => {};
 
 export const deleteUserById = async (userId) => {};
 

@@ -1,8 +1,9 @@
 import { Container } from 'react-bootstrap';
-export default function ProfilePage() {
+
+export default function SignInPage() {
   return (
     <Container>
-      <h1>Profile Page (user must be logged in)</h1>
+      <h1>Sign in</h1>
     </Container>
   );
 }

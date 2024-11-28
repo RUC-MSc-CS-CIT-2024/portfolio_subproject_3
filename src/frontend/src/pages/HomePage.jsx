@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import Container from 'react-bootstrap/Container';
 
 export default function HomePage() {
   const { user, login, logout } = useAuth();
@@ -14,7 +15,7 @@ export default function HomePage() {
   };
 
   return (
-    <div>
+    <Container>
       <h1>Homepage</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -46,6 +47,6 @@ export default function HomePage() {
           <p>Not logged in</p>
         </div>
       )}
-    </div>
+    </Container>
   );
 }

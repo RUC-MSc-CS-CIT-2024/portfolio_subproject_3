@@ -42,7 +42,7 @@ export default function UpdateProfileForm({ onSubmit }) {
         />
       </Form.Group>
       <Button variant="dark" type="submit">
-        Update your profile
+        Update profile
       </Button>
     </Form>
   );

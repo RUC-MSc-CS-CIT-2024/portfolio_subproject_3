@@ -1,3 +1,0 @@
-src/frontend/* text=auto eol=lf
-src/frontend/*.{cmd,[cC][mM][dD]} text eol=crlf
-src/frontend/*.{bat,[bB][aA][tT]} text eol=crlf

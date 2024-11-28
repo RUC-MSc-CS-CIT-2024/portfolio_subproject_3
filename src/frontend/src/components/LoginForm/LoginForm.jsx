@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import './LoginForm.css';
 
-export default function HomePage() {
-  const { user, login, logout } = useAuth();
+export default function LoginForm() {
+  const { login } = useAuth();
   const [credentials, setCredentials] = useState({
     username: '',
     password: '',
@@ -15,18 +17,21 @@ export default function HomePage() {
   };
 
   return (
-    <Container>
-      <h1>Homepage</h1>
-      <form onSubmit={handleSubmit}>
-        <input
+    <Form onSubmit={handleSubmit} className="p-3 login-form">
+      <Form.Group controlId="formUsername">
+        <Form.Label>Username</Form.Label>
+        <Form.Control
           type="text"
-          placeholder="Username"
+          placeholder="Enter username"
           value={credentials.username}
           onChange={(e) =>
             setCredentials({ ...credentials, username: e.target.value })
           }
         />
-        <input
+      </Form.Group>
+      <Form.Group controlId="formPassword" className="mt-3">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
           type="password"
           placeholder="Password"
           value={credentials.password}
@@ -34,19 +39,10 @@ export default function HomePage() {
             setCredentials({ ...credentials, password: e.target.value })
           }
         />
-        <button type="submit">Login</button>
-      </form>
-
-      {user ? (
-        <div>
-          <p>Logged in as {user.token}</p>
-          <button onClick={logout}>Logout</button>
-        </div>
-      ) : (
-        <div>
-          <p>Not logged in</p>
-        </div>
-      )}
-    </Container>
+      </Form.Group>
+      <Button variant="dark" size="sm" type="submit" className="mt-3">
+        Login
+      </Button>
+    </Form>
   );
 }

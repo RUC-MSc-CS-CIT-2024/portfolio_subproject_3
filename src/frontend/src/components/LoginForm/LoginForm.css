@@ -1,0 +1,11 @@
+.login-form {
+    min-width: 400px;
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    .login-form {
+        max-width: 100%;
+        min-width: auto;
+    }
+}

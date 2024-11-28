@@ -1,8 +1,9 @@
 import HomePage from './HomePage';
 import NotFoundPage from './NotFoundPage';
 import ProfilePage from './ProfilePage';
+import ProfileSettingsPage from './ProfileSettingsPage';
 import PrivateRoute from '@/components/PrivateRoute';
-import SignUpPage from './SignUpPage';
+import SignInPage from './SignInPage';
 
 const PagesData = [
   {
@@ -11,9 +12,9 @@ const PagesData = [
     title: 'Home',
   },
   {
-    path: '/signup',
-    element: <SignUpPage />,
-    title: 'Sign Up',
+    path: '/signin',
+    element: <SignInPage />,
+    title: 'Sign in',
   },
   {
     path: '/profile',
@@ -23,6 +24,15 @@ const PagesData = [
       </PrivateRoute>
     ),
     title: 'Profile',
+  },
+  {
+    path: '/profile-settings',
+    element: (
+      <PrivateRoute>
+        <ProfileSettingsPage />
+      </PrivateRoute>
+    ),
+    title: 'Profile Settings',
   },
   {
     path: '*',

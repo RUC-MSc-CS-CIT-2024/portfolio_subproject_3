@@ -1,0 +1,8 @@
+.no-caret .dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  left: auto !important;
+  right: 0;
+}

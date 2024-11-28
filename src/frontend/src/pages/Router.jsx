@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import PagesData from './PagesData';
+import PagesData from '@/pages/PagesData';
 import Layout from '@/components/Layout';
 
 export default function Router() {

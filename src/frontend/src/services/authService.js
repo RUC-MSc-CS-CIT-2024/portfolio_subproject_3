@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '@/utils/constants';
+import { jwtDecode } from 'jwt-decode';
 
 export const login = async (credentials) => {
   try {
@@ -14,15 +15,25 @@ export const login = async (credentials) => {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText);
-      throw new Error('Login failed: ' + errorText);
+      throw new Error('Network response was not ok');
     }
 
     const token = await response.text();
-    return token;
+    const decodedToken = jwtDecode(token);
+
+    const userData = {
+      username: decodedToken.sub,
+      email: decodedToken.email,
+      id: decodedToken.user_id,
+      role: decodedToken.role,
+      token,
+    };
+
+    sessionStorage.setItem('user', JSON.stringify(userData));
+
+    return userData;
   } catch (error) {
-    console.error('An unexpected error occurred:', error);
+    console.error('Error logging in:', error);
     throw error;
   }
 };

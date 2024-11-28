@@ -1,12 +1,18 @@
 import { API_BASE_URL } from '@/utils/constants';
+import { getUserFromSession } from '@/utils/getUserFromSession';
 
-export const updateUserById = async (data, token) => {
+export const updateUserById = async (data) => {
+  const user = getUserFromSession();
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
   try {
-    const response = await fetch(API_BASE_URL + '/api/users/1', {
+    const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${user.token}`,
       },
       body: JSON.stringify(data),
     });
@@ -16,52 +22,37 @@ export const updateUserById = async (data, token) => {
     }
 
     const responseData = await response.json();
+
+    sessionStorage.setItem('user', JSON.stringify(responseData));
+
     return responseData;
   } catch (error) {
     console.error('Error updating user:', error);
     throw error;
   }
 };
-/* 
-export const createUserBookmark = async (userId, data) => {};
+export const deleteUserById = async () => {
+  const user = getUserFromSession();
+  if (!user) {
+    throw new Error('No user found in session');
+  }
 
-export const fetchUserBookmarks = async (userId) => {};
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
 
-export const moveUserBookmark = async (userId, id, data) => {};
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
 
-export const fetchUserBookmarkById = async (userId, id) => {};
-
-export const updateUserBookmarkById = async (userId, id, data) => {};
-
-export const deleteUserBookmarkById = async (userId, id) => {};
-
-export const fetchUserFollowing = async (userId) => {};
-
-export const createUserFollowing = async (userId, data) => {};
-
-export const deleteUserFollowingById = async (userId, followingId) => {};
-
-export const fetchUserSearchHistory = async (userId) => {};
-
-export const deleteUserSearchHistory = async (userId) => {};
-
-export const fetchUserById = async (userId) => {};
-
-export const deleteUserById = async (userId) => {};
-
-export const createUser = async (data) => {};
-
-export const fetchUserScores = async (userId) => {};
-
-export const createUserScore = async (userId, data) => {};
-
-export const createUserCompleted = async (userId, data) => {};
-
-export const fetchUserCompleted = async (userId) => {};
-
-export const fetchUserCompletedById = async (userId, id) => {};
-
-export const updateUserCompletedById = async (userId, id, data) => {};
-
-export const deleteUserCompletedById = async (userId, id) => {};
- */
+    sessionStorage.removeItem('user');
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { Button, Form } from 'react-bootstrap';
 import './LoginForm.css';
 
-export default function LoginForm() {
+export default function LoginForm({ onLoginResult }) {
   const { login } = useAuth();
   const [credentials, setCredentials] = useState({
     username: '',
@@ -13,7 +12,12 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(credentials);
+    try {
+      await login(credentials);
+      onLoginResult(true, 'Login successful. Welcome!');
+    } catch {
+      onLoginResult(false, 'Login failed. Please try again.');
+    }
   };
 
   return (

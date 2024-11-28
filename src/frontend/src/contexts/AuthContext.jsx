@@ -22,7 +22,8 @@ export const AuthProvider = ({ children }) => {
       setUser({ token });
       setCookie('token', token, 1);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error(error);
+      throw error;
     }
   };
 

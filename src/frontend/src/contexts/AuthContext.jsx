@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     deleteCookie('token');
+    sessionStorage.removeItem('user');
   };
 
   return (

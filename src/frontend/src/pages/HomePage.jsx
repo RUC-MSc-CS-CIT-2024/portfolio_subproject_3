@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import Container from 'react-bootstrap/Container';
+import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export default function HomePage() {
-  const { user, login, logout } = useAuth();
+  const user = getUserFromSession();
+  const { login, logout } = useAuth();
   const [credentials, setCredentials] = useState({
     username: '',
     password: '',

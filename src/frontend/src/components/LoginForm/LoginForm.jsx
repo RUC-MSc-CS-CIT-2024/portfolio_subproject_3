@@ -26,6 +26,7 @@ export default function LoginForm({ onLoginResult }) {
         <Form.Label>Username</Form.Label>
         <Form.Control
           type="text"
+          autoComplete={credentials.username}
           placeholder="Enter username"
           value={credentials.username}
           onChange={(e) =>
@@ -37,6 +38,7 @@ export default function LoginForm({ onLoginResult }) {
         <Form.Label>Password</Form.Label>
         <Form.Control
           type="password"
+          autoComplete={credentials.password}
           placeholder="Password"
           value={credentials.password}
           onChange={(e) =>

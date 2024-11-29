@@ -1,16 +1,17 @@
-import { Container, Row, Col, Toast, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { updateUserById, deleteUserById } from '@/services/userService';
 import { useAuth } from '@/hooks/useAuth';
 import UpdateProfileForm from '@/components/UpdateProfileForm/UpdateProfileForm';
 import DynamicBreadcrumb from '@/components/DynamicBreadcrumb/DynamicBreadcrumb';
 import { useState, useEffect } from 'react';
 import { getUserFromSession } from '@/utils/getUserFromSession';
+import { useToast } from '@/hooks/useToast';
+import ToastNotification from '../components/ToastNotification/ToastNotification';
 
 export default function ProfilePage() {
   const { logout } = useAuth();
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState('');
+  const { showToastMessage } = useToast();
+
   const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
@@ -21,36 +22,27 @@ export default function ProfilePage() {
   const handleUpdateProfile = async (updatedData) => {
     try {
       await updateUserById(updatedData);
-      setToastMessage(
+      showToastMessage(
         'Profile updated successfully! You will be logged out in 3 seconds.',
+        'success',
       );
-      setToastVariant('success');
-      setShowToast(true);
       setTimeout(() => {
-        setShowToast(false);
         logout();
       }, 3000);
     } catch {
-      setToastMessage('Error updating profile.');
-      setToastVariant('danger');
-      setShowToast(true);
+      showToastMessage('Error updating profile.', 'danger');
     }
   };
 
   const handleDeleteProfile = async () => {
     try {
       await deleteUserById();
-      setToastMessage('Profile deleted successfully!');
-      setToastVariant('success');
-      setShowToast(true);
+      showToastMessage('Profile deleted successfully!', 'success');
       setTimeout(() => {
-        setShowToast(false);
         logout();
       }, 3000);
     } catch {
-      setToastMessage('Error deleting profile.');
-      setToastVariant('danger');
-      setShowToast(true);
+      showToastMessage('Error deleting profile.', 'danger');
     }
   };
 
@@ -87,16 +79,7 @@ export default function ProfilePage() {
           </Button>
         </Col>
       </Row>
-      <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
-        delay={3000}
-        autohide
-        bg={toastVariant}
-        className="position-fixed bottom-0 end-0 m-3"
-      >
-        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
-      </Toast>
+      <ToastNotification />
     </Container>
   );
 }

@@ -1,25 +1,22 @@
-import { Container, Nav, Navbar, NavDropdown, Toast } from 'react-bootstrap/';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap/';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
 import { useEffect, useState } from 'react';
 import SearchForm from '@/components/SearchForm/SearchForm';
 import LoginForm from '@/components/LoginForm/LoginForm';
+import ToastNotification from '@/components/ToastNotification/ToastNotification';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
 
 export default function NavBar({ username }) {
   const { user } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState('');
+  const { showToastMessage } = useToast();
 
   const handleLoginResult = (success, message) => {
-    setToastMessage(message);
-    setToastVariant(success ? 'success' : 'danger');
-    setShowToast(true);
+    showToastMessage(message, success ? 'success' : 'danger');
   };
-
   const handleToggle = () => {
     setShowLogin(!showLogin);
   };
@@ -82,16 +79,7 @@ export default function NavBar({ username }) {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
-        delay={3000}
-        autohide
-        bg={toastVariant}
-        className="position-fixed bottom-0 end-0 m-3"
-      >
-        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
-      </Toast>
+      <ToastNotification />
     </>
   );
 }

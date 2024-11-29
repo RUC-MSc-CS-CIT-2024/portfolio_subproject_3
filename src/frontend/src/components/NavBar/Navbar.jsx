@@ -1,11 +1,8 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap/';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
+import { useAuth, useToast } from '@/hooks';
 import { useEffect, useState } from 'react';
-import SearchForm from '@/components/SearchForm/SearchForm';
-import LoginForm from '@/components/LoginForm/LoginForm';
-import ToastNotification from '@/components/ToastNotification/ToastNotification';
+import { SearchForm, LoginForm, ToastNotification } from '@/components';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
 

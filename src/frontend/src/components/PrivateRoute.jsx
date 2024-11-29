@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/useToast';
+import { useAuth, useToast } from '@/hooks';
 
 export default function PrivateRoute() {
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 import Container from 'react-bootstrap/Container';
-import ToastNotification from '../components/ToastNotification/ToastNotification';
+import { ToastNotification } from '@/components';
 
 export default function HomePage() {
   return (

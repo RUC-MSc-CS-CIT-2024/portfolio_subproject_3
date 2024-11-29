@@ -1,5 +1,5 @@
-import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider } from '@/contexts/ToastContext';
 import { Route, Routes } from 'react-router-dom';
 import { Layout, PrivateRoute } from '@/components';
 import {

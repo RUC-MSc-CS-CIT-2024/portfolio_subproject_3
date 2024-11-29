@@ -1,5 +1,5 @@
 import { Toast } from 'react-bootstrap';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks';
 
 export default function ToastNotification() {
   const { toastMessage, toastVariant, showToast, showToastMessage } =

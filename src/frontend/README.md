@@ -1,37 +1,32 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Portfolio Subproject 3
 
 ## Getting Started
 
-1. **Install the dependencies:**
-```sh
- npm install
-```
+### Run inside dev container
 
-2. **Start the development server:**
-```sh
-npm run dev
-```
+*Requires [Docker](https://docs.docker.com/get-started/introduction/get-docker-desktop/)*
 
-3. **Build the production version:**
-```sh
-npm run build
- ```
+1. Install 'Dev Containers' vscode extension
+2. Opening `src/frontend` folder inside vscode
+3. Open the command palette and run the 'Dev Containers: Reopen in Container' command
 
-4. **Lint the code:**
-```sh
-npm run lint
-```
+This reopens the folder inside the container with all the nessesarry dependencies.
 
-5. **Format the code with Prettier:**
-```sh
-npm run format
- ```
+### How to run React
 
+*Requires latest version of API and database running*
 
+1. Install the dependencies:
+    ```sh
+    npm ci
+    ```
+
+2. Start the development server:
+    ```sh
+    npm run dev
+    ```
+
+3. **Lint the code:**
+    ```sh
+    npm run lint
+    ```

@@ -1,16 +1,16 @@
 import { Form, FormControl, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import useNavigation from '@/hooks/useNavigation';
+import { useNavigate } from 'react-router';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default function SearchForm({ btnVariant = 'dark' }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { goTo } = useNavigation();
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    goTo(`/search?q=${searchQuery}`);
+    navigate(`/search?q=${searchQuery}`);
   };
 
   return (

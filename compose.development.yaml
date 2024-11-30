@@ -1,0 +1,27 @@
+services:
+  db:
+    build:
+      context: src/database
+      dockerfile: Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+  api:
+    build:
+      context: src/backend
+      dockerfile: Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8043
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8043;http://+:8080
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ./dev-cert:/https:ro
+    depends_on:
+      - db 

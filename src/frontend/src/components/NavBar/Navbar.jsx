@@ -7,7 +7,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
 
 export default function NavBar({ username }) {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const { showToastMessage } = useToast();
 
@@ -23,10 +23,10 @@ export default function NavBar({ username }) {
   };
 
   useEffect(() => {
-    if (!user) {
+    if (!isAuthenticated) {
       setShowLogin(false);
     }
-  }, [user]);
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function NavBar({ username }) {
             <Nav className="me-auto">
               <SearchForm />
             </Nav>
-            {user ? (
+            {isAuthenticated ? (
               <Nav className="ms-auto d-flex flex-column flex-lg-row gap-3">
                 <Nav.Link as={Link} to="/profile-settings">
                   <span className="d-flex gap-2">

@@ -7,6 +7,7 @@ import {
   ProfilePage,
   ProfileSettingsPage,
   SignInPage,
+  SignUpPage,
 } from '@/pages';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="signin" element={<SignInPage />} />
+          <Route path="signup" element={<SignUpPage />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="profile-settings" element={<ProfileSettingsPage />} />

@@ -6,3 +6,4 @@ export { default as UpdateProfileForm } from './UpdateProfileForm/UpdateProfileF
 export { default as Layout } from './Layout';
 export { default as PrivateRoute } from './PrivateRoute';
 export { default as ToastNotification } from './ToastNotification/ToastNotification';
+export { default as MovieCard } from './MovieCard/MovieCard';

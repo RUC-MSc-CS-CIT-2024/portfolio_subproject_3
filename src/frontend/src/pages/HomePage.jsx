@@ -1,6 +1,5 @@
 import { Container, Col, Row } from 'react-bootstrap';
-import SearchForm from '@/components/SearchForm/SearchForm';
-import { BackgroundContainer } from '../components';
+import { BackgroundContainer, SearchForm } from '../components';
 
 export default function HomePage() {
   return (

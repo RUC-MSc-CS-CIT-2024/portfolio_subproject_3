@@ -5,7 +5,7 @@
 > [!INFO]
 > .NET 9 SDK or later is required on Unix systems
 
-```
+```bash
 dotnet dev-certs https --trust
 ```
 

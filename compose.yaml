@@ -7,6 +7,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    healthcheck:
+      test: bash -c "[ -f /tmp/startup_finished ]"
+      interval: 5s
+      timeout: 5s
+      retries: 60
   api:
     image: ghcr.io/ruc-msc-cs-cit-2024/portfolio_subproject_2:latest
     ports:
@@ -20,4 +25,5 @@ services:
     volumes:
       - ./dev-cert:/https:ro
     depends_on:
-      - db 
+      db:
+        condition: service_healthy 

@@ -9,6 +9,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    healthcheck:
+      test: bash -c "[ -f /tmp/startup_finished ]"
+      interval: 5s
+      timeout: 5s
+      retries: 60
   api:
     build:
       context: src/backend
@@ -24,4 +29,5 @@ services:
     volumes:
       - ./dev-cert:/https:ro
     depends_on:
-      - db 
+      db:
+        condition: service_healthy 

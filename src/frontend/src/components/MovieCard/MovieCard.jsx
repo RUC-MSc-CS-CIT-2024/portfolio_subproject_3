@@ -17,12 +17,7 @@ export default function MovieCard({
 
   const defaultImage = (
     <div className="movieCard-img">
-      <svg
-        width="100%"
-        height="100%"
-        xmlns="http://www.w3.org/2000/svg"
-        className="default-svg"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" className="default-svg">
         <rect width="100%" height="100%" fill="#ddd" />
         <text
           x="50%"
@@ -30,7 +25,7 @@ export default function MovieCard({
           dominantBaseline="middle"
           textAnchor="middle"
           fill="#aaa"
-          fontSize="20"
+          fontSize="inherit"
         >
           No Image Found
         </text>

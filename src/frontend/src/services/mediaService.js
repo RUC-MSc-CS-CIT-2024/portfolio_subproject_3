@@ -1,6 +1,33 @@
-/* import { API_BASE_URL } from '@/utils/constants';
+import { API_BASE_URL } from '@/utils/constants';
 
-export const fetchMedia = async () => {};
+export const fetchMedia = async ({
+  page = 1,
+  pageCount = 10,
+  query = '',
+  queryType = 'All',
+}) => {
+  const response = await fetch(
+    `${API_BASE_URL}/api/media?Page.page=${page}&Page.count=${pageCount}&query_type=${queryType}&query=${query}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  const data = await response.json();
+
+  const transformedResults = data.map((media) => ({
+    id: media.id,
+    title: media.title,
+    posterUri: media.posterUri,
+    releaseDate: media.releaseDate,
+  }));
+
+  return transformedResults;
+};
+
+/*
 
 export const fetchMediaById = async (id) => {};
 

@@ -28,6 +28,7 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
         <Form.Label>Username</Form.Label>
         <Form.Control
           type="text"
+          autoComplete={username}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -36,6 +37,7 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
         <Form.Label>Email</Form.Label>
         <Form.Control
           type="email"
+          autoComplete={email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -44,6 +46,7 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
         <Form.Label>Password</Form.Label>
         <Form.Control
           type="password"
+          autoComplete={password}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

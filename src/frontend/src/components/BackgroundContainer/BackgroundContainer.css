@@ -1,0 +1,13 @@
+.background-image {
+    background-image: url("../src/assets/heroImage.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: calc(100vh - 79px);
+}
+
+@media (max-width: 992px) {
+    .background-image {
+        height: calc(100vh - 56px);
+    }
+}

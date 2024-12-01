@@ -1,5 +1,6 @@
 import { Container, Col, Row } from 'react-bootstrap';
 import { BackgroundContainer, SearchForm } from '../components';
+import { ToastNotification } from '@/components';
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
               <SearchForm btnVariant="light" />
             </Col>
           </Row>
+          <ToastNotification />
         </Container>
       </BackgroundContainer>
     </div>

@@ -10,7 +10,7 @@ export default function UserListsPage() {
       <h1>Profile Setting (user must be logged in)</h1>
       <Tabs activeKey={key} onSelect={(k) => setKey(k)} className="mb-3">
         <Tab eventKey="following" title="Following">
-          Tab content for following list
+          <FollowingList />
         </Tab>
         <Tab eventKey="bookmarked" title="Bookmarked">
           Tab content for bookmarked list

@@ -1,7 +1,7 @@
-import { Container, Row, Col } from 'react-bootstrap';
-import { MediaInformation } from '@/components';
+import { useState } from 'react';
+import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
+import { MediaInformation, MediaActions, MediaBadges } from '@/components';
 import { useParams } from 'react-router-dom';
-import { MediaActions } from '@/components';
 
 export default function MediaDetailPage() {
   const dummyData = {
@@ -16,12 +16,40 @@ export default function MediaDetailPage() {
   };
   const { id: mediaId } = useParams();
 
+  const genres = ['Action', 'Comedy'];
+  const titles = [
+    'The Shawshank Redemption',
+    'La redención de Shawshank', // Spanish
+    'La rédemption de Shawshank', // French
+    'Die Verurteilten', // German
+    'Le ali della libertà', // Italian
+    'Shawshank Redemption', // Japanese
+  ];
+
+  const [activeKey, setActiveKey] = useState('genres');
+
   return (
     <Container>
       <MediaInformation {...dummyData} />
-      <Row>
+
+      <Row className="mt-5">
         <Col xs={12} md={3}>
           <MediaActions id={mediaId} />
+        </Col>
+        <Col md={6}>
+          <Tabs
+            id="media-detail-tabs"
+            activeKey={activeKey}
+            onSelect={(k) => setActiveKey(k)}
+            className="mb-3"
+          >
+            <Tab eventKey="genres" title="Genres">
+              <MediaBadges title="Genres" badges={genres} />
+            </Tab>
+            <Tab eventKey="titles" title="Titles">
+              <MediaBadges title="Titles" badges={titles} />
+            </Tab>
+          </Tabs>
         </Col>
       </Row>
     </Container>

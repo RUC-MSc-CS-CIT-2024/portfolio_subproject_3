@@ -8,6 +8,8 @@ import {
   ProfilePage,
   ProfileSettingsPage,
   SignInPage,
+  MediaOverviewPage,
+  MediaDetailPage,
 } from '@/pages';
 
 export default function App() {
@@ -25,6 +27,8 @@ export default function App() {
                 element={<ProfileSettingsPage />}
               />
             </Route>
+            <Route path="media" element={<MediaOverviewPage />} />
+            <Route path="media/:id" element={<MediaDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

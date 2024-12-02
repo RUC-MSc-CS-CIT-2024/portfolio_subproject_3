@@ -4,7 +4,7 @@ import { MovieCard } from '@/components';
 import { useMoviesPerRow } from '@/hooks';
 import './MovieGrid.css';
 
-export default function MovieGrid({ movies }) {
+export default function MovieGrid({ movies, loading }) {
   const [showMore, setShowMore] = useState(false);
   const moviesPerRow = useMoviesPerRow();
 
@@ -12,7 +12,7 @@ export default function MovieGrid({ movies }) {
   const remainingMovies = movies.slice(moviesPerRow);
 
   return (
-    <Container fluid>
+    <Container fluid className="container-layout ">
       <Row>
         {firstRowMovies.map((movie, index) => (
           <Col
@@ -22,14 +22,14 @@ export default function MovieGrid({ movies }) {
             md={4}
             lg={3}
             xl={2}
-            className={`position-relative ${index === 0 ? 'margin-left' : ''}`}
+            className="position-relative"
           >
             <MovieCard
               id={movie.movieId}
               imageUri={movie.imageUri}
               title={movie.title}
               releaseYear={movie.releaseYear}
-              isLoading={false}
+              isLoading={loading}
             />
             {index === firstRowMovies.length - 1 &&
               remainingMovies.length > 0 && (
@@ -54,14 +54,14 @@ export default function MovieGrid({ movies }) {
               md={4}
               lg={3}
               xl={2}
-              className={`position-relative ${index === 0 ? 'margin-left' : ''}`}
+              className="position-relative"
             >
               <MovieCard
                 id={movie.movieId}
                 imageUri={movie.imageUri}
                 title={movie.title}
                 releaseYear={movie.releaseYear}
-                isLoading={false}
+                isLoading={loading}
               />
             </Col>
           ))}

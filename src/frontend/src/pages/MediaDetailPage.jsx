@@ -31,12 +31,11 @@ export default function MediaDetailPage() {
   return (
     <Container>
       <MediaInformation {...dummyData} />
-      <Row>
+
+      <Row className="mt-5">
         <Col xs={12} md={3}>
           <MediaActions id={mediaId} />
         </Col>
-      </Row>
-      <Row>
         <Col md={6}>
           <Tabs
             id="media-detail-tabs"

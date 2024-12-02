@@ -42,7 +42,7 @@ export default function NavBar({ username }) {
             </Nav>
             {isAuthenticated ? (
               <Nav className="ms-auto d-flex flex-column flex-lg-row gap-3">
-                <Nav.Link as={Link} to="/profile-settings">
+                <Nav.Link as={Link} to="/profile/lists">
                   <span className="d-flex gap-2">
                     <i className="bi bi-list-task"></i>
                     Bookmarks

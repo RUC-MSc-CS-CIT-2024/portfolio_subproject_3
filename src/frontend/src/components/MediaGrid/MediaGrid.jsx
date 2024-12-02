@@ -1,20 +1,20 @@
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { MovieCard } from '@/components';
-import { useMoviesPerRow } from '@/hooks';
-import './MovieGrid.css';
+import { MediaCard } from '@/components';
+import { useMediaPerRow } from '@/hooks';
+import './MediaGrid.css';
 
-export default function MovieGrid({ movies, loading }) {
+export default function MediaGrid({ media, loading }) {
   const [showMore, setShowMore] = useState(false);
-  const moviesPerRow = useMoviesPerRow();
+  const mediaPerRow = useMediaPerRow();
 
-  const firstRowMovies = movies.slice(0, moviesPerRow);
-  const remainingMovies = movies.slice(moviesPerRow);
+  const firstRowMedia = media.slice(0, mediaPerRow);
+  const remainingMedia = media.slice(mediaPerRow);
 
   return (
     <Container fluid className="container-layout ">
       <Row>
-        {firstRowMovies.map((movie, index) => (
+        {firstRowMedia.map((media, index) => (
           <Col
             key={index}
             xs={12}
@@ -24,15 +24,15 @@ export default function MovieGrid({ movies, loading }) {
             xl={2}
             className="position-relative"
           >
-            <MovieCard
-              id={movie.movieId}
-              imageUri={movie.imageUri}
-              title={movie.title}
-              releaseYear={movie.releaseYear}
+            <MediaCard
+              id={media.id}
+              imageUri={media.imageUri}
+              title={media.title}
+              releaseYear={media.releaseYear}
               isLoading={loading}
             />
-            {index === firstRowMovies.length - 1 &&
-              remainingMovies.length > 0 && (
+            {index === firstRowMedia.length - 1 &&
+              remainingMedia.length > 0 && (
                 <Button
                   variant="link"
                   onClick={() => setShowMore(!showMore)}
@@ -46,7 +46,7 @@ export default function MovieGrid({ movies, loading }) {
       </Row>
       {showMore && (
         <Row>
-          {remainingMovies.map((movie, index) => (
+          {remainingMedia.map((media, index) => (
             <Col
               key={index}
               xs={12}
@@ -56,11 +56,11 @@ export default function MovieGrid({ movies, loading }) {
               xl={2}
               className="position-relative"
             >
-              <MovieCard
-                id={movie.movieId}
-                imageUri={movie.imageUri}
-                title={movie.title}
-                releaseYear={movie.releaseYear}
+              <MediaCard
+                id={media.mediaId}
+                imageUri={media.imageUri}
+                title={media.title}
+                releaseYear={media.releaseYear}
                 isLoading={loading}
               />
             </Col>

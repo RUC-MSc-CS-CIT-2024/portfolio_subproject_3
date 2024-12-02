@@ -6,6 +6,6 @@ export { default as UpdateProfileForm } from './UpdateProfileForm/UpdateProfileF
 export { default as Layout } from './Layout';
 export { default as PrivateRoute } from './PrivateRoute';
 export { default as ToastNotification } from './ToastNotification/ToastNotification';
-export { default as MovieCard } from './MovieCard/MovieCard';
-export { default as MovieGrid } from './MovieGrid/MovieGrid';
-export { default as MovieCarousel } from './MovieCarousel/MovieCarousel';
+export { default as MediaCard } from './MediaCard/MediaCard';
+export { default as MediaGrid } from './MediaGrid/MediaGrid';
+export { default as MediaCarousel } from './MediaCarousel/MediaCarousel';

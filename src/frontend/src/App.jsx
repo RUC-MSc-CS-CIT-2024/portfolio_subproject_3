@@ -27,8 +27,8 @@ export default function App() {
                 element={<ProfileSettingsPage />}
               />
             </Route>
-            <Route path="movies" element={<MediaOverviewPage />} />
-            <Route path="movies/:id" element={<MediaDetailPage />} />
+            <Route path="media" element={<MediaOverviewPage />} />
+            <Route path="media/:id" element={<MediaDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

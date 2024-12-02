@@ -1,13 +1,13 @@
-.movieCard-clickable {
+.mediaCard-clickable {
   cursor: pointer;
 }
 
-.movieCard.card {
+.mediaCard.card {
   border: none;
   width: 100%;
 }
 
-.movieCard-img {
+.mediaCard-img {
   border-radius: 1rem;
   width: 100%;
   aspect-ratio: 2 / 3;
@@ -19,6 +19,6 @@
   border-radius: 1rem;
 }
 
-.movieCard-body.card-body {
+.mediaCard-body.card-body {
   padding-left: 0;
 }

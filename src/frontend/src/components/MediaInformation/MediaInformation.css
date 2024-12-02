@@ -1,0 +1,24 @@
+.container-layout {
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+.secondary-information {
+  color: grey; 
+}
+
+.plot-text {
+  display: inline;
+  hyphens: auto;
+}
+
+.toggle-button {
+  display: inline;
+  padding: 0;
+  margin-left: 5px;
+  color: black;
+}

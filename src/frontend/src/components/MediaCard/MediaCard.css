@@ -1,0 +1,17 @@
+.mediaCard-clickable {
+  cursor: pointer;
+}
+
+.mediaCard.card {
+  border: none;
+  width: 100%;
+}
+
+.mediaCard-img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+}
+
+.mediaCard-body.card-body {
+  padding-left: 0;
+}

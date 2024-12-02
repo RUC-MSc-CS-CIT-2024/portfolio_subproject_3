@@ -10,5 +10,9 @@ export { default as ToastNotification } from './ToastNotification/ToastNotificat
 export { default as MediaCard } from './MediaCard/MediaCard';
 export { default as MediaGrid } from './MediaGrid/MediaGrid';
 export { default as MediaCarousel } from './MediaCarousel/MediaCarousel';
+export { default as MediaInformation } from './MediaInformation/MediaInformation';
+export { default as PlaceholderText } from './PlaceholderText/PlaceholderText';
+export { default as InfoRow } from './InfoRow/InfoRow';
+export { default as DefaultImage } from './DefaultImage/DefaultImage';
 export { default as MediaActions } from './MediaActions/MediaActions';
 export { default as ActionDropdown } from './ActionDropdown/ActionDropdown';

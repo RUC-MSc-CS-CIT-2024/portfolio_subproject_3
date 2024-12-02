@@ -1,5 +1,6 @@
 import { Card, Placeholder } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { DefaultImage } from '@/components';
 import './MediaCard.css';
 
 export default function MediaCard({
@@ -15,23 +16,6 @@ export default function MediaCard({
     navigate(`/media/${id}`);
   };
 
-  const defaultImage = (
-    <div className="mediaCard-img">
-      <svg xmlns="http://www.w3.org/2000/svg" className="default-svg">
-        <rect width="100%" height="100%" fill="#ddd" />
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          fill="#aaa"
-          fontSize="inherit"
-        >
-          No Image Found
-        </text>
-      </svg>
-    </div>
-  );
   const defaultTitle = 'Unknown Title';
   const defaultReleaseYear = 'Unknown Year';
 
@@ -43,9 +27,9 @@ export default function MediaCard({
         ) : (
           <div className="mediaCard-img">
             {imageUri ? (
-              <Card.Img src={imageUri} className="mediaCard-img" />
+              <Card.Img src={imageUri} className="mediaCard-img" rounded />
             ) : (
-              defaultImage
+              <DefaultImage />
             )}
           </div>
         )}

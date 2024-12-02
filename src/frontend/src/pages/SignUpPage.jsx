@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Form, Container, Card, Toast } from 'react-bootstrap';
+import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { signUpUser } from '@/services/signUpService';
 import { useToast } from '@/hooks';
@@ -87,16 +87,6 @@ export default function SignUpPage() {
           Already have an account? <a href="/login">Login</a>
         </Card.Footer>
       </Card>
-      <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
-        delay={3000}
-        autohide
-        bg={toastVariant}
-        className="position-fixed bottom-0 end-0 m-3"
-      >
-        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
-      </Toast>
     </Container>
   );
 }

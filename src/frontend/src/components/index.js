@@ -7,3 +7,5 @@ export { default as Layout } from './Layout';
 export { default as PrivateRoute } from './PrivateRoute';
 export { default as ToastNotification } from './ToastNotification/ToastNotification';
 export { default as MovieCard } from './MovieCard/MovieCard';
+export { default as MovieGrid } from './MovieGrid/MovieGrid';
+export { default as MovieCarousel } from './MovieCarousel/MovieCarousel';

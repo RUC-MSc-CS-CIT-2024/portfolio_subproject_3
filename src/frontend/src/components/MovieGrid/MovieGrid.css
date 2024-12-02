@@ -1,0 +1,11 @@
+
+.see-more-button.btn {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  color: black;
+}
+
+.margin-left {
+  margin-left: -12px;
+}

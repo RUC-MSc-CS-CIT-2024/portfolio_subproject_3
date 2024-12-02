@@ -3,6 +3,8 @@ import { MediaCarousel, MediaGrid } from '@/components';
 
 const titles = [
   {
+    imageUri:
+      'https://m.media-amazon.com/images/M/MV5BYTU0ODc3NmMtMjliYy00YjE4LTg3ODctMmQxYmRlM2U2YmVhXkEyXkFqcGdeQXVyMTkzODUwNzk@._V1_SX300.jpg',
     id: 1,
     title: 'Movie Title 1',
     releaseYear: '2023',

@@ -12,6 +12,7 @@ const parseToken = (token) => {
     email: decoded.email,
     username: decoded.sub,
     role: decoded.role,
+    token,
   };
 };
 
@@ -23,7 +24,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = getCookie('token');
     if (token) {
-      setUser(parseToken(token));
+      const userData = parseToken(token);
+      setUser(userData);
       setIsAuthenticated(true);
     }
     setLoading(false);
@@ -32,8 +34,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const token = await loginService(credentials);
+      const userData = parseToken(token);
 
-      setUser(parseToken(token));
+      sessionStorage.setItem('user', JSON.stringify(userData));
+
+      setUser(userData);
       setCookie('token', token, 1);
       setIsAuthenticated(true);
     } catch (error) {

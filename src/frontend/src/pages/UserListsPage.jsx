@@ -1,6 +1,6 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useState } from 'react';
-import { FollowingList } from '@/components';
+import { FollowingList, BookmarkList, CompletedList } from '@/components';
 
 export default function UserListsPage() {
   const [key, setKey] = useState('following');
@@ -13,10 +13,10 @@ export default function UserListsPage() {
           <FollowingList />
         </Tab>
         <Tab eventKey="bookmarked" title="Bookmarked">
-          Tab content for bookmarked list
+          <BookmarkList />
         </Tab>
         <Tab eventKey="completed" title="Completed">
-          Tab content for completed list
+          <CompletedList />
         </Tab>
       </Tabs>
     </Container>

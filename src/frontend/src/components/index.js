@@ -14,3 +14,5 @@ export { default as MediaInformation } from './MediaInformation/MediaInformation
 export { default as PlaceholderText } from './PlaceholderText/PlaceholderText';
 export { default as InfoRow } from './InfoRow/InfoRow';
 export { default as DefaultImage } from './DefaultImage/DefaultImage';
+export { default as MediaActions } from './MediaActions/MediaActions';
+export { default as ActionDropdown } from './ActionDropdown/ActionDropdown';

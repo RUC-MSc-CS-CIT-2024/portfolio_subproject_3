@@ -1,5 +1,7 @@
-import { Container } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { MediaInformation } from '@/components';
+import { useParams } from 'react-router-dom';
+import { MediaActions } from '@/components';
 
 export default function MediaDetailPage() {
   const dummyData = {
@@ -12,9 +14,16 @@ export default function MediaDetailPage() {
     director: 'John Doe',
     screenwriter: 'Jane Smith',
   };
+  const { id: mediaId } = useParams();
+
   return (
     <Container>
       <MediaInformation {...dummyData} />
+      <Row>
+        <Col xs={12} md={3}>
+          <MediaActions id={mediaId} />
+        </Col>
+      </Row>
     </Container>
   );
 }

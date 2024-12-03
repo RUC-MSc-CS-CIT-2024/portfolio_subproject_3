@@ -6,14 +6,15 @@ const accessKey = import.meta.env.VITE_TMDB_READ_TOKEN;
 const client = new ApiClient(baseUrl, accessKey);
 
 export const ImageSize = Object.freeze({
-  VerySmall: 'w92',
-  Small: 'w158',
-  Normal: 'w500',
+  VerySmall: 'w92', // Used on lists
+  Small: 'w185', // Used for cards
+  Normal: 'w500', // Used on the detailed pages
   Original: 'original',
 });
 
-export async function getTMDBPersonImage(person_imdb_id, size) {
-  const resp = await client.Get(`/person/${person_imdb_id}`);
+export async function getTMDBImage(imdb_id, size) {
+  size = size ?? ImageSize.Normal;
+  const resp = await client.Get(`/find/${imdb_id}?external_source=imdb_id`);
   if (!resp.ok) {
     throw new Error('Network response was not ok');
   }

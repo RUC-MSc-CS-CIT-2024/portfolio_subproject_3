@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '@/utils/constants';
 import { getUserFromSession } from '@/utils/getUserFromSession';
 import { ApiClient } from '../utils/apiClient';
-import { getTMDBPersonImage, ImageSize } from './tmdbService';
+import { getTMDBImage, ImageSize } from './tmdbService';
 
 export const updateUserById = async (data) => {
   const user = getUserFromSession();
@@ -168,12 +168,12 @@ export const createMarkAsCompleted = async ({
 
 export const getCurrentUserFollowing = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = await new ApiClient();
+  const apiClient = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
-  let path = `api/users/${user.id}/following`;
+  let path = `users/${user.id}/following`;
 
   let queryParams = [];
   if (page) queryParams.push({ key: 'page', value: page });
@@ -186,7 +186,7 @@ export const getCurrentUserFollowing = async (page, count) => {
   }
 
   for (const followEntry of response.value.items) {
-    followEntry.pictureUri = await getTMDBPersonImage(
+    followEntry.pictureUri = await getTMDBImage(
       followEntry.person.imdbId,
       ImageSize.VerySmall,
     );
@@ -197,12 +197,12 @@ export const getCurrentUserFollowing = async (page, count) => {
 
 export const getCurrentUserBookmarks = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = await new ApiClient();
+  const apiClient = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
-  let path = `api/users/${user.id}/bookmarks`;
+  let path = `users/${user.id}/bookmarks`;
 
   let queryParams = [];
   if (page) queryParams.push({ key: 'page', value: page });
@@ -219,12 +219,12 @@ export const getCurrentUserBookmarks = async (page, count) => {
 
 export const getCurrentUserCompleted = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = await new ApiClient();
+  const apiClient = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
-  let path = `api/users/${user.id}/completed`;
+  let path = `users/${user.id}/completed`;
 
   let queryParams = [];
   if (page) queryParams.push({ key: 'page', value: page });

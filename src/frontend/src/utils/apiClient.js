@@ -35,6 +35,7 @@ export class ApiClient {
     }
   }
 
+  // params format: [{key: 'key1', value: 'value1'}, {key: 'key2', value: 'value2'}]
   #_getUrl(path, params) {
     const url = new URL(this.#baseUrl);
     url.pathname = path;

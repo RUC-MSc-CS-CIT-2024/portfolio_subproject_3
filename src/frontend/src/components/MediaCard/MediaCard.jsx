@@ -26,11 +26,7 @@ export default function MediaCard({
           <Placeholder as={Card.Img} className="mediaCard-img" />
         ) : (
           <div className="mediaCard-img">
-            {imageUri ? (
-              <Card.Img src={imageUri} className="mediaCard-img" rounded />
-            ) : (
-              <DefaultImage />
-            )}
+            {imageUri ? <Card.Img src={imageUri} /> : <DefaultImage />}
           </div>
         )}
         <Card.Body className="mediaCard-body">

@@ -1,14 +1,98 @@
-/* import { API_BASE_URL } from '@/utils/constants';
+import { API_BASE_URL } from '@/utils/constants';
 
-export const fetchMedia = async () => {};
+export const fetchMediaById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media:', error);
+    throw error;
+  }
+};
 
-export const fetchMediaById = async (id) => {};
+export const fetchTitles = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/titles`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media titles:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCrew = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/crew`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media crew:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCast = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/cast`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media cast:', error);
+    throw error;
+  }
+};
+
+export const fetchSimilarMedia = async (id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/media/${id}/similar_media`,
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch similar media:', error);
+    throw error;
+  }
+};
+
+export const fetchReleases = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/releases`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media releases:', error);
+    throw error;
+  }
+};
+
+/*
+ export const fetchMedia = async () => {};
 
 export const fetchSimilarMedia = async (id) => {};
 
 export const fetchRelatedMedia = async (id) => {};
 
-export const fetchMediaCrew = async (id) => {};
 
 export const fetchMediaCast = async (id) => {};
 

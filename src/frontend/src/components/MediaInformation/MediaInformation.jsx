@@ -9,18 +9,19 @@ import {
 } from 'react-bootstrap';
 import './MediaInformation.css';
 import { PlaceholderText, InfoRow, DefaultImage, Rating } from '@/components';
+import { formatDate } from '@/utils/date';
 
 export default function MediaInformation({
-  poster,
+  posterUri,
   title,
-  year,
-  length,
+  releaseDate,
+  runtimeMinutes,
   rating,
   plot,
   director,
-  screenwriter,
-  composer,
-  ratings,
+  writer,
+  producer,
+  scores,
   isLoading,
 }) {
   const [showMore, setShowMore] = useState(false);
@@ -30,16 +31,29 @@ export default function MediaInformation({
   const plotPreview =
     plot?.length > 200 ? plot.substring(0, 200) + '...' : plot;
 
+  const renderInfoRowWithSeparator = (label, value, showSeparator) => (
+    <>
+      <InfoRow label={label} value={value} />
+      {showSeparator && <p className="mx-3 lines">|</p>}
+    </>
+  );
+
   return (
     <Container className="container-layout">
       <Row>
-        <Col xs={12} md={3}>
+        <Col xs={12} md={3} className="image-container">
           {isLoading ? (
             <Placeholder as={Image} className="mediaCard-img" />
           ) : (
             <div className="mediaCard-img">
-              {poster ? (
-                <Image src={poster} alt={`${title} poster`} fluid rounded />
+              {posterUri ? (
+                <Image
+                  src={posterUri}
+                  alt={`${title} poster`}
+                  fluid
+                  rounded
+                  className="img-media-information"
+                />
               ) : (
                 <DefaultImage />
               )}
@@ -48,14 +62,14 @@ export default function MediaInformation({
         </Col>
         <Col xs={12} md={9}>
           <Row>
-            <Col className="d-flex align-items-baseline">
+            <Col className="d-flex align-items-baseline flex-wrap">
               {isLoading ? (
                 <PlaceholderText as="h1" xs={6} />
               ) : (
                 <>
                   <h1 className="title">{title || 'Unknown Title'}</h1>
                   <p className="secondary-information">
-                    {year || 'Unknown Year'}
+                    {formatDate(releaseDate) || 'Unknown Year'}
                   </p>
                 </>
               )}
@@ -70,9 +84,14 @@ export default function MediaInformation({
                 </>
               ) : (
                 <div className="d-flex">
-                  <InfoRow label="Length" value={length} />
-                  <p className="mx-3">|</p>
-                  <InfoRow label="Rating" value={rating} />
+                  {renderInfoRowWithSeparator(
+                    'Runtime',
+                    runtimeMinutes === null
+                      ? 'Unknown length'
+                      : `${runtimeMinutes} minutes`,
+                    runtimeMinutes !== null && rating,
+                  )}
+                  {rating && <InfoRow label="Age Rating" value={rating} />}
                 </div>
               )}
             </Col>
@@ -114,18 +133,28 @@ export default function MediaInformation({
                 </>
               ) : (
                 <div className="d-flex mt-3 crew-information">
-                  <InfoRow label="Director" value={director} />
-                  <p className="mx-3 lines">|</p>
-                  <InfoRow label="Screenwriter" value={screenwriter} />
-                  <p className="mx-3 lines">|</p>
-                  <InfoRow label="Composer" value={composer} />
+                  {director.length > 0 &&
+                    renderInfoRowWithSeparator(
+                      'Director',
+                      director.join(', '),
+                      writer.length > 0 || producer.length > 0,
+                    )}
+                  {writer.length > 0 &&
+                    renderInfoRowWithSeparator(
+                      'Writer',
+                      writer.join(', '),
+                      producer.length > 0,
+                    )}
+                  {producer.length > 0 && (
+                    <InfoRow label="Producer" value={producer.join(', ')} />
+                  )}
                 </div>
               )}
             </Col>
           </Row>
           <Row>
             <Col>
-              <Rating ratings={ratings} />
+              <Rating ratings={scores} />
             </Col>
           </Row>
         </Col>

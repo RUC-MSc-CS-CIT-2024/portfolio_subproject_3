@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '@/utils/constants';
 import { getUserFromSession } from '@/utils/getUserFromSession';
-import { getCookie } from '@/utils/cookie';
+import { ApiClient } from '../utils/apiClient';
+import { getTMDBPersonImage, ImageSize } from './tmdbService';
 
 export const updateUserById = async (data) => {
   const user = getUserFromSession();
@@ -167,48 +168,73 @@ export const createMarkAsCompleted = async ({
 
 export const getCurrentUserFollowing = async (page, count) => {
   const user = getUserFromSession();
-  const token = getCookie('token');
+  const apiClient = await new ApiClient();
 
-  if (!user || !token) {
+  if (!user) {
     throw new Error('No user found in session');
   }
-  let requestUrl = `${API_BASE_URL}/api/users/${user.id}/following`;
+  let path = `api/users/${user.id}/following`;
+
   let queryParams = [];
-  if (page) {
-    queryParams.push(`page=${page}`);
-  }
-  if (count) {
-    queryParams.push(`count=${count}`);
-  }
-  if (queryParams.length > 0) {
-    requestUrl += '?' + queryParams.join('&');
-  }
+  if (page) queryParams.push({ key: 'page', value: page });
+  if (count) queryParams.push({ key: 'count', value: count });
 
-  const response = await fetch(requestUrl, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.Get(path, queryParams);
 
-  const followResult = await response.json();
-
-  for (const followEntry of followResult.items) {
-    const personUrl = followEntry.links.find(
-      (link) => link.rel === 'person',
-    ).href;
-
-    const personResp = await fetch(personUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    followEntry.person = await personResp.json();
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
   }
 
-  return followResult;
+  for (const followEntry of response.value.items) {
+    followEntry.pictureUri = await getTMDBPersonImage(
+      followEntry.person.imdbId,
+      ImageSize.VerySmall,
+    );
+  }
+
+  return response.value;
+};
+
+export const getCurrentUserBookmarks = async (page, count) => {
+  const user = getUserFromSession();
+  const apiClient = await new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+  let path = `api/users/${user.id}/bookmarks`;
+
+  let queryParams = [];
+  if (page) queryParams.push({ key: 'page', value: page });
+  if (count) queryParams.push({ key: 'count', value: count });
+
+  const response = await apiClient.Get(path, queryParams);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};
+
+export const getCurrentUserCompleted = async (page, count) => {
+  const user = getUserFromSession();
+  const apiClient = await new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+  let path = `api/users/${user.id}/completed`;
+
+  let queryParams = [];
+  if (page) queryParams.push({ key: 'page', value: page });
+  if (count) queryParams.push({ key: 'count', value: count });
+
+  const response = await apiClient.Get(path, queryParams);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
 };

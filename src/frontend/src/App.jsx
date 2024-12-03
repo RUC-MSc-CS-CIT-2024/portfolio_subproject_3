@@ -10,6 +10,7 @@ import {
   SignInPage,
   MediaOverviewPage,
   MediaDetailPage,
+  PersonDetailPage,
 } from '@/pages';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
             </Route>
             <Route path="media" element={<MediaOverviewPage />} />
             <Route path="media/:id" element={<MediaDetailPage />} />
+            <Route path="person" element={<PersonDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

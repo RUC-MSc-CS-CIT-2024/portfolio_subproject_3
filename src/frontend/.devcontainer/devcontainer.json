@@ -1,39 +1,39 @@
 // See https://containers.dev/implementors/json_reference/ for configuration reference
 {
-	"name": "Node.js environment",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"remoteUser": "node",
-	"workspaceMount": "source=${localWorkspaceFolder}/../..,target=/workspace,type=bind",
-	"mounts": [
-		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
-	],
-	"postCreateCommand": "git config --global --add safe.directory '/workspace' && chown node node_modules && npm ci",
-	"workspaceFolder": "/workspace/src/frontend",
-	"features": {
-		"ghcr.io/devcontainers/features/git:1": {}
-	},
-	"forwardPorts": [ 3000 ],
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"dbaeumer.vscode-eslint",
-				"dsznajder.es7-react-js-snippets",
-				"esbenp.prettier-vscode",
-				"mhutchie.git-graph"
-			],
-			"settings": {
-				"git.openRepositoryInParentFolders": "always",
-				"[javascript]": {
-					"editor.formatOnSave": true,
-					"editor.defaultFormatter": "esbenp.prettier-vscode"
-				},
-				"[javascriptreact]": {
-					"editor.formatOnSave": true,
-					"editor.defaultFormatter": "esbenp.prettier-vscode"
-				}
-			}
-		}
-	}
+  "name": "Node.js environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "workspaceMount": "source=${localWorkspaceFolder}/../..,target=/workspace,type=bind",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+  "postCreateCommand": "git config --global --add safe.directory '/workspace' && chown node node_modules && npm ci",
+  "workspaceFolder": "/workspace/src/frontend",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "forwardPorts": [3000],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "dsznajder.es7-react-js-snippets",
+        "esbenp.prettier-vscode",
+        "mhutchie.git-graph"
+      ],
+      "settings": {
+        "git.openRepositoryInParentFolders": "always",
+        "[javascript]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  }
 }

@@ -1,0 +1,34 @@
+.personCard {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.personCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.personCard-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.personCard-body {
+  text-align: center;
+}
+
+.personCard-role {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.personCard-info {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #777;
+}

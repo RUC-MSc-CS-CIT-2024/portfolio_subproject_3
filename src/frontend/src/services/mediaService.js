@@ -3,7 +3,7 @@ import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export const fetchMedia = async ({
   page = 1,
-  pageCount = 10,
+  pageCount = 20,
   query = '',
   queryType = 'All',
 }) => {
@@ -26,14 +26,18 @@ export const fetchMedia = async ({
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
+  console.log('response:', response);
 
   const data = await response.json();
+
+  console.log('data:', data);
 
   const transformedResults = data.map((media) => ({
     id: media.id,
     title: media.title,
-    posterUri: media.posterUri,
-    releaseDate: media.releaseDate,
+    type: media.type,
+    imageUri: media.posterUri,
+    releaseYear: new Date(media.releaseDate).toLocaleDateString(),
   }));
 
   return transformedResults;

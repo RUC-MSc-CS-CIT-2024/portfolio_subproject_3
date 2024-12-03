@@ -3,16 +3,14 @@ import Container from 'react-bootstrap/Container';
 import { fetchMedia } from '../services/mediaService';
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import SearchForm from '../components/SearchForm/SearchForm';
+import { SearchForm, MediaGrid } from '@/components';
 
 export default function SearchPage() {
   const location = useLocation();
-  const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState(
-    new URLSearchParams(location.search).get('q'),
-  );
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSearch = async (searchQuery) => {
+  const handleSearch = async (searchQuery, gueryType) => {
     if (!searchQuery) {
       return;
     }
@@ -20,36 +18,42 @@ export default function SearchPage() {
     try {
       const results = await fetchMedia({
         query: searchQuery,
-        queryType: 'Simple',
+        queryType: gueryType,
       });
-      setMovies(results);
+      setResults(results);
     } catch (error) {
       console.error('Error searching:', error);
     }
   };
 
   useEffect(() => {
-    async function fetchData() {
-      const searchQuery = new URLSearchParams(location.search).get('q');
-      setQuery(searchQuery);
-      await handleSearch(searchQuery);
-      console.log('searchQuery:', searchQuery);
+    const fetchData = async (searchQuery, type) => {
+      setLoading(true);
+      try {
+        await handleSearch(searchQuery, type);
+      } catch (err) {
+        console.error('Error during search:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    console.log('location.search:', location);
+    if (location.search === '') {
+      fetchData('all', 'All');
     }
-    fetchData();
+
+    const search = new URLSearchParams(location.search).get('q');
+    fetchData(search, 'Simple');
   }, [location.search]);
 
   return (
     <Container>
       <h1>SearchPage</h1>
       <SearchForm btnVariant="dark" />
-      <ul>
-        {movies.map((movie, index) => (
-          <li key={index}>
-            {movie.title}
-            <img src={movie.posterUri} alt={movie.title} />
-          </li>
-        ))}
-      </ul>
+      {!loading && results.length === 0 && <div>No results found.</div>}
+      {loading && results.length === 0 && <div>Loading...</div>}
+      <MediaGrid media={results} loading={loading} />
     </Container>
   );
 }

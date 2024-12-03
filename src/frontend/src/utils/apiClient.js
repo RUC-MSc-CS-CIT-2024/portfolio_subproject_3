@@ -16,26 +16,32 @@ export class ApiClient {
   #baseUrl;
   #request;
 
-  constructor() {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    if (baseUrl === undefined)
+  constructor(baseUrl, accessKey) {
+    const url = baseUrl ?? import.meta.env.VITE_API_BASE_URL;
+    if (url === undefined)
       throw new Error('Environment variable VITE_API_BASE_URL missing');
-    this.#baseUrl = new URL(baseUrl);
+    this.#baseUrl = new URL(url);
+
     this.#request = {
       headers: new Headers({
-        Authorization: 'Bearer ' + getCookie('token'),
+        'Content-Type': 'application/json',
       }),
       mode: 'cors',
     };
+
+    const token = accessKey ?? getCookie('token');
+    if (token !== undefined) {
+      this.#request.headers.append('Authorization', `Bearer ${token}`);
+    }
   }
 
   #_getUrl(path, params) {
     const url = new URL(this.#baseUrl);
     url.pathname = path;
     if (params !== undefined)
-      Object.entries(params).forEach(([key, value]) =>
-        url.searchParams.append(key, value),
-      );
+      for (const param of params) {
+        url.searchParams.append(param.key, param.value);
+      }
     return url;
   }
 

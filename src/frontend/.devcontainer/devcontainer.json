@@ -9,7 +9,7 @@
 	"mounts": [
 		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
 	],
-	"postCreateCommand": "git config --global --add safe.directory '/workspace' && chown node node_modules && npm ci",
+	"postCreateCommand": "sudo chown node node_modules && git config --global --add safe.directory /workspace",
 	"workspaceFolder": "/workspace/src/frontend",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}

@@ -8,7 +8,7 @@ import {
   Placeholder,
 } from 'react-bootstrap';
 import './MediaInformation.css';
-import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
+import { PlaceholderText, InfoRow, DefaultImage, Rating } from '@/components';
 
 export default function MediaInformation({
   poster,
@@ -20,6 +20,7 @@ export default function MediaInformation({
   director,
   screenwriter,
   composer,
+  ratings,
   isLoading,
 }) {
   const [showMore, setShowMore] = useState(false);
@@ -112,14 +113,19 @@ export default function MediaInformation({
                   <PlaceholderText as="p" xs={6} />
                 </>
               ) : (
-                <div className="d-flex mt-3">
+                <div className="d-flex mt-3 crew-information">
                   <InfoRow label="Director" value={director} />
-                  <p className="mx-3">|</p>
+                  <p className="mx-3 lines">|</p>
                   <InfoRow label="Screenwriter" value={screenwriter} />
-                  <p className="mx-3">|</p>
+                  <p className="mx-3 lines">|</p>
                   <InfoRow label="Composer" value={composer} />
                 </div>
               )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Rating ratings={ratings} />
             </Col>
           </Row>
         </Col>

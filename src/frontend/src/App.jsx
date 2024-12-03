@@ -8,6 +8,7 @@ import {
   ProfilePage,
   ProfileSettingsPage,
   SignUpPage,
+  UserListsPage,
   MediaOverviewPage,
   MediaDetailPage,
 } from '@/pages';
@@ -21,11 +22,10 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="signup" element={<SignUpPage />} />
             <Route element={<PrivateRoute />}>
-              <Route path="profile" element={<ProfilePage />} />
-              <Route
-                path="profile-settings"
-                element={<ProfileSettingsPage />}
-              />
+              <Route path="profile">
+                <Route index element={<ProfilePage />} />
+                <Route path="lists" element={<UserListsPage />} />
+              </Route>
             </Route>
             <Route path="media" element={<MediaOverviewPage />} />
             <Route path="media/:id" element={<MediaDetailPage />} />

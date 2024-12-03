@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '@/utils/constants';
 import { getUserFromSession } from '@/utils/getUserFromSession';
+import { getCookie } from '@/utils/cookie';
 
 export const updateUserById = async (data) => {
   const user = getUserFromSession();
@@ -31,6 +32,7 @@ export const updateUserById = async (data) => {
     throw error;
   }
 };
+
 export const deleteUserById = async () => {
   const user = getUserFromSession();
   if (!user) {
@@ -161,4 +163,52 @@ export const createMarkAsCompleted = async ({
     console.error('Error marking as completed:', error);
     throw error;
   }
+};
+
+export const getCurrentUserFollowing = async (page, count) => {
+  const user = getUserFromSession();
+  const token = getCookie('token');
+
+  if (!user || !token) {
+    throw new Error('No user found in session');
+  }
+  let requestUrl = `${API_BASE_URL}/api/users/${user.id}/following`;
+  let queryParams = [];
+  if (page) {
+    queryParams.push(`page=${page}`);
+  }
+  if (count) {
+    queryParams.push(`count=${count}`);
+  }
+  if (queryParams.length > 0) {
+    requestUrl += '?' + queryParams.join('&');
+  }
+
+  const response = await fetch(requestUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const followResult = await response.json();
+
+  for (const followEntry of followResult.items) {
+    const personUrl = followEntry.links.find(
+      (link) => link.rel === 'person',
+    ).href;
+
+    const personResp = await fetch(personUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    followEntry.person = await personResp.json();
+  }
+
+  return followResult;
 };

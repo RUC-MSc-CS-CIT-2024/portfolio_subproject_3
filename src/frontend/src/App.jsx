@@ -7,7 +7,6 @@ import {
   NotFoundPage,
   ProfilePage,
   ProfileSettingsPage,
-  SignInPage,
   SignUpPage,
   MediaOverviewPage,
   MediaDetailPage,
@@ -20,12 +19,14 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="signin" element={<SignInPage />} />
             <Route path="signup" element={<SignUpPage />} />
             <Route element={<PrivateRoute />}>
               <Route path="profile" element={<ProfilePage />} />
-              <Route path="profile-settings" element={<ProfileSettingsPage />} /> 
-          </Route>
+              <Route
+                path="profile-settings"
+                element={<ProfileSettingsPage />}
+              />
+            </Route>
             <Route path="media" element={<MediaOverviewPage />} />
             <Route path="media/:id" element={<MediaDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />

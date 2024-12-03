@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Form, Container, Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signUpUser } from '@/services/signUpService';
 import { useToast } from '@/hooks';
 
@@ -27,7 +27,7 @@ export default function SignUpPage() {
         variant: 'success',
       });
       setTimeout(() => {
-        navigate('/login'); // TODO: This I basiclly think should redirect us to the home page instead of the login page. and just log us in automatically or we should redirect to the profile page.
+        navigate('/'); // TODO: This I basiclly think should redirect us to the home page instead of the login page. and just log us in automatically or we should redirect to the profile page.
       }, 3000);
     } catch (error) {
       showToastMessage({
@@ -84,7 +84,7 @@ export default function SignUpPage() {
           </Form>
         </Card.Body>
         <Card.Footer className="text-center text-muted">
-          Already have an account? <a href="/login">Login</a>
+          Already have an account? <Link to="/">Login</Link>
         </Card.Footer>
       </Card>
     </Container>

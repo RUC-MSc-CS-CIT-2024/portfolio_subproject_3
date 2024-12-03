@@ -17,3 +17,6 @@ export { default as DefaultImage } from './DefaultImage/DefaultImage';
 export { default as MediaActions } from './MediaActions/MediaActions';
 export { default as ActionDropdown } from './ActionDropdown/ActionDropdown';
 export { default as MediaBadges } from './MediaBadges/MediaBadges';
+export { default as FollowingList } from './FollowingList/FollowingList';
+export { default as BookmarkList } from './BookmarkList/BookmarkList';
+export { default as CompletedList } from './CompletedList/CompletedList';

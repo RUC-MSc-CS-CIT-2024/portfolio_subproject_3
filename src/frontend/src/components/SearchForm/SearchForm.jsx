@@ -9,7 +9,10 @@ export default function SearchForm({ btnVariant = 'dark' }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    if (searchQuery.trim() !== '') {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+    }
   };
 
   const handleKeypress = (e) => {

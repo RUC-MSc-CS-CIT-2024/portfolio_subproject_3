@@ -7,9 +7,9 @@
 	"remoteUser": "node",
 	"workspaceMount": "source=${localWorkspaceFolder}/../..,target=/workspace,type=bind",
 	"mounts": [
-    	"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
 	],
-	"postCreateCommand": "sudo chown node node_modules && git config --global --add safe.directory ${containerWorkspaceFolder}",
+	"postCreateCommand": "git config --global --add safe.directory '/workspace' && chown node node_modules && npm ci",
 	"workspaceFolder": "/workspace/src/frontend",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}
@@ -20,8 +20,20 @@
 			"extensions": [
 				"dbaeumer.vscode-eslint",
 				"dsznajder.es7-react-js-snippets",
-				"esbenp.prettier-vscode"
-			]
+				"esbenp.prettier-vscode",
+				"mhutchie.git-graph"
+			],
+			"settings": {
+				"git.openRepositoryInParentFolders": "always",
+				"[javascript]": {
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				},
+				"[javascriptreact]": {
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				}
+			}
 		}
 	}
 }

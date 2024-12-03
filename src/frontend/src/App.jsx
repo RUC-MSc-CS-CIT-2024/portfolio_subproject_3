@@ -6,7 +6,7 @@ import {
   HomePage,
   NotFoundPage,
   ProfilePage,
-  ProfileSettingsPage,
+  UserListsPage,
   SignInPage,
   MediaOverviewPage,
   MediaDetailPage,
@@ -21,11 +21,10 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="signin" element={<SignInPage />} />
             <Route element={<PrivateRoute />}>
-              <Route path="profile" element={<ProfilePage />} />
-              <Route
-                path="profile-settings"
-                element={<ProfileSettingsPage />}
-              />
+              <Route path="profile">
+                <Route index element={<ProfilePage />} />
+                <Route path="lists" element={<UserListsPage />} />
+              </Route>
             </Route>
             <Route path="media" element={<MediaOverviewPage />} />
             <Route path="media/:id" element={<MediaDetailPage />} />

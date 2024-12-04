@@ -1,7 +1,6 @@
 import { ApiClient } from '../utils/apiClient';
 
 const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-const imageBaseUrl = import.meta.env.VITE_TMDB_IMAGE_BASE_UR;
 const accessKey = import.meta.env.VITE_TMDB_READ_TOKEN;
 const client = new ApiClient(baseUrl, accessKey);
 
@@ -14,7 +13,7 @@ export const ImageSize = Object.freeze({
 
 export async function getTMDBImage(imdb_id, size) {
   size = size ?? ImageSize.Normal;
-  const resp = await client.Get(`/find/${imdb_id}?external_source=imdb_id`);
+  const resp = await client.Get(`find/${imdb_id}?external_source=imdb_id`);
   if (!resp.ok) {
     throw new Error('Network response was not ok');
   }
@@ -31,5 +30,10 @@ export async function getTMDBImage(imdb_id, size) {
   } else {
     throw new Error('No image found');
   }
-  return new URL(path, `${imageBaseUrl}/${size}`).href;
+
+  const imageUrlWithSize = new URL(
+    size + '/',
+    import.meta.env.VITE_TMDB_IMAGE_BASE_URL,
+  );
+  return new URL(path.substring(1), imageUrlWithSize).href;
 }

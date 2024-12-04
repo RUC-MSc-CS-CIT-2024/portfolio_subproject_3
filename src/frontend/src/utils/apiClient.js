@@ -16,7 +16,7 @@ export class ApiClient {
   #baseUrl;
   #request;
 
-  constructor(baseUrl, accessKey) {
+  constructor(baseUrl, accessKey, options) {
     const url = baseUrl ?? import.meta.env.VITE_API_BASE_URL;
     if (url === undefined)
       throw new Error('Environment variable VITE_API_BASE_URL missing');
@@ -26,8 +26,15 @@ export class ApiClient {
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
-      mode: 'cors',
     };
+
+    if (options !== undefined) {
+      if (options.headers !== undefined) {
+        for (const [key, value] of Object.entries(options.headers)) {
+          this.#request.headers.append(key, value);
+        }
+      }
+    }
 
     const token = accessKey ?? getCookie('token');
     if (token !== undefined) {
@@ -37,8 +44,7 @@ export class ApiClient {
 
   // params format: [{key: 'key1', value: 'value1'}, {key: 'key2', value: 'value2'}]
   #_getUrl(path, params) {
-    const url = new URL(this.#baseUrl);
-    url.pathname = path;
+    const url = new URL(path, this.#baseUrl);
     if (params !== undefined)
       for (const param of params) {
         url.searchParams.append(param.key, param.value);

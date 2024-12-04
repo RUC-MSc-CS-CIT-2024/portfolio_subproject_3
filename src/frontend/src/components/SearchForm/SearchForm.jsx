@@ -9,8 +9,17 @@ export default function SearchForm({ btnVariant = 'dark' }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
-    navigate(`/search?q=${searchQuery}`);
+    if (searchQuery.trim() !== '') {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+    }
+  };
+
+  const handleKeypress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch(e);
+    }
   };
 
   return (
@@ -23,6 +32,7 @@ export default function SearchForm({ btnVariant = 'dark' }) {
         size="sm"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyDown={handleKeypress}
       />
       <Button variant={btnVariant} size="sm" onClick={handleSearch}>
         <span className="d-flex gap-2">

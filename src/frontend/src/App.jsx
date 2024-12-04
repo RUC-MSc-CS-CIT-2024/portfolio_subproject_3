@@ -8,6 +8,7 @@ import {
   ProfilePage,
   SignUpPage,
   UserListsPage,
+  SearchPage,
   MediaOverviewPage,
   MediaDetailPage,
 } from '@/pages';
@@ -19,6 +20,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
+            <Route path="search" element={<SearchPage />} />
             <Route path="signup" element={<SignUpPage />} />
             <Route element={<PrivateRoute />}>
               <Route path="profile">

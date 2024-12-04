@@ -23,12 +23,29 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = getCookie('token');
-    if (token) {
+    const storedUser = sessionStorage.getItem('user');
+    if (token && storedUser) {
       const userData = parseToken(token);
       setUser(userData);
       setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
     }
     setLoading(false);
+
+    const handleStorageChange = () => {
+      const updatedStoredUser = sessionStorage.getItem('user');
+      if (!updatedStoredUser) {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = async (credentials) => {
@@ -49,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    setIsAuthenticated(false);
     deleteCookie('token');
     sessionStorage.removeItem('user');
   };

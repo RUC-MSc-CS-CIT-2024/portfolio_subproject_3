@@ -3,7 +3,6 @@ import { ApiClient } from '../utils/apiClient';
 import { getTMDBImage, ImageSize } from './tmdbService';
 
 const api = new ApiClient();
-const BASE_PATH = 'api/users/';
 
 export const updateUserById = async (data) => {
   const user = getUserFromSession();
@@ -11,7 +10,7 @@ export const updateUserById = async (data) => {
     throw new Error('No user found in session');
   }
 
-  const path = `${BASE_PATH}${user.id}`;
+  const path = `users/${user.id}`;
   try {
     const response = await api.Patch(path, data);
 
@@ -32,9 +31,9 @@ export const deleteUserById = async () => {
   if (!user) {
     throw new Error('No user found in session');
   }
-
+  const path = `users/${user.id}`;
   try {
-    const response = await api.Delete(`${BASE_PATH}${user.id}`);
+    const response = await api.Delete(path);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -53,7 +52,7 @@ export const createBookmark = async (bookmarkData) => {
     throw new Error('No user found in session');
   }
 
-  const path = `${BASE_PATH}${user.id}/bookmarks`;
+  const path = `users/${user.id}/bookmarks`;
   try {
     const response = await api.Post(path, bookmarkData);
 
@@ -74,7 +73,7 @@ export const createScore = async ({ mediaId, score, reviewText }) => {
     throw new Error('No user found in session');
   }
 
-  const path = `${BASE_PATH}${user.id}/scores`;
+  const path = `users/${user.id}/scores`;
   try {
     const response = await api.Post(path, { mediaId, score, reviewText });
 
@@ -99,7 +98,7 @@ export const createMarkAsCompleted = async ({
     throw new Error('No user found in session');
   }
 
-  const path = `${BASE_PATH}${user.id}/completed`;
+  const path = `users/${user.id}/completed`;
 
   const completedData = {
     mediaId,

@@ -1,9 +1,6 @@
-import { getUserFromSession } from '@/utils/getUserFromSession';
 import { ApiClient } from '../utils/apiClient';
 
-const user = getUserFromSession();
-const api = new ApiClient(undefined, user?.token);
-const BASE_PATH = '/api/media';
+const api = new ApiClient();
 
 export const fetchMedia = async ({
   page = 1,
@@ -18,8 +15,9 @@ export const fetchMedia = async ({
     { key: 'query', value: query },
   ];
 
+  const path = '/api/media';
   try {
-    const response = await api.Get(`${BASE_PATH}`, queryParams);
+    const response = await api.Get(path, queryParams);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');

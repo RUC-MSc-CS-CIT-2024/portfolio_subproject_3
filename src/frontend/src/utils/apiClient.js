@@ -103,4 +103,17 @@ export class ApiClient {
     }
     return returnResp;
   }
+
+  async Delete(path) {
+    const req = {
+      ...this.#request,
+      method: 'DELETE',
+    };
+    const requestUrl = this.#_getUrl(path);
+    const response = await fetch(requestUrl, req);
+    return new ApiResponse(
+      response.status,
+      response.ok ? await response.json() : null,
+    );
+  }
 }

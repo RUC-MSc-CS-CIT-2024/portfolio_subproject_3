@@ -1,25 +1,25 @@
-import { API_BASE_URL } from '@/utils/constants';
+import { ApiClient } from '../utils/apiClient';
 
 export const login = async (credentials) => {
   try {
     const { username, password } = credentials;
     const authHeader = 'Basic ' + btoa(`${username}:${password}`);
-
-    const response = await fetch(API_BASE_URL + '/api/auth/generate-token', {
-      method: 'POST',
+    const api = new ApiClient(undefined, undefined, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: authHeader,
       },
     });
-
+    const path = '/api/auth/generate-token';
+    const response = await api.Post(path, {});
     if (!response.ok) {
       throw new Error(
-        `Failed to login (STATUS: ${response.status}): ${response.statusText}`,
+        `Failed to login (STATUS: ${response.statusCode}): ${
+          response.value?.message || 'Unknown error'
+        }`,
       );
     }
 
-    return await response.text();
+    return response.value;
   } catch (error) {
     console.error('Error logging in:', error);
     throw error;

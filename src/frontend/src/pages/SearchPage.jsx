@@ -1,4 +1,3 @@
-import { Button } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import { fetchMedia } from '../services/mediaService';
 import { useLocation } from 'react-router-dom';
@@ -38,7 +37,6 @@ export default function SearchPage() {
       }
     };
 
-    console.log('location.search:', location);
     if (location.search === '') {
       fetchData('all', 'All');
     }

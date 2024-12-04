@@ -3,53 +3,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './BookmarkList.css';
 import { Link } from 'react-router-dom';
 
-export default function BookmarkList() {
-  const data = [
-    {
-      bookmarkId: 1,
-      media: {
-        id: 1,
-        title: 'Toy Story',
-        type: 'Movie',
-        releaseDate: '1995-11-22',
-        runtime: '81 min',
-        rated: 'G',
-        posterUri:
-          'https://media.themoviedb.org/t/p/w300_and_h450_bestv2/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg',
-      },
-      note: 'A great movie',
-    },
-    {
-      bookmarkId: 2,
-      media: {
-        id: 2,
-        title: 'Game of Thrones',
-        type: 'TV Show',
-        releaseDate: '2011-04-17',
-        runtime: '57 min',
-        rated: 'TV-MA',
-        posterUri:
-          'https://media.themoviedb.org/t/p/w300_and_h450_bestv2/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg',
-      },
-      note: undefined,
-    },
-    {
-      bookmarkId: 3,
-      media: {
-        id: 3,
-        title: 'The Witcher',
-        type: 'TV Show',
-        releaseDate: '2019-12-20',
-        runtime: '60 min',
-        rated: 'TV-MA',
-        posterUri:
-          'https://media.themoviedb.org/t/p/w300_and_h450_bestv2/cZ0d3rtvXPVvuiX22sP79K3Hmjz.jpg',
-      },
-      note: 'Recommended by a friend',
-    },
-  ];
-
-  const rows = data.map((item) => (
+export default function BookmarkList({ items }) {
+  let rows = items.map((item) => (
     <tr key={item.bookmarkId}>
       <td>
         <img className="mx-2" src={item.media.posterUri} height={68} />
@@ -57,19 +12,30 @@ export default function BookmarkList() {
       </td>
       <td className="align-middle">{item.media.type}</td>
       <td className="align-middle">{item.media.releaseDate}</td>
-      <td className="align-middle">{item.media.rated}</td>
-      <td className="align-middle">{item.media.runtime}</td>
+      <td className="align-middle">{item.media.ageRating}</td>
+      <td className="align-middle">{item.media.runtimeMinutes}</td>
       <td className="align-middle">{item.note}</td>
       <td className="align-middle">
         <OverlayTrigger overlay={<Tooltip>Remove bookmark</Tooltip>}>
-          <div>
-            <i className="bi bi-bookmark-x text-danger" />
-            <i className="bi bi-star-fill text-warning" />
-          </div>
+          <i className="bi bi-bookmark-x text-danger" />
+        </OverlayTrigger>
+        <OverlayTrigger overlay={<Tooltip>Mark as completed</Tooltip>}>
+          <i className="bi bi-star-fill text-warning" />
         </OverlayTrigger>
       </td>
     </tr>
   ));
+
+  if (rows.length === 0) {
+    rows = (
+      <tr>
+        <td colSpan={3} height={100} className="text-center align-middle">
+          It looks like you haven&apos;t bookmarked anything yet. Use the search
+          bar to find media to bookmark!
+        </td>
+      </tr>
+    );
+  }
 
   return (
     <Table hover>

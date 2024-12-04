@@ -1,0 +1,37 @@
+.person-layout {
+    margin-top: 20px;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-right: 10px;
+  }
+  
+  .secondary-information {
+    color: grey;
+  }
+  
+  .bio-text {
+    display: inline;
+    hyphens: auto;
+  }
+  
+  .toggle-button {
+    display: inline;
+    padding: 0;
+    margin-left: 5px;
+    color: black;
+  }
+  
+  .roles-information {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  @media only screen and (max-width: 500px) {
+    .roles-information {
+      flex-direction: column;
+    }
+  }
+  

@@ -6,3 +6,4 @@ export { default as SearchPage } from './SearchPage';
 export { default as MediaOverviewPage } from './MediaOverviewPage';
 export { default as MediaDetailPage } from './MediaDetailPage';
 export { default as SignUpPage } from './SignUpPage';
+export { default as PersonDetailPage } from './PersonDetailPage';

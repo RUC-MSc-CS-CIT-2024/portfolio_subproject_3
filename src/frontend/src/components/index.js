@@ -21,5 +21,7 @@ export { default as Pagination } from './Pagination/Pagination';
 export { default as FollowingList } from './FollowingList/FollowingList';
 export { default as BookmarkList } from './BookmarkList/BookmarkList';
 export { default as CompletedList } from './CompletedList/CompletedList';
+export { default as PersonCard } from './PersonCard/PersonCard';
 export { default as MediaCardBadge } from './MediaCardBadge/MediaCardBadge';
 export { default as Rating } from './Rating/Rating';
+export { default as PersonInformation } from './PersonInformation/PersonInformation';

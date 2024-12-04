@@ -1,23 +1,21 @@
-.personCard {
+.personCard-clickable {
   cursor: pointer;
-  transition:
-    transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
 }
 
-.personCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.personCard {
+  border: none;
+  width: 100%;
 }
 
 .personCard-img {
   width: 100%;
-  height: 200px;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: 8px;
 }
 
 .personCard-body {
+  padding-left: 0;
   text-align: center;
 }
 

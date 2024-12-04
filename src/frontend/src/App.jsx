@@ -6,7 +6,6 @@ import {
   HomePage,
   NotFoundPage,
   ProfilePage,
-  ProfileSettingsPage,
   SignUpPage,
   UserListsPage,
   MediaOverviewPage,
@@ -30,7 +29,7 @@ export default function App() {
             </Route>
             <Route path="media" element={<MediaOverviewPage />} />
             <Route path="media/:id" element={<MediaDetailPage />} />
-            <Route path="person" element={<PersonDetailPage />} />
+            <Route path="person/:id" element={<PersonDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

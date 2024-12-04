@@ -57,8 +57,8 @@ export default function NavBar({ username }) {
               </Nav>
             ) : (
               <Nav>
-                <Nav.Link as={Link} to="/signin">
-                  Sign in
+                <Nav.Link as={Link} to="/signup">
+                  Sign Up
                 </Nav.Link>
                 <NavDropdown
                   title="Login"

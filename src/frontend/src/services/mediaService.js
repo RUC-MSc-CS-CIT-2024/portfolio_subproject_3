@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '@/utils/constants';
+import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export const fetchMediaById = async (id) => {
   try {
@@ -85,6 +86,49 @@ export const fetchReleases = async (id) => {
     throw error;
   }
 };
+
+export const fetchMedia = async ({
+  page = 1,
+  pageCount = 18,
+  query = '',
+  queryType = 'All',
+}) => {
+  const user = getUserFromSession();
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  if (user) {
+    headers['Authorization'] = `Bearer ${user.token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/media?Page.page=${page}&Page.count=${pageCount}&query_type=${queryType}&query=${query}`,
+    {
+      method: 'GET',
+      headers: headers,
+    },
+  );
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  console.log('response:', response);
+
+  const data = await response.json();
+
+  console.log('data:', data);
+
+  const transformedResults = data.map((media) => ({
+    id: media.id,
+    title: media.title,
+    type: media.type,
+    imageUri: media.posterUri,
+    releaseYear: new Date(media.releaseDate).toLocaleDateString(),
+  }));
+
+  return transformedResults;
+};
+
 
 /*
  export const fetchMedia = async () => {};

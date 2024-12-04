@@ -8,6 +8,7 @@
 }
 
 .mediaCard-img {
+  object-fit: cover;
   width: 100%;
   aspect-ratio: 2 / 3;
 }
@@ -19,5 +20,16 @@
 }
 
 .mediaCard-body.card-body {
-  padding-left: 0;
+  padding: 2rem 2rem 2rem 0;
+}
+
+.mediaCard-title-custom {
+  max-width: 100%; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: normal; 
+  display: -webkit-box; 
+  line-clamp: 3; 
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical; 
 }

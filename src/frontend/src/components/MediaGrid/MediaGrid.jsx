@@ -27,6 +27,7 @@ export default function MediaGrid({ media, loading }) {
             <MediaCard
               id={media.id}
               imageUri={media.imageUri}
+              type={media.type}
               title={media.title}
               releaseYear={media.releaseYear}
               isLoading={loading}
@@ -59,6 +60,7 @@ export default function MediaGrid({ media, loading }) {
               <MediaCard
                 id={media.mediaId}
                 imageUri={media.imageUri}
+                type={media.type}
                 title={media.title}
                 releaseYear={media.releaseYear}
                 isLoading={loading}

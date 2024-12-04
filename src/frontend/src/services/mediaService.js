@@ -3,7 +3,7 @@ import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export const fetchMedia = async ({
   page = 1,
-  pageCount = 20,
+  pageCount = 18,
   query = '',
   queryType = 'All',
 }) => {

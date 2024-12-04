@@ -1,12 +1,13 @@
 import { Card, Placeholder } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { DefaultImage } from '@/components';
+import { DefaultImage, MediaCardBadge } from '@/components';
 import './MediaCard.css';
 
 export default function MediaCard({
   id,
   imageUri,
   title,
+  type,
   releaseYear,
   isLoading,
 }) {
@@ -27,10 +28,11 @@ export default function MediaCard({
         ) : (
           <div className="mediaCard-img">
             {imageUri ? (
-              <Card.Img src={imageUri} className="mediaCard-img" rounded />
+              <Card.Img src={imageUri} className="mediaCard-img" />
             ) : (
               <DefaultImage />
             )}
+            <MediaCardBadge type={type} />
           </div>
         )}
         <Card.Body className="mediaCard-body">
@@ -45,8 +47,8 @@ export default function MediaCard({
             </>
           ) : (
             <>
-              <Card.Title>{title || defaultTitle}</Card.Title>
-              <Card.Text>{releaseYear || defaultReleaseYear}</Card.Text>
+              <Card.Title className="mediaCard-title-custom">{title || defaultTitle}</Card.Title>
+              <Card.Text className="">{releaseYear || defaultReleaseYear}</Card.Text>
             </>
           )}
         </Card.Body>

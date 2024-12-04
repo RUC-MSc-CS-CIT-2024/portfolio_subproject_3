@@ -6,7 +6,6 @@ import {
   HomePage,
   NotFoundPage,
   ProfilePage,
-  ProfileSettingsPage,
   SignUpPage,
   UserListsPage,
   SignInPage,

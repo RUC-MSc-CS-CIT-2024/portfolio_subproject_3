@@ -45,8 +45,6 @@ export const fetchMedia = async ({
 
 /*
 
-password123456789
-
 export const fetchMediaById = async (id) => {};
 
 export const fetchSimilarMedia = async (id) => {};

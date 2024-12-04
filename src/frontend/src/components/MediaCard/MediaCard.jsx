@@ -15,6 +15,7 @@ export default function MediaCard({
 
   const handleClick = () => {
     navigate(`/media/${id}`);
+    window.scrollTo(0, 0);
   };
 
   const defaultTitle = 'Unknown Title';

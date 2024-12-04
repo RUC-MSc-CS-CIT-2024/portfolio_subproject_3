@@ -8,7 +8,12 @@ import {
   Placeholder,
 } from 'react-bootstrap';
 import './MediaInformation.css';
-import { PlaceholderText, InfoRow, DefaultImage, Rating } from '@/components';
+import {
+  PlaceholderText,
+  DefaultImage,
+  Rating,
+  InfoRowWithSeparator,
+} from '@/components';
 import { formatDate } from '@/utils/date';
 
 export default function MediaInformation({
@@ -30,13 +35,6 @@ export default function MediaInformation({
 
   const plotPreview =
     plot?.length > 200 ? plot.substring(0, 200) + '...' : plot;
-
-  const renderInfoRowWithSeparator = (label, value, showSeparator) => (
-    <>
-      <InfoRow label={label} value={value} />
-      {showSeparator && <p className="mx-3 lines">|</p>}
-    </>
-  );
 
   return (
     <Container className="container-layout">
@@ -64,7 +62,7 @@ export default function MediaInformation({
           <Row>
             <Col className="d-flex align-items-baseline flex-wrap">
               {isLoading ? (
-                <PlaceholderText as="h1" xs={6} />
+                <PlaceholderText as="h1" xs={4} />
               ) : (
                 <>
                   <h1 className="title">{title || 'Unknown Title'}</h1>
@@ -84,14 +82,22 @@ export default function MediaInformation({
                 </>
               ) : (
                 <div className="d-flex">
-                  {renderInfoRowWithSeparator(
-                    'Runtime',
-                    runtimeMinutes === null
-                      ? 'Unknown length'
-                      : `${runtimeMinutes} minutes`,
-                    runtimeMinutes !== null && rating,
+                  <InfoRowWithSeparator
+                    label="Runtime"
+                    value={
+                      runtimeMinutes === null
+                        ? 'Unknown length'
+                        : `${runtimeMinutes} minutes`
+                    }
+                    showSeparator={runtimeMinutes !== null && rating}
+                  />
+                  {rating && (
+                    <InfoRowWithSeparator
+                      label="Age Rating"
+                      value={rating}
+                      showSeparator={false}
+                    />
                   )}
-                  {rating && <InfoRow label="Age Rating" value={rating} />}
                 </div>
               )}
             </Col>
@@ -133,20 +139,26 @@ export default function MediaInformation({
                 </>
               ) : (
                 <div className="d-flex mt-3 crew-information">
-                  {director.length > 0 &&
-                    renderInfoRowWithSeparator(
-                      'Director',
-                      director.join(', '),
-                      writer.length > 0 || producer.length > 0,
-                    )}
-                  {writer.length > 0 &&
-                    renderInfoRowWithSeparator(
-                      'Writer',
-                      writer.join(', '),
-                      producer.length > 0,
-                    )}
+                  {director.length > 0 && (
+                    <InfoRowWithSeparator
+                      label="Director"
+                      value={director.join(', ')}
+                      showSeparator={writer.length > 0 || producer.length > 0}
+                    />
+                  )}
+                  {writer.length > 0 && (
+                    <InfoRowWithSeparator
+                      label="Writer"
+                      value={writer.join(', ')}
+                      showSeparator={producer.length > 0}
+                    />
+                  )}
                   {producer.length > 0 && (
-                    <InfoRow label="Producer" value={producer.join(', ')} />
+                    <InfoRowWithSeparator
+                      label="Producer"
+                      value={producer.join(', ')}
+                      showSeparator={false}
+                    />
                   )}
                 </div>
               )}

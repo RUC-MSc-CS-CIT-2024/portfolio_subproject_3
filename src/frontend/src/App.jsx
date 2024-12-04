@@ -6,6 +6,8 @@ import {
   HomePage,
   NotFoundPage,
   ProfilePage,
+  ProfileSettingsPage,
+  SignUpPage,
   UserListsPage,
   SignInPage,
   SearchPage,
@@ -22,6 +24,7 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="signin" element={<SignInPage />} />
             <Route path="search" element={<SearchPage />} />
+            <Route path="signup" element={<SignUpPage />} />
             <Route element={<PrivateRoute />}>
               <Route path="profile">
                 <Route index element={<ProfilePage />} />

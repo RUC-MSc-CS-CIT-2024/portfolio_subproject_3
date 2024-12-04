@@ -1,22 +1,46 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useState } from 'react';
 import { FollowingList, BookmarkList, CompletedList } from '@/components';
+import { useAsyncEffect } from '@/hooks/useAsyncEffect';
+import {
+  getCurrentUserBookmarks,
+  getCurrentUserCompleted,
+  getCurrentUserFollowing,
+} from '@/services/userService';
 
 export default function UserListsPage() {
   const [key, setKey] = useState('following');
+  const [bookmarks, setBookmarks] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [following, setFollowing] = useState([]);
+
+  useAsyncEffect(
+    async () => {
+      const bookmarkResult = await getCurrentUserBookmarks();
+      const completedResult = await getCurrentUserCompleted();
+      const followingResult = await getCurrentUserFollowing();
+      return { bookmarkResult, completedResult, followingResult };
+    },
+    ({ bookmarkResult, completedResult, followingResult }) => {
+      setBookmarks(bookmarkResult.items);
+      setCompleted(completedResult.items);
+      setFollowing(followingResult.items);
+    },
+    [],
+  );
 
   return (
     <Container>
-      <h1>Profile Setting (user must be logged in)</h1>
+      <h1>Lists</h1>
       <Tabs activeKey={key} onSelect={(k) => setKey(k)} className="mb-3">
         <Tab eventKey="following" title="Following">
-          <FollowingList />
+          <FollowingList items={following} />
         </Tab>
         <Tab eventKey="bookmarked" title="Bookmarked">
-          <BookmarkList />
+          <BookmarkList items={bookmarks} />
         </Tab>
         <Tab eventKey="completed" title="Completed">
-          <CompletedList />
+          <CompletedList items={completed} />
         </Tab>
       </Tabs>
     </Container>

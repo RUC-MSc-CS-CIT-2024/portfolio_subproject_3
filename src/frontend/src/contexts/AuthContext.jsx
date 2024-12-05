@@ -6,7 +6,10 @@ import {
   useCallback,
   useRef,
 } from 'react';
-import { authenticate, refreshToken } from '@/services/authService';
+import {
+  authenticate,
+  refreshToken as refreshTokenService,
+} from '@/services/authService';
 import { getCookie, deleteCookie, setCookie } from '@/utils/cookie';
 import { jwtDecode } from 'jwt-decode';
 
@@ -35,11 +38,34 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(() => {
     setUser(null);
     sessionStorage.removeItem('user');
-    deleteCookie('access-token');
+    deleteCookie('token');
     localStorage.removeItem('REFRESH_TOKEN');
     setIsAuthenticated(false);
     console.log('Logged out');
   }, []);
+
+  const refresh = useCallback(
+    async (refreshToken) => {
+      const localRefreshToken =
+        refreshToken ?? localStorage.getItem('REFRESH_TOKEN');
+      if (!localRefreshToken) {
+        return;
+      }
+
+      try {
+        const tokenResult = await refreshTokenService(localRefreshToken);
+        if (tokenResult.accessToken) {
+          setCookie('token', tokenResult.accessToken, tokenResult.expiresIn);
+          localStorage.setItem('REFRESH_TOKEN', tokenResult.refreshToken);
+          storeUser(tokenResult.accessToken);
+        }
+      } catch (error) {
+        console.error('Failed to refresh token:', error);
+        logout();
+      }
+    },
+    [logout],
+  );
 
   useEffect(() => {
     if (didInitialise.current) {
@@ -47,21 +73,12 @@ export const AuthProvider = ({ children }) => {
     }
     didInitialise.current = true;
 
-    // const handleStorageChange = () => {
-    //   const updatedStoredUser = sessionStorage.getItem('user');
-    //   if (!updatedStoredUser) {
-    //     setIsAuthenticated(false);
-    //     setUser(null);
-    //   }
-    // };
-
     (async () => {
-      let token = getCookie('access-token');
+      let token = getCookie('token');
       const localRefreshToken = localStorage.getItem('REFRESH_TOKEN');
-
-      // If token is not present, but refresh token is, try to refresh the token
       if (!token && localRefreshToken) {
-        const tokenResult = await refreshToken(localRefreshToken);
+        // If token is not present, but refresh token is, try to refresh the token
+        const tokenResult = await refreshTokenService(localRefreshToken);
         if (tokenResult.accessToken) {
           setCookie('token', tokenResult.accessToken, tokenResult.expiresIn);
           localStorage.setItem('REFRESH_TOKEN', tokenResult.refreshToken);
@@ -73,16 +90,34 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         storeUser(token);
       } else {
+        console.log('No token found, logging out');
         logout();
       }
       setLoading(false);
     })();
 
-    // window.addEventListener('storage', handleStorageChange);
+    const handleStorageChange = (e) => {
+      console.log('Storage change:', e);
+      if (e.key === 'user' && e.newValue === null) {
+        logout();
+      }
+      if (
+        e.key === 'REFRESH_TOKEN' &&
+        e.newValue !== undefined &&
+        e.newValue !== e.oldValue
+      ) {
+        let token = getCookie('token');
+        if (token !== undefined) {
+          storeUser(token);
+        }
+      }
+    };
 
-    // return () => {
-    //   window.removeEventListener('storage', handleStorageChange);
-    // };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [logout]);
 
   const login = useCallback(async (credentials) => {
@@ -103,10 +138,11 @@ export const AuthProvider = ({ children }) => {
     return {
       login,
       logout,
+      refresh,
       user,
       isAuthenticated,
     };
-  }, [login, logout, user, isAuthenticated]);
+  }, [login, logout, refresh, user, isAuthenticated]);
 
   return (
     <AuthContext.Provider value={contextValue}>

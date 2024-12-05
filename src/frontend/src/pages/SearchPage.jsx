@@ -64,7 +64,6 @@ export default function SearchPage() {
   }, [location.search, handleSearch]);
 
   useEffect(() => {
-    if (!location.search) return;
     fetchData();
   }, [location.search, fetchData]);
 

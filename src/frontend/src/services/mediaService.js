@@ -126,7 +126,6 @@ export const fetchMedia = async ({
   }
 };
 
-
 /*
  export const fetchMedia = async () => {};
 

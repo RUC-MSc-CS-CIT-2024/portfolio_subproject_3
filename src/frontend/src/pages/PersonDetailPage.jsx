@@ -1,9 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { PersonCard, PersonsCarousel } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById, fetchPersonCoactors } from '@/services/personService';
-import { useToast } from '@/contexts/ToastContext';
+import { createFollow } from '@/services/userService';
+import { useToast } from '@/hooks';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
@@ -52,6 +53,15 @@ export default function PersonDetailPage() {
     }
   }, [loadingPerson, person, navigate]);
 
+  const handleFollow = async () => {
+    try {
+      await createFollow(id);
+      showToastMessage('Successfully followed the person', 'success');
+    } catch (error) {
+      console.error('Error following the person', error);
+      showToastMessage('Error following the person', 'danger');
+    }
+  };
   return (
     <Container className="my-5">
       <Row className="mt-5">
@@ -68,7 +78,13 @@ export default function PersonDetailPage() {
         </Col>
         <Row className="mt-5 gap-5">
           <Col xs={12} md={3}>
-            {/*  Here the button should be inserted so the action */}
+            <Button
+              variant="outline-dark"
+              onClick={handleFollow}
+              className="w-100 mb-2 rounded"
+            >
+              Follow
+            </Button>
           </Col>
           <Col md={6}>
             {/*  Here the rating and the 3 media cards should be inserted  */}

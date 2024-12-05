@@ -88,6 +88,7 @@ export const fetchPersonCoactors = async (id) => {
           ...coactor,
           ...coactorData,
           name: coactor.actorName || coactorData.name,
+          id: coactorData.id,
         };
       }),
     );

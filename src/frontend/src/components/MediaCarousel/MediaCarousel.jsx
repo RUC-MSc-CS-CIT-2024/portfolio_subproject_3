@@ -3,6 +3,7 @@ import { MediaCard } from '@/components';
 import { useMediaPerRow } from '@/hooks';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MediaCarousel.css';
+import { formatDate } from '@/utils/date';
 
 export default function MediaCarousel({ media, loading }) {
   const mediaPerRow = useMediaPerRow();
@@ -22,9 +23,9 @@ export default function MediaCarousel({ media, loading }) {
                 <Col key={media.id} xs={12} sm={6} md={4} lg={3} xl={2}>
                   <MediaCard
                     id={media.id}
-                    imageUri={media.imageUri}
+                    imageUri={media.posterUri}
                     title={media.title}
-                    releaseYear={media.releaseYear}
+                    releaseYear={formatDate(media.releaseDate)}
                     isLoading={loading}
                   />
                 </Col>

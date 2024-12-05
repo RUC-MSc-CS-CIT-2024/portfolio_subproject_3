@@ -23,12 +23,22 @@
   color: black;
 }
 
-@media only screen and (max-width: 500px) {
+.img-media-information {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@media only screen and (max-width: 768px) {
   .crew-information {
     flex-direction: column;
   }
 
   .lines {
     display: none;
+  }
+
+  .image-container {
+    margin-bottom: 3rem;
   }
 }

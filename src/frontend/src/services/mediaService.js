@@ -1,5 +1,92 @@
-import { API_BASE_URL } from '@/utils/constants';
-import { getUserFromSession } from '@/utils/getUserFromSession';
+import { ApiClient } from '../utils/apiClient';
+
+const api = new ApiClient();
+
+export const fetchMediaById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media:', error);
+    throw error;
+  }
+};
+
+export const fetchTitles = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/titles`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media titles:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCrew = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/crew`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media crew:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCast = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/cast`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media cast:', error);
+    throw error;
+  }
+};
+
+export const fetchSimilarMedia = async (id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/media/${id}/similar_media`,
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch similar media:', error);
+    throw error;
+  }
+};
+
+export const fetchReleases = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/media/${id}/releases`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch media releases:', error);
+    throw error;
+  }
+};
 
 export const fetchMedia = async ({
   page = 1,
@@ -7,51 +94,46 @@ export const fetchMedia = async ({
   query = '',
   queryType = 'All',
 }) => {
-  const user = getUserFromSession();
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  const queryParams = [
+    { key: 'Page.page', value: page },
+    { key: 'Page.count', value: pageCount },
+    { key: 'query_type', value: queryType },
+    { key: 'query', value: query },
+  ];
 
-  if (user) {
-    headers['Authorization'] = `Bearer ${user.token}`;
+  const path = '/api/media';
+  try {
+    const response = await api.Get(path, queryParams);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    console.log('response:', response);
+
+    const transformedResults = response.value.map((media) => ({
+      id: media.id,
+      title: media.title,
+      type: media.type,
+      imageUri: media.posterUri,
+      releaseYear: new Date(media.releaseDate).toLocaleDateString(),
+    }));
+
+    return transformedResults;
+  } catch (error) {
+    console.error('Error fetching media:', error);
+    throw error;
   }
-
-  const response = await fetch(
-    `${API_BASE_URL}/api/media?Page.page=${page}&Page.count=${pageCount}&query_type=${queryType}&query=${query}`,
-    {
-      method: 'GET',
-      headers: headers,
-    },
-  );
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  console.log('response:', response);
-
-  const data = await response.json();
-
-  console.log('data:', data);
-
-  const transformedResults = data.map((media) => ({
-    id: media.id,
-    title: media.title,
-    type: media.type,
-    imageUri: media.posterUri,
-    releaseYear: new Date(media.releaseDate).toLocaleDateString(),
-  }));
-
-  return transformedResults;
 };
 
-/*
 
-export const fetchMediaById = async (id) => {};
+/*
+ export const fetchMedia = async () => {};
 
 export const fetchSimilarMedia = async (id) => {};
 
 export const fetchRelatedMedia = async (id) => {};
 
-export const fetchMediaCrew = async (id) => {};
 
 export const fetchMediaCast = async (id) => {};
 

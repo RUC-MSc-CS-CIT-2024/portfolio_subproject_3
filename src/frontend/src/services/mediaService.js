@@ -1,4 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
+import { ApiClient } from '@/utils/apiClient';
 
 const api = new ApiClient();
 
@@ -125,7 +125,6 @@ export const fetchMedia = async ({
     throw error;
   }
 };
-
 
 /*
  export const fetchMedia = async () => {};

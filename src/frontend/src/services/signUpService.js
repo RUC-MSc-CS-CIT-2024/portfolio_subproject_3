@@ -1,4 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
+import { ApiClient } from '@/utils/apiClient';
 import { login } from './authService';
 
 const api = new ApiClient();

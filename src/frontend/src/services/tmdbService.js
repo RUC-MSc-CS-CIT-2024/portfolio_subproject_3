@@ -1,4 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
+import { ApiClient } from '@/utils/apiClient';
 
 const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
 const accessKey = import.meta.env.VITE_TMDB_READ_TOKEN;

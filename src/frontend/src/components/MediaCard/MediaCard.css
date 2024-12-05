@@ -24,12 +24,12 @@
 }
 
 .mediaCard-title-custom {
-  max-width: 100%; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  white-space: normal; 
-  display: -webkit-box; 
-  line-clamp: 3; 
-  -webkit-line-clamp: 3; 
-  -webkit-box-orient: vertical; 
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }

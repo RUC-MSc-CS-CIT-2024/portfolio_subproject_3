@@ -1,4 +1,4 @@
-import Container from 'react-bootstrap/Container';
+import { Container } from 'react-bootstrap';
 import { fetchMedia } from '../services/mediaService';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';

@@ -1,6 +1,9 @@
 import { Container, Col, Row } from 'react-bootstrap';
-import { BackgroundContainer, SearchForm } from '@/components';
-import { ToastNotification } from '@/components';
+import {
+  BackgroundContainer,
+  SearchForm,
+  ToastNotification,
+} from '@/components';
 import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {

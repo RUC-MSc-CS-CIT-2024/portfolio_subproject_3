@@ -1,5 +1,90 @@
-import { API_BASE_URL } from '@/utils/constants';
-import { getUserFromSession } from '@/utils/getUserFromSession';
+import { ApiClient } from '@/utils/apiClient';
+
+const api = new ApiClient();
+
+export const fetchMediaById = async (id) => {
+  const path = `/api/media/${id}`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch media by ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch media:', error);
+    throw error;
+  }
+};
+
+export const fetchTitles = async (id) => {
+  const path = `/api/media/${id}/titles`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch titles for media ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch media titles:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCrew = async (id) => {
+  const path = `/api/media/${id}/crew`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch crew for media ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch media crew:', error);
+    throw error;
+  }
+};
+
+export const fetchMediaCast = async (id) => {
+  const path = `/api/media/${id}/cast`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cast for media ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch media cast:', error);
+    throw error;
+  }
+};
+
+export const fetchSimilarMedia = async (id) => {
+  const path = `/api/media/${id}/similar_media`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch similar media for ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch similar media:', error);
+    throw error;
+  }
+};
+
+export const fetchReleases = async (id) => {
+  const path = `/api/media/${id}/releases`;
+  try {
+    const response = await api.Get(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch releases for media ID ${id}.`);
+    }
+    return response.value;
+  } catch (error) {
+    console.error('Failed to fetch media releases:', error);
+    throw error;
+  }
+};
 
 export const fetchMedia = async ({
   page = 1,
@@ -7,51 +92,45 @@ export const fetchMedia = async ({
   query = '',
   queryType = 'All',
 }) => {
-  const user = getUserFromSession();
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  const queryParams = [
+    { key: 'Page.page', value: page },
+    { key: 'Page.count', value: pageCount },
+    { key: 'query_type', value: queryType },
+    { key: 'query', value: query },
+  ];
 
-  if (user) {
-    headers['Authorization'] = `Bearer ${user.token}`;
+  const path = '/api/media';
+  try {
+    const response = await api.Get(path, queryParams);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch media: ${response.statusCode}`);
+    }
+
+    console.log('response:', response);
+
+    const transformedResults = response.value.map((media) => ({
+      id: media.id,
+      title: media.title,
+      type: media.type,
+      imageUri: media.posterUri,
+      releaseYear: new Date(media.releaseDate).toLocaleDateString(),
+    }));
+
+    return transformedResults;
+  } catch (error) {
+    console.error('Error fetching media:', error);
+    throw error;
   }
-
-  const response = await fetch(
-    `${API_BASE_URL}/api/media?Page.page=${page}&Page.count=${pageCount}&query_type=${queryType}&query=${query}`,
-    {
-      method: 'GET',
-      headers: headers,
-    },
-  );
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  console.log('response:', response);
-
-  const data = await response.json();
-
-  console.log('data:', data);
-
-  const transformedResults = data.map((media) => ({
-    id: media.id,
-    title: media.title,
-    type: media.type,
-    imageUri: media.posterUri,
-    releaseYear: new Date(media.releaseDate).toLocaleDateString(),
-  }));
-
-  return transformedResults;
 };
 
 /*
-
-export const fetchMediaById = async (id) => {};
+ export const fetchMedia = async () => {};
 
 export const fetchSimilarMedia = async (id) => {};
 
 export const fetchRelatedMedia = async (id) => {};
 
-export const fetchMediaCrew = async (id) => {};
 
 export const fetchMediaCast = async (id) => {};
 

@@ -12,7 +12,7 @@ export default function ToastNotification() {
       delay={3000}
       autohide
       bg={toastVariant}
-      className="position-fixed bottom-0 end-0 m-3"
+      className="position-fixed bottom-0 end-0 m-3 z-3"
     >
       <Toast.Body className="text-white">{toastMessage}</Toast.Body>
     </Toast>

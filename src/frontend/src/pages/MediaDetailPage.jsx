@@ -1,61 +1,160 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
-import { MediaInformation, MediaActions, MediaBadges } from '@/components';
-import { useParams } from 'react-router-dom';
+import {
+  MediaInformation,
+  MediaActions,
+  MediaBadges,
+  MediaCarousel,
+  InfoRow,
+} from '@/components';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchMediaById,
+  fetchTitles,
+  fetchMediaCrew,
+  //fetchMediaCast,
+  fetchSimilarMedia,
+  fetchReleases,
+} from '@/services/mediaService';
+import { useToast } from '@/contexts/ToastContext';
+
+const extractDirectors = (crew) => {
+  return crew
+    .filter((member) => member.jobCategory.toLowerCase().includes('director'))
+    .map((member) => member.personName);
+};
+
+const extractWriters = (crew) => {
+  const createdByWriters = crew
+    .filter(
+      (member) =>
+        member.jobCategory.toLowerCase().includes('writer') &&
+        member.role.toLowerCase() === 'created by',
+    )
+    .map((member) => member.personName);
+
+  if (createdByWriters.length > 0) {
+    return createdByWriters;
+  }
+
+  return crew
+    .filter((member) => member.jobCategory.toLowerCase().includes('writer'))
+    .map((member) => member.personName);
+};
+
+const extractProducer = (crew) => {
+  return crew
+    .filter((member) => member.jobCategory.toLowerCase().includes('producer'))
+    .map((member) => member.personName);
+};
 
 export default function MediaDetailPage() {
-  const dummyData = {
-    poster: '',
-    title: 'Dummy Movie Title',
-    year: '2023',
-    length: '120 min',
-    rating: 'PG-13',
-    plot: 'This is a dummy plot for the movie. It describes the storyline and main events of the movie. The movie follows the journey of the protagonist as they navigate through various challenges and obstacles. Along the way, they encounter a diverse cast of characters, each with their own unique backstory and motivations. The plot thickens as secrets are revealed, alliances are formed, and conflicts arise. The protagonist must use their wit, courage, and determination to overcome the odds and achieve their goals. The movie is filled with thrilling action sequences, emotional moments, and unexpected twists and turns. As the story unfolds, the audience is taken on a rollercoaster ride of emotions, from laughter to tears, from suspense to relief. In the end, the protagonist emerges victorious, having learned valuable lessons and grown as a person. The movie leaves a lasting impact on the audience, making them reflect on their own lives and the choices they make. It is a tale of resilience, hope, and the power of the human spirit.',
-    director: 'John Doe',
-    screenwriter: 'Jane Smith',
-    ratings: [
-      { name: 'IMDb', score: '8.7/10' },
-      { name: 'Rotten Tomatoes', score: '95%' },
-      { name: 'Metacritic', score: '85/100' },
-      { name: 'user score', score: '8/10' },
-    ],
-  };
   const { id: mediaId } = useParams();
+  const navigate = useNavigate();
+  const [mediaData, setMediaData] = useState(null);
+  const [titles, setTitles] = useState([]);
+  const [crew, setCrew] = useState([]);
+  // To be implemented - const [cast, setCast] = useState([]);
+  const [similarMedia, setSimilarMedia] = useState([]);
+  const [releases, setReleases] = useState([]);
 
-  const genres = ['Action', 'Comedy'];
-  const titles = [
-    'The Shawshank Redemption',
-    'La redención de Shawshank', // Spanish
-    'La rédemption de Shawshank', // French
-    'Die Verurteilten', // German
-    'Le ali della libertà', // Italian
-    'Shawshank Redemption', // Japanese
-  ];
+  const [loading, setLoading] = useState(true);
+  const { showToastMessage } = useToast();
 
-  const [activeKey, setActiveKey] = useState('genres');
+  useEffect(() => {
+    const loadMedia = async () => {
+      try {
+        const mediaData = await fetchMediaById(mediaId);
+        setMediaData(mediaData);
+        const titlesData = await fetchTitles(mediaId);
+        setTitles(titlesData);
+        const crewData = await fetchMediaCrew(mediaId);
+        setCrew(crewData);
+        //const castData = await fetchMediaCast(mediaId);
+        //setCast(castData);
+        const similarMediaData = await fetchSimilarMedia(mediaId);
+        setSimilarMedia(similarMediaData.items);
+        const releasesData = await fetchReleases(mediaId);
+        setReleases(releasesData.items);
+      } catch {
+        showToastMessage('Error getting the media.', 'danger');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMedia();
+  }, [mediaId, showToastMessage]);
+
+  useEffect(() => {
+    if (!loading && !mediaData) {
+      navigate('/NotFound');
+    }
+  }, [loading, mediaData, navigate]);
+
+  const directors = extractDirectors(crew);
+  const writers = extractWriters(crew);
+  const producers = extractProducer(crew);
 
   return (
     <Container>
-      <MediaInformation {...dummyData} />
-
-      <Row className="mt-5">
+      <MediaInformation
+        {...mediaData}
+        isLoading={loading}
+        director={directors}
+        writer={writers}
+        producer={producers}
+        rating={releases ? releases.map((release) => release.rated) : []}
+      />
+      <Row className="mt-5 gap-5">
         <Col xs={12} md={3}>
           <MediaActions id={mediaId} />
         </Col>
         <Col md={6}>
-          <Tabs
-            id="media-detail-tabs"
-            activeKey={activeKey}
-            onSelect={(k) => setActiveKey(k)}
-            className="mb-3"
-          >
+          <Tabs id="media-detail-tabs" className="mb-3">
             <Tab eventKey="genres" title="Genres">
-              <MediaBadges title="Genres" badges={genres} />
+              <MediaBadges
+                title="Genres"
+                badges={
+                  mediaData?.genres
+                    ? mediaData.genres.map((genre) => genre.name)
+                    : []
+                }
+              />
             </Tab>
             <Tab eventKey="titles" title="Titles">
-              <MediaBadges title="Titles" badges={titles} />
+              <MediaBadges
+                title="Titles"
+                badges={
+                  titles ? [...new Set(titles.map((title) => title.name))] : []
+                }
+              />
             </Tab>
           </Tabs>
+        </Col>
+      </Row>
+      <Row className="mt-5">
+        <Col>
+          <h5> Similar Media </h5>
+          <MediaCarousel media={similarMedia} loading={loading} />
+        </Col>
+      </Row>
+      <Row className="mt-5">
+        <Col>{/* todo - cast and crew carousel */}</Col>
+      </Row>
+      <Row>
+        <Col>
+          <h5>Extra Information</h5>
+          <InfoRow label="Type" value={mediaData?.type} />
+          <InfoRow label="Box Office" value={mediaData?.boxoffice} />
+          <InfoRow label="Awards" value={mediaData?.awardText} />
+          <InfoRow
+            label="Release type"
+            value={
+              releases ? releases.map((release) => release.type).join(', ') : ''
+            }
+          />
+          <InfoRow label="Episode number" value={mediaData?.episodeNumber} />
         </Col>
       </Row>
     </Container>

@@ -28,17 +28,17 @@ export class ApiClient {
       }),
     };
 
+    const token = accessKey ?? getCookie('token');
+    if (token !== undefined) {
+      this.#request.headers.set('Authorization', `Bearer ${token}`);
+    }
+
     if (options !== undefined) {
       if (options.headers !== undefined) {
         for (const [key, value] of Object.entries(options.headers)) {
-          this.#request.headers.append(key, value);
+          this.#request.headers.set(key, value);
         }
       }
-    }
-
-    const token = accessKey ?? getCookie('token');
-    if (token !== undefined) {
-      this.#request.headers.append('Authorization', `Bearer ${token}`);
     }
   }
 
@@ -102,5 +102,18 @@ export class ApiClient {
       }
     }
     return returnResp;
+  }
+
+  async Delete(path) {
+    const req = {
+      ...this.#request,
+      method: 'DELETE',
+    };
+    const requestUrl = this.#_getUrl(path);
+    const response = await fetch(requestUrl, req);
+    return new ApiResponse(
+      response.status,
+      response.ok ? await response.json() : null,
+    );
   }
 }

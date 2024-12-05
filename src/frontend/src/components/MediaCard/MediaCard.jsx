@@ -15,6 +15,7 @@ export default function MediaCard({
 
   const handleClick = () => {
     navigate(`/media/${id}`);
+    window.scrollTo(0, 0);
   };
 
   const defaultTitle = 'Unknown Title';
@@ -27,11 +28,7 @@ export default function MediaCard({
           <Placeholder as={Card.Img} className="mediaCard-img" />
         ) : (
           <div className="mediaCard-img">
-            {imageUri ? (
-              <Card.Img src={imageUri} className="mediaCard-img" />
-            ) : (
-              <DefaultImage />
-            )}
+            {imageUri ? <Card.Img src={imageUri} /> : <DefaultImage />}
             <MediaCardBadge type={type} />
           </div>
         )}
@@ -47,8 +44,12 @@ export default function MediaCard({
             </>
           ) : (
             <>
-              <Card.Title className="mediaCard-title-custom">{title || defaultTitle}</Card.Title>
-              <Card.Text className="">{releaseYear || defaultReleaseYear}</Card.Text>
+              <Card.Title className="mediaCard-title-custom">
+                {title || defaultTitle}
+              </Card.Title>
+              <Card.Text className="">
+                {releaseYear || defaultReleaseYear}
+              </Card.Text>
             </>
           )}
         </Card.Body>

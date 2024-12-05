@@ -79,10 +79,19 @@ export const fetchPersonCoactors = async (id) => {
       throw new Error(`Failed to fetch coactors for person with ID ${id}.`);
     }
 
-    const coactors = response.value.items;
-    await Promise.all(coactors.map(enhancePersonWithImage));
+    const coactors = response.value?.items || [];
 
-    return coactors;
+    const detailedCoactors = await Promise.all(
+      coactors.map(async (coactor) => {
+        const coactorData = await fetchPersonById(coactor.id);
+        return {
+          ...coactor,
+          ...coactorData,
+          name: coactor.actorName || coactorData.name,
+        };
+      }),
+    );
+    return detailedCoactors;
   } catch (error) {
     console.error(`Error fetching coactors for ID (${id}):`, error);
     throw error;

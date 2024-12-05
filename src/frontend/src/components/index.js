@@ -25,3 +25,5 @@ export { default as CompletedList } from './CompletedList/CompletedList';
 export { default as MediaCardBadge } from './MediaCardBadge/MediaCardBadge';
 export { default as Rating } from './Rating/Rating';
 export { default as PersonCard } from './PersonCard/PersonCard';
+export { default as PersonsCarousel } from './PersonsCarousel/PersonsCarousel';
+export { default as PersonsGrid } from './PersonsGrid/PersonsGrid';

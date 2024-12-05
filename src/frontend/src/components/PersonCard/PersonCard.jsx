@@ -14,7 +14,7 @@ export default function PersonCard({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/person/${id}`);
+    navigate(`/persons/${id}`);
   };
 
   const defaultName = 'Unknown Name';
@@ -28,7 +28,7 @@ export default function PersonCard({
         ) : (
           <div className="personCard-img">
             {imageUri ? (
-              <Card.Img src={imageUri} className="personCard-img" rounded />
+              <Card.Img src={imageUri} className="personCard-img" />
             ) : (
               <DefaultImage />
             )}

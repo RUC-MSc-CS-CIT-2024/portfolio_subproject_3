@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import { fetchMedia } from '../services/mediaService';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SearchForm, MediaGrid, FilterMediaComponent } from '@/components';
 
 export default function SearchPage() {
@@ -11,49 +11,51 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(true);
   const [filteredResults, setFilteredResults] = useState([]);
 
-  const handleSearch = async (searchQuery, gueryType) => {
-    if (!searchQuery) {
-      return;
-    }
+  const handleSearch = useCallback(async (searchQuery, queryType) => {
+    if (!searchQuery) return;
 
     try {
-      const resultList = await fetchMedia({
-        query: searchQuery,
-        queryType: gueryType,
-      });
+      const resultList = await fetchMedia({ query: searchQuery, queryType });
       setResults(resultList);
-      setFilteredResults(results);
+      setFilteredResults(resultList);
     } catch (error) {
       console.error('Error searching:', error);
     }
-  };
+  }, []);
 
-  const handleFilterChange = (filterCriteria) => {
-    const newFilteredResults = results.filter(
-      (item) => item.type === filterCriteria.type,
-    );
-    setFilteredResults(newFilteredResults);
-  };
+  const handleFilterChange = useCallback(
+    (filterCriteria) => {
+      if (!filterCriteria || !filterCriteria.type) {
+        setFilteredResults(results);
+        return;
+      }
+
+      const newFilteredResults = results.filter(
+        (item) => item.type === filterCriteria.type,
+      );
+      setFilteredResults(newFilteredResults);
+    },
+    [results],
+  );
+
+  const fetchData = useCallback(async () => {
+    const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
+    const queryType = location.search ? 'Simple' : 'All';
+    setLoading(true);
+
+    try {
+      await handleSearch(searchQuery, queryType);
+    } catch (err) {
+      console.error('Error during search:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [location.search, handleSearch]);
 
   useEffect(() => {
-    const fetchData = async (searchQuery, type) => {
-      setLoading(true);
-      try {
-        await handleSearch(searchQuery, type);
-      } catch (err) {
-        console.error('Error during search:', err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (location.search === '') {
-      fetchData('all', 'All');
-    }
-
-    const search = new URLSearchParams(location.search).get('q');
-    fetchData(search, 'Simple');
-  }, [location.search]);
+    if (!location.search) return;
+    fetchData();
+  }, [location.search, fetchData]);
 
   return (
     <Container>
@@ -67,6 +69,9 @@ export default function SearchPage() {
       {!loading && results.length > 0 && (
         <>
           <FilterMediaComponent onFilterChange={handleFilterChange} />
+          {!loading && filteredResults.length === 0 && (
+            <div>No filtered results found.</div>
+          )}
           <MediaGrid media={filteredResults} loading={loading} />
         </>
       )}

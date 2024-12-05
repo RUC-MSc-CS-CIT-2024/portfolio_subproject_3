@@ -35,3 +35,21 @@
     }
   }
   
+  .person-layout .roles-information {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .person-layout .toggle-button {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .person-layout .secondary-information {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  

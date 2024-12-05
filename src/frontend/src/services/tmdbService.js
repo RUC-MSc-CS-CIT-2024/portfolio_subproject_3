@@ -37,3 +37,16 @@ export async function getTMDBImage(imdb_id, size) {
   );
   return new URL(path.substring(1), imageUrlWithSize).href;
 }
+
+export async function fetchPersonTMDB(imdbId) {
+  try {
+    const resp = await api.Get(`person/${imdbId}?language=en-US`);
+    if (!resp.ok) {
+      throw new Error('Failed to fetch person details from TMDB');
+    }
+    return resp.value;
+  } catch (err) {
+    console.error(`Error fetching TMDB data for IMDb ID ${imdbId}:`, err);
+    throw err;
+  }
+}

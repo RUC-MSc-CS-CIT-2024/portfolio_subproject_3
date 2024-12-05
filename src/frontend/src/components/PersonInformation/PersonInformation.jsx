@@ -7,7 +7,7 @@ import {
   Placeholder,
   Button,
 } from 'react-bootstrap';
-import { PlaceholderText, InfoRow, DefaultImage, Rating } from '@/components';
+import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
 import './PersonInformation.css';
 
 export default function PersonInformation({
@@ -17,6 +17,11 @@ export default function PersonInformation({
   deathDate,
   bio,
   rating,
+  score,
+  popularity,
+  alsoKnownAs = [],
+  homepage,
+  placeOfBirth,
   roles = [],
   isLoading,
 }) {
@@ -26,9 +31,17 @@ export default function PersonInformation({
 
   const bioPreview = bio?.length > 200 ? bio.substring(0, 200) + '...' : bio;
 
+  const formattedBirthDate = birthDate
+    ? new Date(birthDate).toLocaleDateString()
+    : 'Unknown';
+  const formattedDeathDate = deathDate
+    ? new Date(deathDate).toLocaleDateString()
+    : null;
+
   return (
     <Container className="person-layout">
       <Row>
+        {/* Left Column: Picture */}
         <Col xs={12} md={3}>
           {isLoading ? (
             <Placeholder as={Image} className="personCard-img" />
@@ -47,7 +60,10 @@ export default function PersonInformation({
             </div>
           )}
         </Col>
+
+        {/* Right Column: Details */}
         <Col xs={12} md={9}>
+          {/* Name and Dates */}
           <Row>
             <Col className="d-flex align-items-baseline">
               {isLoading ? (
@@ -56,13 +72,46 @@ export default function PersonInformation({
                 <>
                   <h1 className="title">{name || 'Unknown Name'}</h1>
                   <p className="secondary-information">
-                    {birthDate || 'Unknown Birth Date'}
-                    {deathDate ? ` - ${deathDate}` : ''}
+                    Born: {formattedBirthDate}
+                    {formattedDeathDate && ` - Died: ${formattedDeathDate}`}
                   </p>
                 </>
               )}
             </Col>
           </Row>
+
+          {/* Popularity, Score, and Name Rating */}
+          <Row className="mt-3">
+            <Col>
+              {isLoading ? (
+                <PlaceholderText as="p" xs={6} />
+              ) : (
+                <div className="d-flex align-items-center justify-content-start">
+                  <InfoRow label="Popularity" value={popularity || 'N/A'} />
+                  <InfoRow label="Score" value={score || 'N/A'} />
+                  <InfoRow label="Name Rating" value={rating || 'N/A'} />
+                </div>
+              )}
+            </Col>
+          </Row>
+
+          {/* Roles */}
+          <Row className="mt-3">
+            <Col>
+              {isLoading ? (
+                <PlaceholderText as="p" xs={6} />
+              ) : (
+                <div className="d-flex mt-3 roles-information">
+                  <InfoRow
+                    label="Roles"
+                    value={roles.join(', ') || 'Unknown'}
+                  />
+                </div>
+              )}
+            </Col>
+          </Row>
+
+          {/* Biography */}
           <Row>
             <Col>
               <div>
@@ -90,23 +139,36 @@ export default function PersonInformation({
               </div>
             </Col>
           </Row>
-          <Row>
+
+          {/* Additional Information */}
+          <Row className="mt-3">
             <Col>
               {isLoading ? (
                 <PlaceholderText as="p" xs={6} />
               ) : (
-                <div className="d-flex mt-3 roles-information">
+                <>
                   <InfoRow
-                    label="Roles"
-                    value={roles.join(', ') || 'Unknown'}
+                    label="Also Known As"
+                    value={alsoKnownAs.length ? alsoKnownAs.join(', ') : 'N/A'}
                   />
-                </div>
+                  <InfoRow
+                    label="Place of Birth"
+                    value={placeOfBirth || 'Unknown'}
+                  />
+                  {homepage && (
+                    <div className="mt-2">
+                      <strong>Homepage:</strong>{' '}
+                      <a
+                        href={homepage}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {homepage}
+                      </a>
+                    </div>
+                  )}
+                </>
               )}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Rating ratings={[{ name: 'User Rating', score: rating }]} />
             </Col>
           </Row>
         </Col>

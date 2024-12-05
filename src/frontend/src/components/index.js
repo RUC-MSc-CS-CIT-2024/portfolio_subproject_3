@@ -26,4 +26,3 @@ export { default as PersonCard } from './PersonCard/PersonCard';
 export { default as MediaCardBadge } from './MediaCardBadge/MediaCardBadge';
 export { default as Rating } from './Rating/Rating';
 export { default as PersonInformation } from './PersonInformation/PersonInformation';
-export { default as PersonCard } from './PersonCard/PersonCard';

@@ -1,12 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
 import { PersonInformation } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById } from '@/services/personService';
 import { Container, Button } from 'react-bootstrap';
-import { PersonCard } from '@/components';
-import { useState, useEffect } from 'react';
-import { fetchPersonById } from '@/services/personService';
 import { createFollow } from '@/services/userService';
 import { useToast } from '@/hooks';
 
@@ -46,8 +42,15 @@ export default function PersonDetailPage() {
         deathDate={person.deathDate}
         bio={person.description}
         rating={person.nameRating}
+        score={person.score}
+        popularity={person.popularity}
+        alsoKnownAs={person.alsoKnownAs}
+        homepage={person.homepage}
+        placeOfBirth={person.placeOfBirth}
+        roles={person.knownForDepartment ? [person.knownForDepartment] : []}
         isLoading={isLoading}
       />
+
       <Button
         variant="outline-dark"
         onClick={handleFollow}

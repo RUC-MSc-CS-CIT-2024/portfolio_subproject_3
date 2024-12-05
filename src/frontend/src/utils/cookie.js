@@ -1,5 +1,5 @@
-export const setCookie = (name, value, hours) => {
-  const expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
+export const setCookie = (name, value, expireInSeconds) => {
+  const expires = new Date(Date.now() + expireInSeconds * 1000).toUTCString();
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; Secure`;
 };
 

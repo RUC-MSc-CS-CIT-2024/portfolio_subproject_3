@@ -66,13 +66,17 @@ export class ApiClient {
     return returnResp;
   }
 
-  async Post(path, data) {
+  async Post(path, data, params) {
     const req = {
       ...this.#request,
-      body: JSON.stringify(data),
       method: 'POST',
     };
-    const requestUrl = this.#_getUrl(path);
+
+    if (data !== undefined) {
+      req.body = JSON.stringify(data);
+    }
+
+    const requestUrl = this.#_getUrl(path, params);
     const response = await fetch(requestUrl, req);
     const returnResp = new ApiResponse(response.status);
     if (response.ok) {

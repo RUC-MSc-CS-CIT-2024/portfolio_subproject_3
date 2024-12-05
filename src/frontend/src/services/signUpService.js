@@ -1,5 +1,5 @@
 import { ApiClient } from '@/utils/apiClient';
-import { login } from './authService';
+import { authenticate } from './authService';
 
 const api = new ApiClient();
 
@@ -13,7 +13,7 @@ export const signUpUser = async (data) => {
       username: data.username,
       password: data.password,
     };
-    const token = await login(loginData);
+    const token = await authenticate(loginData);
     return {
       message: 'Sign-up and login successful',
       user: response.value,

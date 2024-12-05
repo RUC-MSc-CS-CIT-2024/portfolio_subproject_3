@@ -1,4 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
+import { ApiClient } from '@/utils/apiClient';
 import { getTMDBImage, ImageSize } from './tmdbService';
 
 const api = new ApiClient();

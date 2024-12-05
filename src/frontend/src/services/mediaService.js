@@ -3,13 +3,13 @@ import { ApiClient } from '@/utils/apiClient';
 const api = new ApiClient();
 
 export const fetchMediaById = async (id) => {
+  const path = `/api/media/${id}`;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/media/${id}`);
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch media by ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch media:', error);
     throw error;
@@ -17,13 +17,13 @@ export const fetchMediaById = async (id) => {
 };
 
 export const fetchTitles = async (id) => {
+  const path = `/api/media/${id}/titles`;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/media/${id}/titles`);
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch titles for media ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch media titles:', error);
     throw error;
@@ -31,13 +31,13 @@ export const fetchTitles = async (id) => {
 };
 
 export const fetchMediaCrew = async (id) => {
+  const path = `/api/media/${id}/crew`;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/media/${id}/crew`);
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch crew for media ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch media crew:', error);
     throw error;
@@ -45,13 +45,13 @@ export const fetchMediaCrew = async (id) => {
 };
 
 export const fetchMediaCast = async (id) => {
+  const path = `/api/media/${id}/cast`;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/media/${id}/cast`);
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch cast for media ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch media cast:', error);
     throw error;
@@ -59,15 +59,13 @@ export const fetchMediaCast = async (id) => {
 };
 
 export const fetchSimilarMedia = async (id) => {
+  const path = `/api/media/${id}/similar_media`;
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/media/${id}/similar_media`,
-    );
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch similar media for ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch similar media:', error);
     throw error;
@@ -75,13 +73,13 @@ export const fetchSimilarMedia = async (id) => {
 };
 
 export const fetchReleases = async (id) => {
+  const path = `/api/media/${id}/releases`;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/media/${id}/releases`);
+    const response = await api.Get(path);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch releases for media ID ${id}.`);
     }
-    const data = await response.json();
-    return data;
+    return response.value;
   } catch (error) {
     console.error('Failed to fetch media releases:', error);
     throw error;
@@ -106,7 +104,7 @@ export const fetchMedia = async ({
     const response = await api.Get(path, queryParams);
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`Failed to fetch media: ${response.statusCode}`);
     }
 
     console.log('response:', response);

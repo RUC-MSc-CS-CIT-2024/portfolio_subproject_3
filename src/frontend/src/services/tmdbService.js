@@ -19,6 +19,7 @@ export async function getTMDBImage(imdb_id, size) {
   }
   const val = resp.value;
   let path = '';
+  let tmdbId = null; // Initialize TMDBID
   if (val.movie_results.length > 0) {
     path = val.movie_results[0].poster_path;
   } else if (val.tv_results.length > 0) {
@@ -26,7 +27,9 @@ export async function getTMDBImage(imdb_id, size) {
   } else if (val.tv_episode_results.length > 0) {
     path = val.tv_episode_results[0].still_path;
   } else if (val.person_results.length > 0) {
-    path = val.person_results[0].profile_path;
+    const person = val.person_results[0];
+    path = person.profile_path;
+    tmdbId = person.id; // Set TMDBID from person results
   } else {
     throw new Error('No image found');
   }
@@ -35,18 +38,19 @@ export async function getTMDBImage(imdb_id, size) {
     size + '/',
     import.meta.env.VITE_TMDB_IMAGE_BASE_URL,
   );
-  return new URL(path.substring(1), imageUrlWithSize).href;
+  const imageUrl = new URL(path.substring(1), imageUrlWithSize).href;
+  return { imageUrl, tmdbId };
 }
 
-export async function fetchPersonTMDB(imdbId) {
+export async function fetchPersonTMDB(tmdbId) {
   try {
-    const resp = await api.Get(`person/${imdbId}?language=en-US`);
+    const resp = await api.Get(`person/${tmdbId}?language=en-US`);
     if (!resp.ok) {
       throw new Error('Failed to fetch person details from TMDB');
     }
     return resp.value;
   } catch (err) {
-    console.error(`Error fetching TMDB data for IMDb ID ${imdbId}:`, err);
+    console.error(`Error fetching TMDB data for TMDB ID ${tmdbId}:`, err);
     throw err;
   }
 }

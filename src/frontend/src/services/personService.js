@@ -47,9 +47,13 @@ export const fetchPersonById = async (id) => {
     if (!response.ok) {
       throw new Error(`Failed to fetch person with ID ${id}.`);
     }
-    response = await enhancePersonWithImage(response.value, ImageSize.Normal);
-    const tmdbResponse = await fetchPersonTMDB('8635'); //response.imdbId
-    return mergePersonData(response, tmdbResponse);
+    const { imageUrl, tmdbId } = await getTMDBImage(
+      response.value.imdbId,
+      ImageSize.Normal,
+    );
+    response.value.pictureUri = imageUrl;
+    const tmdbData = await fetchPersonTMDB(tmdbId);
+    return mergePersonData({ ...response.value, tmdbId }, tmdbData);
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
     throw error;
@@ -92,6 +96,7 @@ export const fetchPersonCoactors = async (id) => {
 function mergePersonData(originalData, tmdbData) {
   return {
     id: originalData.id || tmdbData.id,
+    tmdbId: originalData.tmdbId || tmdbData.id,
     name: tmdbData.name || originalData.name,
     description: tmdbData.biography || originalData.description,
     score: originalData.score,

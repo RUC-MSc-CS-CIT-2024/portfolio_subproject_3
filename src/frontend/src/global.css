@@ -3,3 +3,11 @@
   margin-right: 0;
   padding-right: 0;
 }
+
+.action-col {
+  width: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

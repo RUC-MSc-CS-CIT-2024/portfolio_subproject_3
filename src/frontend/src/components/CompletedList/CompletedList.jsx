@@ -1,11 +1,10 @@
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './CompletedList.css';
 import { Link } from 'react-router-dom';
 
 export default function CompletedList({ items }) {
-  let rows = items.map((item) => (
-    <tr key={item.media.id}>
+  let rows = items.map((item, index) => (
+    <tr key={`${item.media.id}-${index}`}>
       <td>
         <img className="mx-2" src={item.media.posterUri} height={68} />
         <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>

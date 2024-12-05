@@ -1,6 +1,5 @@
 import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './FollowingList.css';
 import { Link } from 'react-router-dom';
 import { unfollowPerson } from '@/services/userService';
 import { useEffect, useState } from 'react';
@@ -21,10 +20,10 @@ export default function FollowingList({ items }) {
       setFollowing(
         following.filter((item) => item.followingId !== followingId),
       );
-      showToastMessage('Unfollowed user.', 'success');
+      showToastMessage('Unfollowed person.', 'success');
     } catch (error) {
-      console.error('Error unfollowing user:', error);
-      showToastMessage('Error unfollowing user.', 'danger');
+      console.error('Error unfollowing person:', error);
+      showToastMessage('Error unfollowing person.', 'danger');
     }
   };
 
@@ -39,7 +38,7 @@ export default function FollowingList({ items }) {
         <OverlayTrigger overlay={<Tooltip>Unfollow</Tooltip>}>
           <span
             onClick={() => handleUnfollow(item.followingId)}
-            className="currsor-pointer "
+            className="cursor-pointer "
           >
             <i className="bi bi-person-dash text-danger" />
           </span>

@@ -238,3 +238,50 @@ export const unfollowPerson = async (followingId) => {
 
   return response.value;
 };
+
+export const removeBookmark = async (bookmarkId) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
+  const path = `users/${user.id}/bookmarks/${bookmarkId}`;
+  const response = await apiClient.Delete(path);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};
+
+export const markBookmarkAsCompleted = async (
+  bookmarkId,
+  completedDate,
+  rewatchability,
+  note,
+) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
+  const path = `users/${user.id}/bookmarks/${bookmarkId}/move`;
+  const data = {
+    completedDate,
+    rewatchability,
+    note,
+  };
+
+  const response = await apiClient.Post(path, data);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};

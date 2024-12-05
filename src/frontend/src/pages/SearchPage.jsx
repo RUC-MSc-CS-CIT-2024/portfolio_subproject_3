@@ -10,30 +10,42 @@ export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredResults, setFilteredResults] = useState([]);
+  const [filterCriteria, setFilterCriteria] = useState({
+    type: null,
+    year: null,
+  });
 
-  const handleSearch = useCallback(async (searchQuery, queryType) => {
-    if (!searchQuery) return;
+  const handleSearch = useCallback(
+    async (searchQuery, queryType) => {
+      if (!searchQuery) return;
 
-    try {
-      const resultList = await fetchMedia({ query: searchQuery, queryType });
-      setResults(resultList);
-      setFilteredResults(resultList);
-    } catch (error) {
-      console.error('Error searching:', error);
-    }
-  }, []);
+      try {
+        const resultList = await fetchMedia({ query: searchQuery, queryType });
+        setResults(resultList);
+        applyFilters(resultList, filterCriteria);
+      } catch (error) {
+        console.error('Error searching:', error);
+      }
+    },
+    [filterCriteria],
+  );
+
+  const applyFilters = (results, filterCriteria) => {
+    const { type, year } = filterCriteria;
+    const filtered = results.filter((item) => {
+      const matchesType = type ? item.type === type : true;
+      const matchesYear = year ? item.releaseYear === year : true;
+      return matchesType && matchesYear;
+    });
+    setFilteredResults(filtered);
+  };
 
   const handleFilterChange = useCallback(
-    (filterCriteria) => {
-      if (!filterCriteria || !filterCriteria.type) {
-        setFilteredResults(results);
-        return;
-      }
-
-      const newFilteredResults = results.filter(
-        (item) => item.type === filterCriteria.type,
-      );
-      setFilteredResults(newFilteredResults);
+    (newFilterCriteria) => {
+      setLoading(true);
+      setFilterCriteria(newFilterCriteria);
+      applyFilters(results, newFilterCriteria);
+      setLoading(false);
     },
     [results],
   );
@@ -42,7 +54,6 @@ export default function SearchPage() {
     const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
     const queryType = location.search ? 'Simple' : 'All';
     setLoading(true);
-
     try {
       await handleSearch(searchQuery, queryType);
     } catch (err) {
@@ -54,7 +65,9 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (!location.search) return;
+    setLoading(true);
     fetchData();
+    setLoading(false);
   }, [location.search, fetchData]);
 
   return (
@@ -64,11 +77,11 @@ export default function SearchPage() {
         btnVariant="dark"
         onSearch={(query) => navigate(`/search?q=${encodeURIComponent(query)}`)}
       />
+      <FilterMediaComponent onFilterChange={handleFilterChange} />
       {!loading && results.length === 0 && <div>No results found.</div>}
       {loading && results.length === 0 && <div>Loading...</div>}
       {!loading && results.length > 0 && (
         <>
-          <FilterMediaComponent onFilterChange={handleFilterChange} />
           {!loading && filteredResults.length === 0 && (
             <div>No filtered results found.</div>
           )}

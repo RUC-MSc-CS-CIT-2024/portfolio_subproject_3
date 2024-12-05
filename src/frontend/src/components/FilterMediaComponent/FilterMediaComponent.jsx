@@ -1,11 +1,11 @@
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Row, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import './FilterMediaComponent.css';
 
 export default function FilterMediaComponent({ onFilterChange }) {
   const currentYear = new Date().getFullYear();
   const startYear = 1900;
-  const years = ['all'];
+  const years = ['All'];
   for (let year = currentYear; year >= startYear; year--) {
     years.push(year);
   }
@@ -31,21 +31,25 @@ export default function FilterMediaComponent({ onFilterChange }) {
   const handleTypeChange = (event) => {
     const newType = event.target.value;
     setSelectedType(newType);
-    const filterCriteria = {
+    onFilterChange({
       type: newType === 'all' ? null : newType,
-      year: selectedYear,
-    };
-    onFilterChange(filterCriteria);
+      year: selectedYear === 'all' ? null : selectedYear,
+    });
   };
 
   const handleYearChange = (event) => {
     const newYear = event.target.value;
     setSelectedYear(newYear);
-    const filterCriteria = {
-      type: selectedType,
+    onFilterChange({
+      type: selectedType === 'all' ? null : selectedType,
       year: newYear === 'all' ? null : newYear,
-    };
-    onFilterChange(filterCriteria);
+    });
+  };
+
+  const handleReset = () => {
+    setSelectedType('all');
+    setSelectedYear('all');
+    onFilterChange({ type: null, year: null });
   };
 
   return (
@@ -56,7 +60,12 @@ export default function FilterMediaComponent({ onFilterChange }) {
             <Form.Label htmlFor="type" className="mb-0 me-2">
               Type:
             </Form.Label>
-            <Form.Select id="type" size="sm" onChange={handleTypeChange}>
+            <Form.Select
+              id="type"
+              size="sm"
+              value={selectedType}
+              onChange={handleTypeChange}
+            >
               {types.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}
@@ -80,6 +89,18 @@ export default function FilterMediaComponent({ onFilterChange }) {
                 </option>
               ))}
             </Form.Control>
+          </Col>
+          <Col md={2} sm={4} xs={6} className="d-flex align-items-center">
+            {selectedType !== 'all' || selectedYear !== 'all' ? (
+              <Button
+                variant="outline-secondary"
+                type="reset"
+                size="sm"
+                onClick={handleReset}
+              >
+                Reset
+              </Button>
+            ) : null}
           </Col>
         </Row>
       </Form>

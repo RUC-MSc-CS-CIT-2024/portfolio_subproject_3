@@ -285,3 +285,21 @@ export const markBookmarkAsCompleted = async (
 
   return response.value;
 };
+
+export const removeCompletedItem = async (completedId) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
+  const path = `users/${user.id}/completed/${completedId}`;
+  const response = await apiClient.Delete(path);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};

@@ -1,33 +1,69 @@
+import { useState, useEffect } from 'react';
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
+import { formatDate } from '@/utils/date';
+import { useToast } from '@/hooks';
+import { removeCompletedItem } from '@/services/userService';
+import { MediaCardBadge } from '@/components';
 
 export default function CompletedList({ items }) {
-  let rows = items.map((item, index) => (
-    <tr key={`${item.media.id}-${index}`}>
-      <td>
-        <img className="mx-2" src={item.media.posterUri} height={68} />
-        <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
-      </td>
-      <td className="align-middle">{item.media.type}</td>
-      <td className="align-middle">{item.completedDate}</td>
-      <td className="align-middle">{item.rewatchability}</td>
-      <td className="align-middle">{item.score.value}</td>
-      <td className="align-middle">{item.score.reviewText}</td>
-      <td className="align-middle">
-        <OverlayTrigger overlay={<Tooltip>Remove bookmark</Tooltip>}>
-          <i className="bi bi-bookmark-x text-danger" />
-        </OverlayTrigger>
-      </td>
-    </tr>
-  ));
+  const [completedItems, setCompletedItems] = useState(items);
+  const { showToastMessage } = useToast();
+
+  useEffect(() => {
+    setCompletedItems(items);
+  }, [items]);
+
+  const handleRemoveCompletedItem = async (completedId) => {
+    try {
+      await removeCompletedItem(completedId);
+      setCompletedItems(
+        completedItems.filter((item) => item.completedId !== completedId),
+      );
+      showToastMessage('Completed item removed.', 'success');
+    } catch (error) {
+      console.error('Error removing completed item:', error);
+      showToastMessage('Failed to remove completed item.', 'danger');
+    }
+  };
+
+  let rows = completedItems.map((item, index) => {
+    if (!item) return null;
+
+    return (
+      <tr key={`${item.media.id}-${index}`}>
+        <td>
+          <img className="mx-2" src={item.media.posterUri} height={68} />
+          <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
+        </td>
+        <td className="align-middle">
+          <MediaCardBadge type={item.media.type} />
+        </td>
+        <td className="align-middle">{formatDate(item.completedDate)}</td>
+        <td className="align-middle">{item.rewatchability}</td>
+        <td className="align-middle">{item.score?.value}</td>
+        <td className="align-middle">{item.score?.reviewText || item.note}</td>
+        <td className="align-middle">
+          <OverlayTrigger overlay={<Tooltip>Remove completed item</Tooltip>}>
+            <span
+              className="cursor-pointer"
+              onClick={() => handleRemoveCompletedItem(item.completedId)}
+            >
+              <i className="bi bi-bookmark-x text-danger" />
+            </span>
+          </OverlayTrigger>
+        </td>
+      </tr>
+    );
+  });
 
   if (rows.length === 0) {
     rows = (
       <tr>
-        <td colSpan={3} height={100} className="text-center align-middle">
+        <td colSpan={7} height={100} className="text-center align-middle">
           It looks like you haven&apos;t completed anything yet. Use the search
-          bar to find media you have complete and mark them as so!
+          bar to find media you have completed and mark them as so!
         </td>
       </tr>
     );

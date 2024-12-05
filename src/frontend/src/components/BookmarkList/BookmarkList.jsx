@@ -17,6 +17,7 @@ import {
   removeBookmark,
   markBookmarkAsCompleted,
 } from '@/services/userService';
+import { MediaCardBadge } from '@/components';
 
 export default function BookmarkList({ items }) {
   const [bookmarks, setBookmarks] = useState(items);
@@ -52,7 +53,7 @@ export default function BookmarkList({ items }) {
       );
       setBookmarks(bookmarks.filter((item) => item.bookmarkId !== bookmarkId));
       showToastMessage('Bookmark marked as completed.', 'success');
-      setExpandedRow(null); // Collapse the row after submission
+      setExpandedRow(null);
     } catch (error) {
       console.error('Error marking bookmark as completed:', error);
       showToastMessage('Failed to mark bookmark as completed.', 'danger');
@@ -63,6 +64,7 @@ export default function BookmarkList({ items }) {
     setExpandedRow(expandedRow === bookmarkId ? null : bookmarkId);
   };
 
+  console.log('bookmarks', bookmarks);
   let rows = bookmarks.map((item) => (
     <React.Fragment key={item.bookmarkId}>
       <tr>
@@ -70,7 +72,9 @@ export default function BookmarkList({ items }) {
           <img className="mx-2" src={item.media.posterUri} height={68} />
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
-        <td className="align-middle">{item.media.type}</td>
+        <td className="align-middle">
+          <MediaCardBadge type={item.media.type} />
+        </td>
         <td className="align-middle">{formatDate(item.media.releaseDate)}</td>
         <td className="align-middle">{item.media.ageRating}</td>
         <td className="align-middle">{item.media.runtimeMinutes}</td>
@@ -97,7 +101,7 @@ export default function BookmarkList({ items }) {
       {expandedRow === item.bookmarkId && (
         <tr>
           <td colSpan={7}>
-            <Form inline>
+            <Form>
               <Row className="align-items-end mb-3">
                 <Col>
                   <Form.Group controlId="rewatchability">

@@ -111,9 +111,17 @@ export class ApiClient {
     };
     const requestUrl = this.#_getUrl(path);
     const response = await fetch(requestUrl, req);
-    return new ApiResponse(
-      response.status,
-      response.ok ? await response.json() : null,
-    );
+    const returnResp = new ApiResponse(response.status);
+    if (response.ok) {
+      try {
+        const text = await response.text();
+        if (text) {
+          returnResp.value = JSON.parse(text);
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error);
+      }
+    }
+    return returnResp;
   }
 }

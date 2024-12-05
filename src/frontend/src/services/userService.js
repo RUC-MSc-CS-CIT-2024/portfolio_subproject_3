@@ -220,3 +220,21 @@ export const getCurrentUserCompleted = async (page, count) => {
 
   return response.value;
 };
+
+export const unfollowPerson = async (followingId) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
+  const path = `users/${user.id}/following/${followingId}`;
+  const response = await apiClient.Delete(path);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};

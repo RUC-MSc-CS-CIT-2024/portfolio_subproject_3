@@ -21,7 +21,7 @@ export default function PersonsCarousel({ persons, loading }) {
                 <Col key={person.id} xs={12} sm={6} md={4} lg={3} xl={2}>
                   <PersonCard
                     id={person.id}
-                    imageUri={person.imageUri}
+                    imageUri={person.pictureUri}
                     name={person.name}
                     role={person.role}
                     additionalInfo={person.additionalInfo}

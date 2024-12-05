@@ -1,45 +1,34 @@
+import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { PersonsCarousel, PersonsGrid } from '@/components';
+import { fetchPersons } from '@/services/personService';
+import { useToast } from '@/contexts/ToastContext';
 
-// This is a mock data for persons
-const persons = [
-  {
-    id: 100,
-    name: 'Person Name 1',
-    role: 'Actor',
-    additionalInfo: 'Some additional info about Person 1',
-  },
-  {
-    id: 2,
-    name: 'Person Name 2',
-    role: 'Director',
-    additionalInfo: 'Some additional info about Person 2',
-  },
-  {
-    id: 3,
-    name: 'Person Name 3',
-    role: 'Producer',
-    additionalInfo: 'Some additional info about Person 3',
-  },
-  {
-    id: 4,
-    name: 'Person Name 4',
-    role: 'Writer',
-    additionalInfo: 'Some additional info about Person 4',
-  },
-  {
-    id: 5,
-    name: 'Person Name 5',
-    role: 'Actor',
-    additionalInfo: 'Some additional info about Person 5',
-  },
-];
 export default function PersonsOverviewPage() {
+  const [persons, setPersons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { showToastMessage } = useToast();
+
+  useEffect(() => {
+    const loadPersons = async () => {
+      try {
+        const personsData = await fetchPersons();
+        setPersons(personsData);
+      } catch {
+        showToastMessage('Error getting persons.', 'danger');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPersons();
+  }, [showToastMessage]);
+
   return (
     <Container>
-      <h1>Person</h1>
-      <PersonsCarousel persons={persons} />
-      <PersonsGrid persons={persons} />
+      <h1>Persons</h1>
+      <PersonsCarousel persons={persons} loading={loading} />
+      <PersonsGrid persons={persons} loading={loading} />
     </Container>
   );
 }

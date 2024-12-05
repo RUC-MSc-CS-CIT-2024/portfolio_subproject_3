@@ -4,12 +4,17 @@ import { MediaCard } from '@/components';
 import { useMediaPerRow } from '@/hooks';
 import './MediaGrid.css';
 
-export default function MediaGrid({ media, loading }) {
+export default function MediaGrid({ media, loading, onShowMore }) {
   const [showMore, setShowMore] = useState(false);
   const mediaPerRow = useMediaPerRow();
 
   const firstRowMedia = media.slice(0, mediaPerRow);
   const remainingMedia = media.slice(mediaPerRow);
+
+  const handleShowMore = () => {
+    setShowMore(!showMore);
+    onShowMore(showMore);
+  };
 
   return (
     <Container fluid className="container-layout ">
@@ -36,7 +41,7 @@ export default function MediaGrid({ media, loading }) {
               remainingMedia.length > 0 && (
                 <Button
                   variant="link"
-                  onClick={() => setShowMore(!showMore)}
+                  onClick={handleShowMore}
                   className="see-more-button"
                 >
                   {showMore ? 'See Less' : 'See More'}

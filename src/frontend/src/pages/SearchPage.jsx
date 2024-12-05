@@ -65,9 +65,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (!location.search) return;
-    setLoading(true);
     fetchData();
-    setLoading(false);
   }, [location.search, fetchData]);
 
   return (
@@ -78,16 +76,12 @@ export default function SearchPage() {
         onSearch={(query) => navigate(`/search?q=${encodeURIComponent(query)}`)}
       />
       <FilterMediaComponent onFilterChange={handleFilterChange} />
-      {!loading && results.length === 0 && <div>No results found.</div>}
-      {loading && results.length === 0 && <div>Loading...</div>}
-      {!loading && results.length > 0 && (
-        <>
-          {!loading && filteredResults.length === 0 && (
-            <div>No filtered results found.</div>
-          )}
-          <MediaGrid media={filteredResults} loading={loading} />
-        </>
+      {!loading && filteredResults.length === 0 && (
+        <div className="d-flex justify-content-center align-items-center pt-5">
+          <h2>No matches found.</h2>
+        </div>
       )}
+      <MediaGrid media={filteredResults} loading={loading} />
     </Container>
   );
 }

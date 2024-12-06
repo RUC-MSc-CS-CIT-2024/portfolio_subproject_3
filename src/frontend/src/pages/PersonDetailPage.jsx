@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PersonInformation } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById } from '@/services/personService';
@@ -8,19 +8,27 @@ import { useToast } from '@/hooks';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [person, setPerson] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const { showToastMessage } = useToast();
 
   useEffect(() => {
     const fetchPerson = async () => {
-      const personData = await fetchPersonById(id);
-      setPerson(personData);
-      setIsLoading(false);
+      try {
+        const personData = await fetchPersonById(id);
+        setPerson(personData);
+      } catch (error) {
+        console.error('Error fetching person:', error);
+        showToastMessage('Failed to fetch person details.', 'danger');
+        navigate('/persons');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchPerson();
-  }, [id]);
+  }, [id, navigate, showToastMessage]);
 
   // TODO: Include   "birthDate": "1979-01-01T00:00:00", & "deathDate": null,
 

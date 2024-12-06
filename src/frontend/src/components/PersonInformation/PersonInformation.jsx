@@ -8,6 +8,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
+import { formatDate } from '@/utils/date';
 import './PersonInformation.css';
 
 export default function PersonInformation({
@@ -31,12 +32,8 @@ export default function PersonInformation({
 
   const bioPreview = bio?.length > 200 ? bio.substring(0, 200) + '...' : bio;
 
-  const formattedBirthDate = birthDate
-    ? new Date(birthDate).toLocaleDateString()
-    : 'Unknown';
-  const formattedDeathDate = deathDate
-    ? new Date(deathDate).toLocaleDateString()
-    : null;
+  const formattedBirthDate = birthDate ? formatDate(birthDate) : 'Unknown';
+  const formattedDeathDate = deathDate ? formatDate(deathDate) : null;
 
   return (
     <Container className="person-layout">
@@ -86,10 +83,19 @@ export default function PersonInformation({
               {isLoading ? (
                 <PlaceholderText as="p" xs={6} />
               ) : (
-                <div className="d-flex align-items-center justify-content-start">
-                  <InfoRow label="Popularity" value={popularity || 'N/A'} />
-                  <InfoRow label="Score" value={score || 'N/A'} />
-                  <InfoRow label="Name Rating" value={rating || 'N/A'} />
+                <div className="d-flex align-items-center justify-content-start gap-3">
+                  <InfoRow
+                    label="Popularity"
+                    value={popularity || 'No Rating Available'}
+                  />
+                  <InfoRow
+                    label="Score"
+                    value={score || 'No Rating Available'}
+                  />
+                  <InfoRow
+                    label="Name Rating"
+                    value={rating || 'No Rating Available'}
+                  />
                 </div>
               )}
             </Col>
@@ -149,7 +155,11 @@ export default function PersonInformation({
                 <>
                   <InfoRow
                     label="Also Known As"
-                    value={alsoKnownAs.length ? alsoKnownAs.join(', ') : 'N/A'}
+                    value={
+                      alsoKnownAs.length
+                        ? alsoKnownAs.join(', ')
+                        : 'No known aliases'
+                    }
                   />
                   <InfoRow
                     label="Place of Birth"

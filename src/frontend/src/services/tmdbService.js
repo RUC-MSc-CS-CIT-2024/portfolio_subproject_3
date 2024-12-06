@@ -45,6 +45,7 @@ export async function getTMDBImage(imdb_id, size) {
 export async function fetchPersonTMDB(tmdbId) {
   const api = new ApiClient(baseUrl, accessKey);
   try {
+    const api = new ApiClient(baseUrl, accessKey);
     const resp = await api.Get(`person/${tmdbId}?language=en-US`);
     if (!resp.ok) {
       throw new Error('Failed to fetch person details from TMDB');

@@ -1,7 +1,6 @@
 import { ApiClient } from '@/utils/apiClient';
 import { getTMDBImage, ImageSize, fetchPersonTMDB } from './tmdbService';
 
-const api = new ApiClient();
 const BASE_PATH = '/api/persons/';
 
 const enhancePersonWithImage = async (person, imgSize = ImageSize) => {
@@ -20,6 +19,7 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize) => {
 };
 
 export const fetchPersons = async (page, count) => {
+  const api = new ApiClient();
   try {
     const queryParams = [];
     if (page) queryParams.push({ key: 'page', value: page });
@@ -42,6 +42,7 @@ export const fetchPersons = async (page, count) => {
 };
 
 export const fetchPersonById = async (id) => {
+  const api = new ApiClient();
   try {
     let response = await api.Get(`${BASE_PATH}${id}`);
     if (!response.ok) {
@@ -61,6 +62,7 @@ export const fetchPersonById = async (id) => {
 };
 
 export const fetchPersonMedia = async (id) => {
+  const api = new ApiClient();
   try {
     const response = await api.Get(`${BASE_PATH}${id}/media`);
 
@@ -76,6 +78,7 @@ export const fetchPersonMedia = async (id) => {
 };
 
 export const fetchPersonCoactors = async (id) => {
+  const api = new ApiClient();
   try {
     const response = await api.Get(`${BASE_PATH}${id}/coactors`);
 

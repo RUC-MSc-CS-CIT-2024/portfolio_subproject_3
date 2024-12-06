@@ -2,7 +2,6 @@ import { ApiClient } from '@/utils/apiClient';
 
 const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
 const accessKey = import.meta.env.VITE_TMDB_READ_TOKEN;
-const api = new ApiClient(baseUrl, accessKey);
 
 export const ImageSize = Object.freeze({
   VerySmall: 'w92', // Used on lists
@@ -12,6 +11,7 @@ export const ImageSize = Object.freeze({
 });
 
 export async function getTMDBImage(imdb_id, size) {
+  const api = new ApiClient(baseUrl, accessKey);
   size = size ?? ImageSize.Normal;
   const resp = await api.Get(`find/${imdb_id}?external_source=imdb_id`);
   if (!resp.ok) {

@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export default function ProfilePage() {
-  const { logout } = useAuth();
+  const { logout, refresh } = useAuth();
   const { showToastMessage } = useToast();
 
   const [initialData, setInitialData] = useState(null);
@@ -27,9 +27,7 @@ export default function ProfilePage() {
         'Profile updated successfully! You will be logged out in 3 seconds.',
         'success',
       );
-      setTimeout(() => {
-        logout();
-      }, 3000);
+      refresh();
     } catch {
       showToastMessage('Error updating profile.', 'danger');
     }
@@ -39,9 +37,7 @@ export default function ProfilePage() {
     try {
       await deleteUserById();
       showToastMessage('Profile deleted successfully!', 'success');
-      setTimeout(() => {
-        logout();
-      }, 3000);
+      logout();
     } catch {
       showToastMessage('Error deleting profile.', 'danger');
     }

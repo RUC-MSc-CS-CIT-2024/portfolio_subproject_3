@@ -7,14 +7,14 @@ import {
   Button,
   Placeholder,
 } from 'react-bootstrap';
-import './MediaInformation.css';
+import { formatDate } from '@/utils';
 import {
   PlaceholderText,
   DefaultImage,
   Rating,
   InfoRowWithSeparator,
 } from '@/components';
-import { formatDate } from '@/utils/date';
+import './MediaInformation.css';
 
 export default function MediaInformation({
   posterUri,

@@ -1,7 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './BookmarkList.css';
-import { Link } from 'react-router-dom';
 
 export default function BookmarkList({ items }) {
   let rows = items.map((item) => (

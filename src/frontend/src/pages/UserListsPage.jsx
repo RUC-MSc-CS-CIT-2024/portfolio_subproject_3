@@ -1,12 +1,12 @@
-import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useState } from 'react';
-import { FollowingList, BookmarkList, CompletedList } from '@/components';
-import { useAsyncEffect } from '@/hooks/useAsyncEffect';
+import { Container, Tab, Tabs } from 'react-bootstrap';
+import { useAsyncEffect } from '@/hooks';
 import {
   getCurrentUserBookmarks,
   getCurrentUserCompleted,
   getCurrentUserFollowing,
-} from '@/services/userService';
+} from '@/services';
+import { FollowingList, BookmarkList, CompletedList } from '@/components';
 
 export default function UserListsPage() {
   const [key, setKey] = useState('following');

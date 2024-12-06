@@ -1,10 +1,9 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { PersonInformation } from '@/components';
 import { useState, useEffect } from 'react';
-import { fetchPersonById } from '@/services/personService';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Button } from 'react-bootstrap';
-import { createFollow } from '@/services/userService';
 import { useToast } from '@/hooks';
+import { createFollow, fetchPersonById } from '@/services';
+import { PersonInformation } from '@/components';
 
 export default function PersonDetailPage() {
   const { id } = useParams();

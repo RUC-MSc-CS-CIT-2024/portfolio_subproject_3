@@ -1,5 +1,5 @@
-import { Breadcrumb } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { Breadcrumb } from 'react-bootstrap';
 
 export default function DynamicBreadcrumb({ items = [] }) {
   return (

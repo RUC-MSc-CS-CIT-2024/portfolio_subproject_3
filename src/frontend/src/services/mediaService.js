@@ -1,4 +1,4 @@
-import { ApiClient } from '@/utils/apiClient';
+import { ApiClient } from '@/utils';
 
 export const fetchMediaById = async (id) => {
   const api = new ApiClient();

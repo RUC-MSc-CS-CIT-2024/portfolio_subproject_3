@@ -1,7 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './CompletedList.css';
-import { Link } from 'react-router-dom';
 
 export default function CompletedList({ items }) {
   let rows = items.map((item) => (

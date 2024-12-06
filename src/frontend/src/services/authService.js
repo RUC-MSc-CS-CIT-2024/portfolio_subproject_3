@@ -1,4 +1,4 @@
-import { ApiClient } from '@/utils/apiClient';
+import { ApiClient } from '@/utils';
 
 export const authenticate = async (credentials) => {
   try {

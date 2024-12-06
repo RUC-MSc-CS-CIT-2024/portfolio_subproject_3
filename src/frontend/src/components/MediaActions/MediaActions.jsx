@@ -1,12 +1,8 @@
 import { ButtonGroup } from 'react-bootstrap';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useToast } from '@/contexts/ToastContext';
-import {
-  createBookmark,
-  createScore,
-  createMarkAsCompleted,
-} from '@/services/userService';
+import { createBookmark, createScore, createMarkAsCompleted } from '@/services';
+import { useToast } from '@/contexts';
 import { ActionDropdown } from '@/components';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default function MediaActions({ id }) {
   const { showToastMessage } = useToast();

@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
-import {
-  MediaInformation,
-  MediaActions,
-  MediaBadges,
-  MediaCarousel,
-  InfoRow,
-} from '@/components';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   fetchMediaById,
@@ -15,8 +8,15 @@ import {
   //fetchMediaCast,
   fetchSimilarMedia,
   fetchReleases,
-} from '@/services/mediaService';
-import { useToast } from '@/contexts/ToastContext';
+} from '@/services';
+import {
+  MediaInformation,
+  MediaActions,
+  MediaBadges,
+  MediaCarousel,
+  InfoRow,
+} from '@/components';
+import { useToast } from '@/contexts';
 
 const extractDirectors = (crew) => {
   return crew

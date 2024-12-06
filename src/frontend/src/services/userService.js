@@ -1,6 +1,5 @@
-import { getUserFromSession } from '@/utils/getUserFromSession';
-import { ApiClient } from '@/utils/apiClient';
-import { getTMDBImage, ImageSize } from './tmdbService';
+import { ApiClient, getUserFromSession } from '@/utils';
+import { getTMDBImage, ImageSize } from '@/services';
 
 export const updateUserById = async (data) => {
   const api = new ApiClient();
@@ -125,6 +124,7 @@ export const createMarkAsCompleted = async ({
 };
 
 export const createFollow = async (personId) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -152,8 +152,8 @@ export const createFollow = async (personId) => {
 };
 
 export const getCurrentUserFollowing = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -181,8 +181,8 @@ export const getCurrentUserFollowing = async (page, count) => {
 };
 
 export const getCurrentUserBookmarks = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -203,8 +203,8 @@ export const getCurrentUserBookmarks = async (page, count) => {
 };
 
 export const getCurrentUserCompleted = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');

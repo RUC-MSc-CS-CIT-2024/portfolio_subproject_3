@@ -124,6 +124,33 @@ export const createMarkAsCompleted = async ({
   }
 };
 
+export const createFollow = async (personId) => {
+  const user = getUserFromSession();
+  if (!user) {
+    throw new Error('No user found in session');
+  }
+
+  const path = `users/${user.id}/following`;
+  const followData = {
+    userId: user.id,
+    personId: personId,
+  };
+
+  try {
+    const response = await api.Post(path, followData);
+
+    if (!response.ok) {
+      const errorMessage = `Failed to follow person with ID ${personId}.`;
+      throw new Error(errorMessage);
+    }
+
+    return response.value;
+  } catch (error) {
+    console.error('Error following user:', error);
+    throw error;
+  }
+};
+
 export const getCurrentUserFollowing = async (page, count) => {
   const user = getUserFromSession();
   const apiClient = new ApiClient();

@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { isEmailValid } from '@/utils/validation';
+import { useToast } from '@/hooks';
 
 export default function UpdateProfileForm({ onSubmit, initialData }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { showToastMessage } = useToast();
 
   useEffect(() => {
     if (initialData) {
@@ -19,6 +22,10 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
     if (username) updatedData.username = username;
     if (email) updatedData.email = email;
     if (password) updatedData.password = password;
+    if (!isEmailValid(email)) {
+      showToastMessage('Invalid Email.', 'danger');
+      return;
+    }
     onSubmit(updatedData);
   };
 

@@ -13,5 +13,3 @@ export const signUpUser = async (data) => {
     throw error;
   }
 };
-
-// TODO: Currently if you wanna use signup Service remove the login part or you will get the following error "Authorization header is invalid"

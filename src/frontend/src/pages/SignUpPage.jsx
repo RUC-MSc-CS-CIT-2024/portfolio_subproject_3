@@ -22,8 +22,12 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password.length < 15) {
+      showToastMessage('Password must be at least 15 characters.', 'danger');
+      return;
+    }
     if (!isEmailValid(formData.email)) {
-      showToastMessage({ message: 'Invalid Email.', variant: 'danger' });
+      showToastMessage('Invalid Email.', 'danger');
       return;
     }
     try {
@@ -35,12 +39,12 @@ export default function SignUpPage() {
       );
       setTimeout(() => {
         navigate('/');
-        // TODO: This I basiclly think should redirect us to the home page instead of the login page. and just log us in automatically or we should redirect to the profile page.
-      }, 1000);
+      }, 3000);
     } catch (error) {
-      console.error('Error during sign-up:', error);
-      const errorMessage = error.message || 'Sign-up failed. Please try again.';
-      showToastMessage(errorMessage, 'danger');
+      showToastMessage(
+        error.message || 'Sign-up failed. Please try again.',
+        'danger',
+      );
     }
   };
 

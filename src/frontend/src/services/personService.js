@@ -1,12 +1,12 @@
 import { ApiClient } from '@/utils/apiClient';
-import { getTMDBImage, ImageSize } from './tmdbService';
+import { getTMDBImage, ImageSize, fetchPersonTMDB } from './tmdbService';
 
 const api = new ApiClient();
 const BASE_PATH = '/api/persons/';
 
-const enhancePersonWithImage = async (person) => {
+const enhancePersonWithImage = async (person, imgSize = ImageSize) => {
   try {
-    person.pictureUri = await getTMDBImage(person.imdbId, ImageSize.VerySmall);
+    person.pictureUri = await getTMDBImage(person.imdbId, imgSize);
   } catch (error) {
     console.error(
       `Failed to fetch image for person with ID ${person.imdbId}:`,
@@ -43,13 +43,17 @@ export const fetchPersons = async (page, count) => {
 
 export const fetchPersonById = async (id) => {
   try {
-    const response = await api.Get(`${BASE_PATH}${id}`);
-
+    let response = await api.Get(`${BASE_PATH}${id}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch person with ID ${id}.`);
     }
-
-    return await enhancePersonWithImage(response.value);
+    const { imageUrl, tmdbId } = await getTMDBImage(
+      response.value.imdbId,
+      ImageSize.Normal,
+    );
+    response.value.pictureUri = imageUrl;
+    const tmdbData = await fetchPersonTMDB(tmdbId);
+    return mergePersonData({ ...response.value, tmdbId }, tmdbData);
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
     throw error;
@@ -88,3 +92,31 @@ export const fetchPersonCoactors = async (id) => {
     throw error;
   }
 };
+
+function mergePersonData(originalData, tmdbData) {
+  return {
+    id: originalData.id || tmdbData.id,
+    tmdbId: originalData.tmdbId || tmdbData.id,
+    name: tmdbData.name || originalData.name,
+    description: tmdbData.biography || originalData.description,
+    score: originalData.score,
+    nameRating: originalData.nameRating,
+    birthDate: tmdbData.birthday || originalData.birthDate,
+    deathDate: tmdbData.deathday || originalData.deathDate,
+    imdbId: originalData.imdbId || tmdbData.imdb_id,
+    links: originalData.links,
+    pictureUri:
+      originalData.pictureUri ||
+      `https://image.tmdb.org/t/p/w500${tmdbData.profile_path}`,
+    alsoKnownAs: Array.from(
+      new Set([
+        ...(originalData.alsoKnownAs || []),
+        ...(tmdbData.also_known_as || []),
+      ]),
+    ),
+    homepage: tmdbData.homepage || null,
+    placeOfBirth: tmdbData.place_of_birth || null,
+    popularity: tmdbData.popularity || null,
+    knownForDepartment: tmdbData.known_for_department || null,
+  };
+}

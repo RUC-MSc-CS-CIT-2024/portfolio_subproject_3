@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
-import { signUpUser } from '@/services/signUpService';
 import { useToast, useAuth } from '@/hooks';
-import { isEmailValid } from '@/utils/validation';
+import { signUpUser } from '@/services';
+import { isEmailValid } from '@/utils';
 
 export default function SignUpPage() {
   const navigate = useNavigate();

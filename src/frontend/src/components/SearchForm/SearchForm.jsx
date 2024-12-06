@@ -1,5 +1,5 @@
-import { Form, FormControl, Button } from 'react-bootstrap';
 import { useState } from 'react';
+import { Form, FormControl, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default function SearchForm({ btnVariant = 'dark', onSearch }) {

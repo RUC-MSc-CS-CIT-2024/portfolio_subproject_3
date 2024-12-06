@@ -1,7 +1,7 @@
-import { Container } from 'react-bootstrap';
-import { fetchMedia } from '../services/mediaService';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import { fetchMedia } from '@/services';
 import { SearchForm, MediaGrid, FilterMediaComponent } from '@/components';
 
 export default function SearchPage() {

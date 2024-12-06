@@ -3,6 +3,7 @@ import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { signUpUser } from '@/services/signUpService';
 import { useToast } from '@/hooks';
+import { isEmailValid } from '@/utils/validation';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -20,6 +21,10 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isEmailValid(formData.email)) {
+      showToastMessage({ message: 'Invalid Email.', variant: 'danger' });
+      return;
+    }
     try {
       await signUpUser(formData);
       showToastMessage({

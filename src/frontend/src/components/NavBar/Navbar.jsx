@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap/';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useToast } from '@/hooks';
 import { useEffect, useState } from 'react';
 import { SearchForm, LoginForm, ToastNotification } from '@/components';
@@ -10,6 +10,7 @@ export default function NavBar({ username }) {
   const { isAuthenticated } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const { showToastMessage } = useToast();
+  const navigate = useNavigate();
 
   const handleLoginResult = (success, message) => {
     showToastMessage(message, success ? 'success' : 'danger');
@@ -38,7 +39,11 @@ export default function NavBar({ username }) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <SearchForm />
+              <SearchForm
+                onSearch={(query) =>
+                  navigate(`/search?q=${encodeURIComponent(query)}`)
+                }
+              />
             </Nav>
             {isAuthenticated ? (
               <Nav className="ms-auto d-flex flex-column flex-lg-row gap-3">

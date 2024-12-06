@@ -1,29 +1,20 @@
 import { Form, FormControl, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-export default function SearchForm({ btnVariant = 'dark' }) {
+export default function SearchForm({ btnVariant = 'dark', onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== '') {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      onSearch(searchQuery);
       setSearchQuery('');
     }
   };
 
-  const handleKeypress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSearch(e);
-    }
-  };
-
   return (
-    <Form className="d-flex my-3">
+    <Form className="d-flex my-3" onSubmit={handleSearch}>
       <FormControl
         type="search"
         placeholder="Search"
@@ -32,9 +23,13 @@ export default function SearchForm({ btnVariant = 'dark' }) {
         size="sm"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={handleKeypress}
       />
-      <Button variant={btnVariant} size="sm" onClick={handleSearch}>
+      <Button
+        variant={btnVariant}
+        size="sm"
+        onClick={handleSearch}
+        type="submit"
+      >
         <span className="d-flex gap-2">
           <i className="bi bi-search"></i> Search
         </span>

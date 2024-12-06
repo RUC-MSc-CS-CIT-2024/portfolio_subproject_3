@@ -119,7 +119,7 @@ export const fetchMedia = async ({
       title: media.title,
       type: media.type,
       imageUri: media.posterUri,
-      releaseYear: new Date(media.releaseDate).toLocaleDateString(),
+      releaseYear: new Date(media.releaseDate).getFullYear().toString(),
     }));
 
     return transformedResults;

@@ -1,24 +1,34 @@
-import { useParams } from 'react-router-dom';
-import { Container, Button } from 'react-bootstrap';
-import { PersonCard } from '@/components';
+import { useParams, useNavigate } from 'react-router-dom';
+import { PersonInformation } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById } from '@/services/personService';
+import { Container, Button } from 'react-bootstrap';
 import { createFollow } from '@/services/userService';
 import { useToast } from '@/hooks';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [person, setPerson] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const { showToastMessage } = useToast();
 
   useEffect(() => {
     const fetchPerson = async () => {
-      const personData = await fetchPersonById(id);
-      setPerson(personData);
+      try {
+        const personData = await fetchPersonById(id);
+        setPerson(personData);
+      } catch (error) {
+        console.error('Error fetching person:', error);
+        showToastMessage('Failed to fetch person details.', 'danger');
+        navigate('/persons');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchPerson();
-  }, [id]);
+  }, [id, navigate, showToastMessage]);
 
   // TODO: Include   "birthDate": "1979-01-01T00:00:00", & "deathDate": null,
 
@@ -33,13 +43,22 @@ export default function PersonDetailPage() {
   };
   return (
     <Container className="my-5">
-      <PersonCard
-        id={person.id}
+      <PersonInformation
+        pictureUri={person.pictureUri}
         name={person.name}
-        description={person.description}
-        imageUri={person.pictureUri}
-        nameRating={person.nameRating}
+        birthDate={person.birthDate}
+        deathDate={person.deathDate}
+        bio={person.description}
+        rating={person.nameRating}
+        score={person.score}
+        popularity={person.popularity}
+        alsoKnownAs={person.alsoKnownAs}
+        homepage={person.homepage}
+        placeOfBirth={person.placeOfBirth}
+        roles={person.knownForDepartment ? [person.knownForDepartment] : []}
+        isLoading={isLoading}
       />
+
       <Button
         variant="outline-dark"
         onClick={handleFollow}

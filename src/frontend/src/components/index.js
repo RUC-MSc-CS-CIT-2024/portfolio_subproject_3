@@ -27,3 +27,5 @@ export { default as MediaCardBadge } from './MediaCardBadge/MediaCardBadge';
 export { default as Rating } from './Rating/Rating';
 export { default as FilterMediaComponent } from './FilterMediaComponent/FilterMediaComponent';
 export { default as PersonInformation } from './PersonInformation/PersonInformation';
+export { default as PersonsCarousel } from './PersonsCarousel/PersonsCarousel';
+export { default as PersonsGrid } from './PersonsGrid/PersonsGrid';

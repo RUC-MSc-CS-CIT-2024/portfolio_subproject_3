@@ -125,6 +125,7 @@ export const createMarkAsCompleted = async ({
 };
 
 export const createFollow = async (personId) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -153,7 +154,7 @@ export const createFollow = async (personId) => {
 
 export const getCurrentUserFollowing = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -164,7 +165,7 @@ export const getCurrentUserFollowing = async (page, count) => {
   if (page) queryParams.push({ key: 'page', value: page });
   if (count) queryParams.push({ key: 'count', value: count });
 
-  const response = await apiClient.Get(path, queryParams);
+  const response = await api.Get(path, queryParams);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -182,7 +183,7 @@ export const getCurrentUserFollowing = async (page, count) => {
 
 export const getCurrentUserBookmarks = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -193,7 +194,7 @@ export const getCurrentUserBookmarks = async (page, count) => {
   if (page) queryParams.push({ key: 'page', value: page });
   if (count) queryParams.push({ key: 'count', value: count });
 
-  const response = await apiClient.Get(path, queryParams);
+  const response = await api.Get(path, queryParams);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -204,7 +205,7 @@ export const getCurrentUserBookmarks = async (page, count) => {
 
 export const getCurrentUserCompleted = async (page, count) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -215,7 +216,7 @@ export const getCurrentUserCompleted = async (page, count) => {
   if (page) queryParams.push({ key: 'page', value: page });
   if (count) queryParams.push({ key: 'count', value: count });
 
-  const response = await apiClient.Get(path, queryParams);
+  const response = await api.Get(path, queryParams);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -226,14 +227,14 @@ export const getCurrentUserCompleted = async (page, count) => {
 
 export const unfollowPerson = async (followingId) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
 
   const path = `users/${user.id}/following/${followingId}`;
-  const response = await apiClient.Delete(path);
+  const response = await api.Delete(path);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -244,14 +245,14 @@ export const unfollowPerson = async (followingId) => {
 
 export const removeBookmark = async (bookmarkId) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
 
   const path = `users/${user.id}/bookmarks/${bookmarkId}`;
-  const response = await apiClient.Delete(path);
+  const response = await api.Delete(path);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -267,7 +268,7 @@ export const markBookmarkAsCompleted = async (
   note,
 ) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -280,7 +281,7 @@ export const markBookmarkAsCompleted = async (
     note,
   };
 
-  const response = await apiClient.Post(path, data);
+  const response = await api.Post(path, data);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');
@@ -291,14 +292,14 @@ export const markBookmarkAsCompleted = async (
 
 export const removeCompletedItem = async (completedId) => {
   const user = getUserFromSession();
-  const apiClient = new ApiClient();
+  const api = new ApiClient();
 
   if (!user) {
     throw new Error('No user found in session');
   }
 
   const path = `users/${user.id}/completed/${completedId}`;
-  const response = await apiClient.Delete(path);
+  const response = await api.Delete(path);
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');

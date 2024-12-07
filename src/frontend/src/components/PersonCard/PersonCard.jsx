@@ -5,7 +5,7 @@ import './PersonCard.css';
 
 export default function PersonCard({
   id,
-  imageUri,
+  pictureUri,
   name,
   role,
   additionalInfo,
@@ -14,7 +14,7 @@ export default function PersonCard({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/person/${id}`);
+    navigate(`/persons/${id}`);
   };
 
   const defaultName = 'Unknown Name';
@@ -27,8 +27,8 @@ export default function PersonCard({
           <Placeholder as={Card.Img} className="personCard-img" />
         ) : (
           <div className="personCard-img">
-            {imageUri ? (
-              <Card.Img src={imageUri} className="personCard-img" rounded />
+            {pictureUri ? (
+              <Card.Img src={pictureUri} className="personCard-img" />
             ) : (
               <DefaultImage />
             )}

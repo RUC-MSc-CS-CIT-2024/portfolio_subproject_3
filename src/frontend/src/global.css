@@ -4,6 +4,29 @@
   padding-right: 0;
 }
 
+.carousel-control-prev,
+.carousel-control-next {
+  width: auto;
+  opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  background-color: rgba(0, 0, 0, 1);
+}
+
+.see-more-button.btn {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  color: black;
+}
+
 .action-col {
   width: 0;
 }

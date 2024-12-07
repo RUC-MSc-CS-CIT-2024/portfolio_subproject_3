@@ -1,16 +1,15 @@
 import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import { MediaCard } from '@/components';
-import { useMediaPerRow } from '@/hooks';
+import { useItemsPerRow } from '@/hooks';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './MediaCarousel.css';
 import { formatDate } from '@/utils/date';
 
 export default function MediaCarousel({ media, loading }) {
-  const mediaPerRow = useMediaPerRow();
+  const itemsPerRow = useItemsPerRow();
 
   const groupedMedia = [];
-  for (let i = 0; i < media.length; i += mediaPerRow) {
-    groupedMedia.push(media.slice(i, i + mediaPerRow));
+  for (let i = 0; i < media.length; i += itemsPerRow) {
+    groupedMedia.push(media.slice(i, i + itemsPerRow));
   }
 
   return (

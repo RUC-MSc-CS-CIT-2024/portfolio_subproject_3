@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { signUpUser } from '@/services/signUpService';
-import { useToast } from '@/hooks';
+import { useToast, useAuth } from '@/hooks';
+import { isEmailValid } from '@/utils/validation';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function SignUpPage() {
     password: '',
   });
   const { showToastMessage } = useToast();
+  const { refresh } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,20 +22,29 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password.length < 15) {
+      showToastMessage('Password must be at least 15 characters.', 'danger');
+      return;
+    }
+    if (!isEmailValid(formData.email)) {
+      showToastMessage('Invalid Email.', 'danger');
+      return;
+    }
     try {
-      await signUpUser(formData);
-      showToastMessage({
-        message: 'Sign-up successful! Redirecting to login...',
-        variant: 'success',
-      });
+      const refreshToken = await signUpUser(formData);
+      refresh(refreshToken);
+      showToastMessage(
+        'Sign-up successful! Redirecting to login...',
+        'success',
+      );
       setTimeout(() => {
-        navigate('/'); // TODO: This I basiclly think should redirect us to the home page instead of the login page. and just log us in automatically or we should redirect to the profile page.
+        navigate('/');
       }, 3000);
     } catch (error) {
-      showToastMessage({
-        message: error.message || 'Sign-up failed. Please try again.',
-        variant: 'danger',
-      });
+      showToastMessage(
+        error.message || 'Sign-up failed. Please try again.',
+        'danger',
+      );
     }
   };
 

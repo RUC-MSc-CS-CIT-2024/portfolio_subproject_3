@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useAsyncEffect = (asyncFunc, onCompletionFunc, deps) => {
+export default function useAsyncEffect(asyncFunc, onCompletionFunc, deps) {
   useEffect(() => {
     let isMounted = true;
     (async () => {
@@ -14,4 +14,4 @@ export const useAsyncEffect = (asyncFunc, onCompletionFunc, deps) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps]);
-};
+}

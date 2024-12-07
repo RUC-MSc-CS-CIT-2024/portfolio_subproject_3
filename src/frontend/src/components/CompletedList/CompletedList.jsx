@@ -61,7 +61,7 @@ export default function CompletedList({ items }) {
   if (rows.length === 0) {
     rows = (
       <tr>
-        <td colSpan={7} height={100} className="text-center align-middle">
+        <td colSpan={6} height={100} className="text-center align-middle">
           It looks like you haven&apos;t completed anything yet. Use the search
           bar to find media you have completed and mark them as so!
         </td>

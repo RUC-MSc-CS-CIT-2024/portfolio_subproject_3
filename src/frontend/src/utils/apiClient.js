@@ -54,6 +54,7 @@ export class ApiClient {
 
   async Get(path, params) {
     const requestUrl = this.#_getUrl(path, params);
+    console.log('requestUrl:', requestUrl);
     const response = await fetch(requestUrl, this.#request);
     const returnResp = new ApiResponse(response.status);
     if (response.ok) {

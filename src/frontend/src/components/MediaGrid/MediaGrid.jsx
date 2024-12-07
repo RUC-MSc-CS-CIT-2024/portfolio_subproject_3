@@ -31,10 +31,10 @@ export default function MediaGrid({ media, loading, onShowMore }) {
           >
             <MediaCard
               id={media.id}
-              imageUri={media.imageUri}
+              imageUri={media.posterUri}
               type={media.type}
               title={media.title}
-              releaseYear={media.releaseYear}
+              releaseYear={new Date(media.releaseDate).getFullYear().toString()}
               isLoading={loading}
             />
             {index === firstRowMedia.length - 1 &&
@@ -63,11 +63,13 @@ export default function MediaGrid({ media, loading, onShowMore }) {
               className="position-relative"
             >
               <MediaCard
-                id={media.mediaId}
-                imageUri={media.imageUri}
+                id={media.id}
+                imageUri={media.posterUri}
                 type={media.type}
                 title={media.title}
-                releaseYear={media.releaseYear}
+                releaseYear={new Date(media.releaseDate)
+                  .getFullYear()
+                  .toString()}
                 isLoading={loading}
               />
             </Col>

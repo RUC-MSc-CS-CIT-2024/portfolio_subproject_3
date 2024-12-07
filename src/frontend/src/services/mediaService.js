@@ -87,8 +87,8 @@ export const fetchReleases = async (id) => {
 };
 
 export const fetchMedia = async ({
-  page = 1,
-  pageCount = 18,
+  page,
+  pageCount,
   query = '',
   queryType = 'All',
 }) => {
@@ -107,17 +107,9 @@ export const fetchMedia = async ({
       throw new Error(`Failed to fetch media: ${response.statusCode}`);
     }
 
-    console.log('response:', response);
+    console.log('response:', response.value);
 
-    const transformedResults = response.value.map((media) => ({
-      id: media.id,
-      title: media.title,
-      type: media.type,
-      imageUri: media.posterUri,
-      releaseYear: new Date(media.releaseDate).getFullYear().toString(),
-    }));
-
-    return transformedResults;
+    return response.value;
   } catch (error) {
     console.error('Error fetching media:', error);
     throw error;

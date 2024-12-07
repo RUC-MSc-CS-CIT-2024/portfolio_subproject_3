@@ -28,6 +28,7 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
+    setLoading(true);
     const searchQuery = new URLSearchParams(location.search).get('q');
     if (!searchQuery) return;
     const queryType = location.search ? 'Simple' : 'All';

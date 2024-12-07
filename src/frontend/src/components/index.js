@@ -29,4 +29,3 @@ export { default as FilterMediaComponent } from './FilterMediaComponent/FilterMe
 export { default as PersonInformation } from './PersonInformation/PersonInformation';
 export { default as PersonsCarousel } from './PersonsCarousel/PersonsCarousel';
 export { default as PersonsGrid } from './PersonsGrid/PersonsGrid';
-export { default as FilterMediaComponent } from './FilterMediaComponent/FilterMediaComponent';

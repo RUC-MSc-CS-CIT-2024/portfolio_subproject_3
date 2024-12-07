@@ -5,7 +5,7 @@ import './PersonCard.css';
 
 export default function PersonCard({
   id,
-  imageUri,
+  pictureUri,
   name,
   role,
   additionalInfo,
@@ -27,8 +27,8 @@ export default function PersonCard({
           <Placeholder as={Card.Img} className="personCard-img" />
         ) : (
           <div className="personCard-img">
-            {imageUri ? (
-              <Card.Img src={imageUri} className="personCard-img" />
+            {pictureUri ? (
+              <Card.Img src={pictureUri} className="personCard-img" />
             ) : (
               <DefaultImage />
             )}

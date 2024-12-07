@@ -1,12 +1,13 @@
 import { ApiClient } from '@/utils/apiClient';
-import { getTMDBImage, ImageSize } from './tmdbService';
+import { getTMDBImage, ImageSize, fetchPersonTMDB } from './tmdbService';
 
-const api = new ApiClient();
 const BASE_PATH = '/api/persons/';
 
-const enhancePersonWithImage = async (person) => {
+const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   try {
-    person.pictureUri = await getTMDBImage(person.imdbId, ImageSize.VerySmall);
+    const { imageUrl } = await getTMDBImage(person.imdbId, imgSize);
+    person.pictureUri = imageUrl;
+    console.log('Picture was found for person: ', person);
   } catch (error) {
     console.error(
       `Failed to fetch image for person with ID ${person.imdbId}:`,
@@ -15,11 +16,11 @@ const enhancePersonWithImage = async (person) => {
     person.pictureUri = null;
     console.log('No pictureUri for person: ', person);
   }
-  console.log('Picture were found for person: ', person);
   return person;
 };
 
 export const fetchPersons = async (page, count) => {
+  const api = new ApiClient();
   try {
     const queryParams = [];
     if (page) queryParams.push({ key: 'page', value: page });
@@ -32,9 +33,11 @@ export const fetchPersons = async (page, count) => {
     }
 
     const persons = response.value.items;
-    await Promise.all(persons.map(enhancePersonWithImage));
+    const enhancedPersons = await Promise.all(
+      persons.map((person) => enhancePersonWithImage(person)),
+    );
 
-    return persons;
+    return enhancedPersons;
   } catch (error) {
     console.error('Error fetching persons:', error);
     throw error;
@@ -42,14 +45,30 @@ export const fetchPersons = async (page, count) => {
 };
 
 export const fetchPersonById = async (id) => {
+  const api = new ApiClient();
   try {
-    const response = await api.Get(`${BASE_PATH}${id}`);
-
+    let response = await api.Get(`${BASE_PATH}${id}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch person with ID ${id}.`);
     }
 
-    return await enhancePersonWithImage(response.value);
+    let imageUrl = null;
+    let tmdbId = null;
+
+    try {
+      const imageResponse = await getTMDBImage(
+        response.value.imdbId,
+        ImageSize.Normal,
+      );
+      imageUrl = imageResponse.imageUrl;
+      tmdbId = imageResponse.tmdbId;
+    } catch (imageError) {
+      console.error(`No image found for person with ID ${id}:`, imageError);
+    }
+
+    response.value.pictureUri = imageUrl;
+    const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
+    return mergePersonData({ ...response.value, tmdbId }, tmdbData);
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
     throw error;
@@ -57,6 +76,7 @@ export const fetchPersonById = async (id) => {
 };
 
 export const fetchPersonMedia = async (id) => {
+  const api = new ApiClient();
   try {
     const response = await api.Get(`${BASE_PATH}${id}/media`);
 
@@ -72,6 +92,7 @@ export const fetchPersonMedia = async (id) => {
 };
 
 export const fetchPersonCoactors = async (id) => {
+  const api = new ApiClient();
   try {
     const response = await api.Get(`${BASE_PATH}${id}/coactors`);
 
@@ -98,3 +119,33 @@ export const fetchPersonCoactors = async (id) => {
     throw error;
   }
 };
+
+function mergePersonData(originalData, tmdbData) {
+  return {
+    id: originalData.id || tmdbData.id,
+    tmdbId: originalData.tmdbId || tmdbData.id,
+    name: tmdbData.name || originalData.name,
+    description: tmdbData.biography || originalData.description,
+    score: originalData.score,
+    nameRating: originalData.nameRating,
+    birthDate: tmdbData.birthday || originalData.birthDate,
+    deathDate: tmdbData.deathday || originalData.deathDate,
+    imdbId: originalData.imdbId || tmdbData.imdb_id,
+    links: originalData.links,
+    pictureUri:
+      originalData.pictureUri ||
+      (tmdbData.profile_path
+        ? `https://image.tmdb.org/t/p/w500${tmdbData.profile_path}`
+        : null),
+    alsoKnownAs: Array.from(
+      new Set([
+        ...(originalData.alsoKnownAs || []),
+        ...(tmdbData.also_known_as || []),
+      ]),
+    ),
+    homepage: tmdbData.homepage || null,
+    placeOfBirth: tmdbData.place_of_birth || null,
+    popularity: tmdbData.popularity || null,
+    knownForDepartment: tmdbData.known_for_department || null,
+  };
+}

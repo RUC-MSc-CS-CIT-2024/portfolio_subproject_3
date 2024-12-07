@@ -1,8 +1,7 @@
 import { ApiClient } from '@/utils/apiClient';
 
-const api = new ApiClient();
-
 export const fetchMediaById = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}`;
   try {
     const response = await api.Get(path);
@@ -17,6 +16,7 @@ export const fetchMediaById = async (id) => {
 };
 
 export const fetchTitles = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}/titles`;
   try {
     const response = await api.Get(path);
@@ -31,6 +31,7 @@ export const fetchTitles = async (id) => {
 };
 
 export const fetchMediaCrew = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}/crew`;
   try {
     const response = await api.Get(path);
@@ -45,6 +46,7 @@ export const fetchMediaCrew = async (id) => {
 };
 
 export const fetchMediaCast = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}/cast`;
   try {
     const response = await api.Get(path);
@@ -59,6 +61,7 @@ export const fetchMediaCast = async (id) => {
 };
 
 export const fetchSimilarMedia = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}/similar_media`;
   try {
     const response = await api.Get(path);
@@ -73,6 +76,7 @@ export const fetchSimilarMedia = async (id) => {
 };
 
 export const fetchReleases = async (id) => {
+  const api = new ApiClient();
   const path = `/api/media/${id}/releases`;
   try {
     const response = await api.Get(path);
@@ -92,6 +96,7 @@ export const fetchMedia = async ({
   query = '',
   queryType = 'All',
 }) => {
+  const api = new ApiClient();
   const queryParams = [
     { key: 'Page.page', value: page },
     { key: 'Page.count', value: pageCount },
@@ -114,7 +119,7 @@ export const fetchMedia = async ({
       title: media.title,
       type: media.type,
       imageUri: media.posterUri,
-      releaseYear: new Date(media.releaseDate).toLocaleDateString(),
+      releaseYear: new Date(media.releaseDate).getFullYear().toString(),
     }));
 
     return transformedResults;

@@ -26,7 +26,7 @@ export default function PersonsGrid({ persons, loading }) {
           >
             <PersonCard
               id={person.id}
-              imageUri={person.pictureUri}
+              pictureUri={person.pictureUri}
               name={person.name}
               role={person.role}
               additionalInfo={person.additionalInfo}
@@ -59,7 +59,7 @@ export default function PersonsGrid({ persons, loading }) {
             >
               <PersonCard
                 id={person.id}
-                imageUri={person.pictureUri}
+                pictureUri={person.pictureUri}
                 name={person.name}
                 role={person.role}
                 additionalInfo={person.additionalInfo}

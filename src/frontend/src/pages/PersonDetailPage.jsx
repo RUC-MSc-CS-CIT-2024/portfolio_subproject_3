@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { PersonCard, PersonsCarousel } from '@/components';
+import { PersonsCarousel, PersonInformation } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById, fetchPersonCoactors } from '@/services/personService';
 import { createFollow } from '@/services/userService';
@@ -25,6 +25,7 @@ export default function PersonDetailPage() {
       } catch {
         showToastMessage('Error getting the person.', 'danger');
         setLoadingPerson(false);
+        navigate('/persons');
       }
     };
 
@@ -37,15 +38,15 @@ export default function PersonDetailPage() {
         setLoadingCoActors(true);
         const coActorsData = await fetchPersonCoactors(id);
         setCoActors(coActorsData);
-        setLoadingCoActors(false);
       } catch {
         showToastMessage('Error getting the co-actors.', 'danger');
+      } finally {
         setLoadingCoActors(false);
       }
     };
 
     loadCoActors();
-  }, [id, showToastMessage]);
+  }, [id]);
 
   useEffect(() => {
     if (!loadingPerson && !person) {
@@ -62,17 +63,26 @@ export default function PersonDetailPage() {
       showToastMessage('Error following the person', 'danger');
     }
   };
+
   return (
     <Container className="my-5">
       <Row className="mt-5">
-        <Col xs={12} md={3}>
-          {/*  the person card should be removed, and the information module should be inserted*/}
-          <PersonCard
-            id={person?.id}
+        <Col md={12}>
+          <PersonInformation
+            pictureUri={person?.pictureUri}
             name={person?.name}
-            description={person?.description}
-            imageUri={person?.pictureUri}
-            nameRating={person?.nameRating}
+            birthDate={person?.birthDate}
+            deathDate={person?.deathDate}
+            bio={person?.description}
+            rating={person?.nameRating}
+            score={person?.score}
+            popularity={person?.popularity}
+            alsoKnownAs={person?.alsoKnownAs}
+            homepage={person?.homepage}
+            placeOfBirth={person?.placeOfBirth}
+            roles={
+              person?.knownForDepartment ? [person?.knownForDepartment] : []
+            }
             isLoading={loadingPerson}
           />
         </Col>
@@ -106,7 +116,7 @@ export default function PersonDetailPage() {
                 name: actor.actorName,
                 additionalInfo: `${actor.frequency} appearances together with ${person.name}`,
                 role: `${actor.nameRating} rating`,
-                imageUri: actor.pictureUri,
+                imageUri: actor?.pictureUri,
                 id: actor.id,
               }))}
               loading={loadingCoActors}

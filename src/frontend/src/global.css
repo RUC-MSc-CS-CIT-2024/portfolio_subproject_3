@@ -26,3 +26,11 @@
   right: 0;
   color: black;
 }
+
+.action-col {
+  width: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

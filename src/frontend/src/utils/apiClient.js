@@ -60,28 +60,28 @@ export class ApiClient {
     if (response.ok) {
       try {
         returnResp.value = await response.json();
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
+      } catch {} // eslint-disable-line no-empty
     }
     return returnResp;
   }
 
-  async Post(path, data) {
+  async Post(path, data, params) {
     const req = {
       ...this.#request,
-      body: JSON.stringify(data),
       method: 'POST',
     };
-    const requestUrl = this.#_getUrl(path);
+
+    if (data !== undefined) {
+      req.body = JSON.stringify(data);
+    }
+
+    const requestUrl = this.#_getUrl(path, params);
     const response = await fetch(requestUrl, req);
     const returnResp = new ApiResponse(response.status);
     if (response.ok) {
       try {
         returnResp.value = await response.json();
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
+      } catch {} // eslint-disable-line no-empty
     }
     return returnResp;
   }
@@ -98,9 +98,7 @@ export class ApiClient {
     if (response.ok) {
       try {
         returnResp.value = await response.json();
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
+      } catch {} // eslint-disable-line no-empty
     }
     return returnResp;
   }
@@ -112,9 +110,12 @@ export class ApiClient {
     };
     const requestUrl = this.#_getUrl(path);
     const response = await fetch(requestUrl, req);
-    return new ApiResponse(
-      response.status,
-      response.ok ? await response.json() : null,
-    );
+    const returnResp = new ApiResponse(response.status);
+    if (response.ok) {
+      try {
+        returnResp.value = await response.json();
+      } catch {} // eslint-disable-line no-empty
+    }
+    return returnResp;
   }
 }

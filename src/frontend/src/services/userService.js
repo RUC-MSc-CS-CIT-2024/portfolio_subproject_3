@@ -2,9 +2,8 @@ import { getUserFromSession } from '@/utils/getUserFromSession';
 import { ApiClient } from '@/utils/apiClient';
 import { getTMDBImage, ImageSize } from './tmdbService';
 
-const api = new ApiClient();
-
 export const updateUserById = async (data) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -27,6 +26,7 @@ export const updateUserById = async (data) => {
 };
 
 export const deleteUserById = async () => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -47,6 +47,7 @@ export const deleteUserById = async () => {
 };
 
 export const createBookmark = async (bookmarkData) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -68,6 +69,7 @@ export const createBookmark = async (bookmarkData) => {
 };
 
 export const createScore = async ({ mediaId, score, reviewText }) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -93,6 +95,7 @@ export const createMarkAsCompleted = async ({
   rewatchability,
   note,
 }) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');

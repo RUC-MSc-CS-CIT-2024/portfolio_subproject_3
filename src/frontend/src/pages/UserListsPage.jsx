@@ -1,7 +1,7 @@
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useState } from 'react';
 import { FollowingList, BookmarkList, CompletedList } from '@/components';
-import { useAsyncEffect } from '@/hooks/useAsyncEffect';
+import { useAsyncEffect } from '@/hooks';
 import {
   getCurrentUserBookmarks,
   getCurrentUserCompleted,

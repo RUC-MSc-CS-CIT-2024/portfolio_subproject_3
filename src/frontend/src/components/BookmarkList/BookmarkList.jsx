@@ -29,7 +29,7 @@ export default function BookmarkList({ items }) {
   if (rows.length === 0) {
     rows = (
       <tr>
-        <td colSpan={3} height={100} className="text-center align-middle">
+        <td colSpan={7} height={100} className="text-center align-middle">
           It looks like you haven&apos;t bookmarked anything yet. Use the search
           bar to find media to bookmark!
         </td>

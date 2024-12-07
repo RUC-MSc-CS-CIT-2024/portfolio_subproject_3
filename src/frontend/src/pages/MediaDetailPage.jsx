@@ -59,11 +59,13 @@ export default function MediaDetailPage() {
   const [releases, setReleases] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [loadingSimilarMedia, setLoadingSimilarMedia] = useState(true);
   const { showToastMessage } = useToast();
 
   useEffect(() => {
     const loadMedia = async () => {
       try {
+        setLoading(true);
         const mediaData = await fetchMediaById(mediaId);
         setMediaData(mediaData);
         const titlesData = await fetchTitles(mediaId);
@@ -72,8 +74,6 @@ export default function MediaDetailPage() {
         setCrew(crewData);
         //const castData = await fetchMediaCast(mediaId);
         //setCast(castData);
-        const similarMediaData = await fetchSimilarMedia(mediaId);
-        setSimilarMedia(similarMediaData.items);
         const releasesData = await fetchReleases(mediaId);
         setReleases(releasesData.items);
       } catch {
@@ -84,6 +84,22 @@ export default function MediaDetailPage() {
     };
 
     loadMedia();
+  }, [mediaId, showToastMessage]);
+
+  useEffect(() => {
+    const loadSimilarMedia = async () => {
+      try {
+        setLoadingSimilarMedia(true);
+        const similarMediaData = await fetchSimilarMedia(mediaId);
+        setSimilarMedia(similarMediaData.items);
+      } catch {
+        showToastMessage('Error getting similar media.', 'danger');
+      } finally {
+        setLoadingSimilarMedia(false);
+      }
+    };
+
+    loadSimilarMedia();
   }, [mediaId, showToastMessage]);
 
   useEffect(() => {
@@ -136,7 +152,7 @@ export default function MediaDetailPage() {
       <Row className="mt-5">
         <Col>
           <h5> Similar Media </h5>
-          <MediaCarousel media={similarMedia} loading={loading} />
+          <MediaCarousel media={similarMedia} loading={loadingSimilarMedia} />
         </Col>
       </Row>
       <Row className="mt-5">

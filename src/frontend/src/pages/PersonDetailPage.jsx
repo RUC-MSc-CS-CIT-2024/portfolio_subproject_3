@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { PersonsCarousel, PersonInformation } from '@/components';
+import { PersonsCarousel, PersonInformation, CreditsList } from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById, fetchPersonCoactors } from '@/services/personService';
 import { createFollow } from '@/services/userService';
@@ -104,6 +104,7 @@ export default function PersonDetailPage() {
       <Row className="mt-5">
         <Col>
           <h5>Credits</h5>
+          <CreditsList items={person?.knownForMedia} />
         </Col>
       </Row>
       <Row className="mt-5">

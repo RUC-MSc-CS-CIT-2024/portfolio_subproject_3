@@ -125,6 +125,7 @@ export const createMarkAsCompleted = async ({
 };
 
 export const createFollow = async (personId) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');

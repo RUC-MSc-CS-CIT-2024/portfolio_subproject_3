@@ -26,3 +26,30 @@
   right: 0;
   color: black;
 }
+
+.action-col {
+  width: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.responsive-img {
+  height: 68px;
+}
+
+@media (max-width: 768px) {
+  .responsive-img {
+    height: 50px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table th,
+  .table td {
+    white-space: nowrap;
+  }
+}

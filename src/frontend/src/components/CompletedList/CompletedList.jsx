@@ -34,7 +34,11 @@ export default function CompletedList({ items }) {
     return (
       <tr key={`${item.media.id}-${index}`}>
         <td>
-          <img className="mx-2" src={item.media.posterUri} height={68} />
+          <img
+            className="mx-2 responsive-img"
+            src={item.media.posterUri}
+            height={68}
+          />
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
@@ -70,19 +74,21 @@ export default function CompletedList({ items }) {
   }
 
   return (
-    <Table hover>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Type</th>
-          <th>Completed Date</th>
-          <th>Rewatchability</th>
-          <th>Score</th>
-          <th>Review Text</th>
-          <th className="action-col"></th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <div className="table-responsive">
+      <Table hover>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Completed Date</th>
+            <th>Rewatchability</th>
+            <th>Score</th>
+            <th>Review Text</th>
+            <th className="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    </div>
   );
 }

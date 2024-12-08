@@ -30,8 +30,8 @@ export default function FollowingList({ items }) {
   let rows = following.map((item) => (
     <tr key={item.followingId}>
       <td>
-        <img className="mx-2" src={item.pictureUri} height={68} />
-        <Link to={`/person/${item.person.id}`}>{item.person.name}</Link>
+        <img className="mx-2 responsive-img" src={item?.pictureUri?.imageUrl} />
+        <Link to={`/persons/${item.person.id}`}>{item.person.name}</Link>
       </td>
       <td className="align-middle">{formatDate(item.followedSince)}</td>
       <td className="align-middle">
@@ -59,15 +59,17 @@ export default function FollowingList({ items }) {
   }
 
   return (
-    <Table hover>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th className="w-25">Follow date</th>
-          <th className="action-col"></th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <div className="table-responsive">
+      <Table hover>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th className="w-25">Follow date</th>
+            <th className="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    </div>
   );
 }

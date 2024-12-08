@@ -64,12 +64,15 @@ export default function BookmarkList({ items }) {
     setExpandedRow(expandedRow === bookmarkId ? null : bookmarkId);
   };
 
-  console.log('bookmarks', bookmarks);
   let rows = bookmarks.map((item) => (
     <React.Fragment key={item.bookmarkId}>
       <tr>
         <td>
-          <img className="mx-2" src={item.media.posterUri} height={68} />
+          <img
+            className="mx-2 responsive-img"
+            src={item.media.posterUri}
+            height={68}
+          />
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
@@ -154,19 +157,21 @@ export default function BookmarkList({ items }) {
   }
 
   return (
-    <Table hover>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Type</th>
-          <th>Release Date</th>
-          <th>Age Rating</th>
-          <th>Runtime</th>
-          <th>Note</th>
-          <th className="action-col"></th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <div className="table-responsive">
+      <Table hover>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Release Date</th>
+            <th>Age Rating</th>
+            <th>Runtime</th>
+            <th>Note</th>
+            <th className="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
-import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
-import { MediaCard } from '@/components';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useItemsPerRow } from '@/hooks';
+import { MediaCard } from '@/components';
+import './MediaGrid.css';
 
 export default function MediaGrid({ media, loading }) {
   const [showMore, setShowMore] = useState(false);

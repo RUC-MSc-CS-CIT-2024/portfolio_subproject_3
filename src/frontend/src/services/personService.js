@@ -1,5 +1,5 @@
-import { ApiClient } from '@/utils/apiClient';
-import { getTMDBImage, ImageSize, fetchPersonTMDB } from './tmdbService';
+import { getTMDBImage, ImageSize, fetchPersonTMDB } from '@/services';
+import { ApiClient } from '@/utils';
 
 const BASE_PATH = '/api/persons/';
 

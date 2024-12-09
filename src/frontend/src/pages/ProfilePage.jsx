@@ -1,13 +1,13 @@
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { updateUserById, deleteUserById } from '@/services/userService';
 import { useAuth, useToast } from '@/hooks';
+import { updateUserById, deleteUserById } from '@/services';
+import { getUserFromSession } from '@/utils';
 import {
   UpdateProfileForm,
   ToastNotification,
   DynamicBreadcrumb,
 } from '@/components';
-import { useState, useEffect } from 'react';
-import { getUserFromSession } from '@/utils/getUserFromSession';
 
 export default function ProfilePage() {
   const { logout, refresh } = useAuth();

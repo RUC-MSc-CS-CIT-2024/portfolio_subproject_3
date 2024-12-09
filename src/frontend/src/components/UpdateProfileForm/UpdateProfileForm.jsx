@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { isEmailValid } from '@/utils/validation';
 import { useToast } from '@/hooks';
+import { isEmailValid } from '@/utils';
 
 export default function UpdateProfileForm({ onSubmit, initialData }) {
   const [username, setUsername] = useState('');

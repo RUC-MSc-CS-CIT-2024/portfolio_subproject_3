@@ -3,9 +3,11 @@ import { ApiClient } from '@/utils';
 
 const BASE_PATH = '/api/persons/';
 
-const enhancePersonWithImage = async (person, imgSize = ImageSize) => {
+const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   try {
-    person.pictureUri = await getTMDBImage(person.imdbId, imgSize);
+    const { imageUrl } = await getTMDBImage(person.imdbId, imgSize);
+    person.pictureUri = imageUrl;
+    console.log('Picture was found for person: ', person);
   } catch (error) {
     console.error(
       `Failed to fetch image for person with ID ${person.imdbId}:`,
@@ -14,7 +16,6 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize) => {
     person.pictureUri = null;
     console.log('No pictureUri for person: ', person);
   }
-  console.log('Picture were found for person: ', person);
   return person;
 };
 
@@ -32,9 +33,11 @@ export const fetchPersons = async (page, count) => {
     }
 
     const persons = response.value.items;
-    await Promise.all(persons.map(enhancePersonWithImage));
+    const enhancedPersons = await Promise.all(
+      persons.map((person) => enhancePersonWithImage(person)),
+    );
 
-    return persons;
+    return enhancedPersons;
   } catch (error) {
     console.error('Error fetching persons:', error);
     throw error;
@@ -48,12 +51,23 @@ export const fetchPersonById = async (id) => {
     if (!response.ok) {
       throw new Error(`Failed to fetch person with ID ${id}.`);
     }
-    const { imageUrl, tmdbId } = await getTMDBImage(
-      response.value.imdbId,
-      ImageSize.Normal,
-    );
+
+    let imageUrl = null;
+    let tmdbId = null;
+
+    try {
+      const imageResponse = await getTMDBImage(
+        response.value.imdbId,
+        ImageSize.Normal,
+      );
+      imageUrl = imageResponse.imageUrl;
+      tmdbId = imageResponse.tmdbId;
+    } catch (imageError) {
+      console.error(`No image found for person with ID ${id}:`, imageError);
+    }
+
     response.value.pictureUri = imageUrl;
-    const tmdbData = await fetchPersonTMDB(tmdbId);
+    const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
     return mergePersonData({ ...response.value, tmdbId }, tmdbData);
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
@@ -86,10 +100,20 @@ export const fetchPersonCoactors = async (id) => {
       throw new Error(`Failed to fetch coactors for person with ID ${id}.`);
     }
 
-    const coactors = response.value.items;
-    await Promise.all(coactors.map(enhancePersonWithImage));
+    const coactors = response.value?.items || [];
 
-    return coactors;
+    const detailedCoactors = await Promise.all(
+      coactors.map(async (coactor) => {
+        const coactorData = await fetchPersonById(coactor.id);
+        return {
+          ...coactor,
+          ...coactorData,
+          name: coactor.actorName || coactorData.name,
+          id: coactorData.id,
+        };
+      }),
+    );
+    return detailedCoactors;
   } catch (error) {
     console.error(`Error fetching coactors for ID (${id}):`, error);
     throw error;
@@ -110,7 +134,9 @@ function mergePersonData(originalData, tmdbData) {
     links: originalData.links,
     pictureUri:
       originalData.pictureUri ||
-      `https://image.tmdb.org/t/p/w500${tmdbData.profile_path}`,
+      (tmdbData.profile_path
+        ? `https://image.tmdb.org/t/p/w500${tmdbData.profile_path}`
+        : null),
     alsoKnownAs: Array.from(
       new Set([
         ...(originalData.alsoKnownAs || []),

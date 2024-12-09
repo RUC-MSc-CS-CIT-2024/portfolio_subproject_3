@@ -22,6 +22,10 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
     if (username) updatedData.username = username;
     if (email) updatedData.email = email;
     if (password) updatedData.password = password;
+    if (password.length < 15) {
+      showToastMessage('Password must be at least 15 characters.', 'danger');
+      return;
+    }
     if (!isEmailValid(email)) {
       showToastMessage('Invalid Email.', 'danger');
       return;

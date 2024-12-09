@@ -1,20 +1,20 @@
-import { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useState } from 'react';
+import { PersonCard } from '@/components';
 import { useItemsPerRow } from '@/hooks';
-import { MediaCard } from '@/components';
-import './MediaGrid.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function MediaGrid({ media, loading }) {
+export default function PersonsGrid({ persons, loading }) {
   const [showMore, setShowMore] = useState(false);
   const itemsPerRow = useItemsPerRow();
 
-  const firstRowMedia = media.slice(0, itemsPerRow);
-  const remainingMedia = media.slice(itemsPerRow);
+  const firstRowPersons = persons.slice(0, itemsPerRow);
+  const remainingPersons = persons.slice(itemsPerRow);
 
   return (
-    <Container fluid className="container-layout ">
+    <Container fluid className="container-layout">
       <Row>
-        {firstRowMedia.map((media, index) => (
+        {firstRowPersons.map((person, index) => (
           <Col
             key={index}
             xs={12}
@@ -24,16 +24,16 @@ export default function MediaGrid({ media, loading }) {
             xl={2}
             className="position-relative"
           >
-            <MediaCard
-              id={media.id}
-              imageUri={media.imageUri}
-              type={media.type}
-              title={media.title}
-              releaseYear={media.releaseYear}
+            <PersonCard
+              id={person.id}
+              pictureUri={person.pictureUri}
+              name={person.name}
+              role={person.role}
+              additionalInfo={person.additionalInfo}
               isLoading={loading}
             />
-            {index === firstRowMedia.length - 1 &&
-              remainingMedia.length > 0 && (
+            {index === firstRowPersons.length - 1 &&
+              remainingPersons.length > 0 && (
                 <Button
                   variant="link"
                   onClick={() => setShowMore(!showMore)}
@@ -47,7 +47,7 @@ export default function MediaGrid({ media, loading }) {
       </Row>
       {showMore && (
         <Row>
-          {remainingMedia.map((media, index) => (
+          {remainingPersons.map((person, index) => (
             <Col
               key={index}
               xs={12}
@@ -57,12 +57,12 @@ export default function MediaGrid({ media, loading }) {
               xl={2}
               className="position-relative"
             >
-              <MediaCard
-                id={media.mediaId}
-                imageUri={media.imageUri}
-                type={media.type}
-                title={media.title}
-                releaseYear={media.releaseYear}
+              <PersonCard
+                id={person.id}
+                pictureUri={person.pictureUri}
+                name={person.name}
+                role={person.role}
+                additionalInfo={person.additionalInfo}
                 isLoading={loading}
               />
             </Col>

@@ -1,7 +1,7 @@
+import { Link } from 'react-router-dom';
 import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './FollowingList.css';
-import { Link } from 'react-router-dom';
 
 export default function FollowingList({ items }) {
   let rows = items.map((item) => (

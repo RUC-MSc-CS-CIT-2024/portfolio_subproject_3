@@ -7,8 +7,8 @@ import {
   Placeholder,
   Button,
 } from 'react-bootstrap';
+import { formatDate } from '@/utils';
 import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
-import { formatDate } from '@/utils/date';
 import './PersonInformation.css';
 
 export default function PersonInformation({

@@ -34,7 +34,7 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
         setSearchHistory((prevHistory) => [...prevHistory, ...history.items]);
       }
       setHasMoreItems(history.nextPage !== null);
-    } catch (error) {
+    } catch {
       console.error('Error getting the search history, you may need to log in');
     }
   };

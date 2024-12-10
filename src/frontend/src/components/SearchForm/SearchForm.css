@@ -1,0 +1,10 @@
+.search-form-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  width: 100%;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+}

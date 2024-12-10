@@ -54,6 +54,7 @@ export const fetchPersonById = async (id) => {
 
     let imageUrl = null;
     let tmdbId = null;
+    let knownFor = [];
 
     try {
       const imageResponse = await getTMDBImage(
@@ -62,24 +63,54 @@ export const fetchPersonById = async (id) => {
       );
       imageUrl = imageResponse.imageUrl;
       tmdbId = imageResponse.tmdbId;
+      knownFor = imageResponse.knownFor;
     } catch (imageError) {
       console.error(`No image found for person with ID ${id}:`, imageError);
     }
 
     response.value.pictureUri = imageUrl;
     const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
-    return mergePersonData({ ...response.value, tmdbId }, tmdbData);
+
+    // Map the known_for movie data
+    const knownForMedia = knownFor.map((media) => ({
+      id: media.id,
+      title: media.title,
+      backdropPath: media.backdrop_path,
+      originalTitle: media.original_title,
+      overview: media.overview,
+      posterPath: media.poster_path,
+      mediaType: media.media_type,
+      adult: media.adult,
+      originalLanguage: media.original_language,
+      genreIds: media.genre_ids,
+      popularity: media.popularity,
+      releaseDate: media.release_date,
+      video: media.video,
+      voteAverage: media.vote_average,
+      voteCount: media.vote_count,
+    }));
+
+    return mergePersonData(
+      { ...response.value, tmdbId, knownForMedia },
+      tmdbData,
+    );
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
     throw error;
   }
 };
 
-export const fetchPersonMedia = async (id) => {
+export const fetchPersonMedia = async (id, page, count) => {
   const api = new ApiClient();
-  try {
-    const response = await api.Get(`${BASE_PATH}${id}/media`);
+  const queryParams = new URLSearchParams();
 
+  if (page) queryParams.append('page', page);
+  if (count) queryParams.append('count', count);
+
+  try {
+    const response = await api.Get(
+      `${BASE_PATH}${id}/media?${queryParams.toString()}`,
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch media for person with ID ${id}.`);
     }
@@ -147,5 +178,25 @@ function mergePersonData(originalData, tmdbData) {
     placeOfBirth: tmdbData.place_of_birth || null,
     popularity: tmdbData.popularity || null,
     knownForDepartment: tmdbData.known_for_department || null,
+    knownForMedia:
+      originalData.knownForMedia ||
+      tmdbData.known_for?.map((media) => ({
+        id: media.id,
+        title: media.title,
+        backdropPath: media.backdrop_path,
+        originalTitle: media.original_title,
+        overview: media.overview,
+        posterPath: media.poster_path,
+        mediaType: media.media_type,
+        adult: media.adult,
+        originalLanguage: media.original_language,
+        genreIds: media.genre_ids,
+        popularity: media.popularity,
+        releaseDate: media.release_date,
+        video: media.video,
+        voteAverage: media.vote_average,
+        voteCount: media.vote_count,
+      })) ||
+      [],
   };
 }

@@ -1,10 +1,10 @@
 import { Container, Col, Row } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import {
   BackgroundContainer,
   SearchForm,
   ToastNotification,
 } from '@/components';
-import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {
   const navigate = useNavigate();

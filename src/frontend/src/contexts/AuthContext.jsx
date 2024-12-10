@@ -6,12 +6,9 @@ import {
   useCallback,
   useRef,
 } from 'react';
-import {
-  authenticate,
-  refreshToken as refreshTokenService,
-} from '@/services/authService';
-import { getCookie, deleteCookie, setCookie } from '@/utils/cookie';
 import { jwtDecode } from 'jwt-decode';
+import { authenticate, refreshToken as refreshTokenService } from '@/services';
+import { getCookie, deleteCookie, setCookie } from '@/utils';
 
 export const AuthContext = createContext();
 

@@ -8,13 +8,13 @@ import {
   MediaCard,
 } from '@/components';
 import { useState, useEffect, useCallback } from 'react';
+import { useToast } from '@/hooks';
 import {
+  createFollow,
   fetchPersonById,
   fetchPersonMedia,
   fetchPersonCoactors,
-} from '@/services/personService';
-import { createFollow } from '@/services/userService';
-import { useToast } from '@/hooks';
+} from '@/services';
 
 export default function PersonDetailPage() {
   const { id } = useParams();

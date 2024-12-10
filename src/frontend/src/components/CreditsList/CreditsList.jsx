@@ -1,6 +1,6 @@
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { formatDate } from '@/utils/date';
+import { formatDate } from '@/utils';
 import { MediaCardBadge } from '@/components';
 
 export default function CreditsList({ items = [] }) {

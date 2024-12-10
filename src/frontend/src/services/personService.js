@@ -99,11 +99,18 @@ export const fetchPersonById = async (id) => {
     throw error;
   }
 };
-export const fetchPersonMedia = async (id) => {
-  const api = new ApiClient();
-  try {
-    const response = await api.Get(`${BASE_PATH}${id}/media`);
 
+export const fetchPersonMedia = async (id, page, count) => {
+  const api = new ApiClient();
+  const queryParams = new URLSearchParams();
+
+  if (page) queryParams.append('page', page);
+  if (count) queryParams.append('count', count);
+
+  try {
+    const response = await api.Get(
+      `${BASE_PATH}${id}/media?${queryParams.toString()}`,
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch media for person with ID ${id}.`);
     }

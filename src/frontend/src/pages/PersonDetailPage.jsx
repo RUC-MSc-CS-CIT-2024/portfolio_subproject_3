@@ -1,6 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { PersonsCarousel, PersonInformation, CreditsList } from '@/components';
+import {
+  PersonsCarousel,
+  PersonInformation,
+  CreditsList,
+  Rating,
+  MediaCard,
+} from '@/components';
 import { useState, useEffect } from 'react';
 import { fetchPersonById, fetchPersonCoactors } from '@/services/personService';
 import { createFollow } from '@/services/userService';
@@ -14,6 +20,8 @@ export default function PersonDetailPage() {
   const [loadingPerson, setLoadingPerson] = useState(true);
   const [loadingCoActors, setLoadingCoActors] = useState(true);
   const { showToastMessage } = useToast();
+
+  console.log(person?.knownForMedia);
 
   useEffect(() => {
     const loadPerson = async () => {
@@ -63,6 +71,22 @@ export default function PersonDetailPage() {
       showToastMessage('Error following the person', 'danger');
     }
   };
+  const knownForMedia = person?.knownForMedia?.map((media) => ({
+    id: media?.id,
+    title: media?.title,
+    releaseYear: media?.releaseDate,
+    imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}}`,
+    type: media?.mediaType,
+  }));
+
+  const ratings = [
+    {
+      source: 'Popularity',
+      value: person?.popularity || 'No Rating Available',
+    },
+    { source: 'Score', value: person?.score || 'No Rating Available' },
+    { source: 'Name Rating', value: person?.rating || 'No Rating Available' },
+  ];
 
   return (
     <Container className="my-5">
@@ -74,9 +98,6 @@ export default function PersonDetailPage() {
             birthDate={person?.birthDate}
             deathDate={person?.deathDate}
             bio={person?.description}
-            rating={person?.nameRating}
-            score={person?.score}
-            popularity={person?.popularity}
             alsoKnownAs={person?.alsoKnownAs}
             homepage={person?.homepage}
             placeOfBirth={person?.placeOfBirth}
@@ -86,7 +107,7 @@ export default function PersonDetailPage() {
             isLoading={loadingPerson}
           />
         </Col>
-        <Row className="mt-5 gap-5">
+        <Row className="mt-5">
           <Col xs={12} md={3}>
             <Button
               variant="outline-dark"
@@ -96,10 +117,16 @@ export default function PersonDetailPage() {
               Follow
             </Button>
           </Col>
-          <Col md={6}>
-            {/*  Here the rating and the 3 media cards should be inserted  */}
+          <Col xs={12} sm={12} md={12} lg={5}>
+            <Rating ratings={ratings} noHeading />
           </Col>
+          {knownForMedia?.map((media, index) => (
+            <Col key={index} xs={12} sm={4} md={4} lg={1}>
+              <MediaCard {...media} />
+            </Col>
+          ))}
         </Row>
+        <Row></Row>
       </Row>
       <Row className="mt-5">
         <Col>

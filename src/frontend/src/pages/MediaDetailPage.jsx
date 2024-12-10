@@ -19,33 +19,42 @@ import {
 import { useToast } from '@/contexts/ToastContext';
 
 const extractDirectors = (crew) => {
+  if (!Array.isArray(crew)) {
+    return [];
+  }
   return crew
-    .filter((member) => member.jobCategory.toLowerCase().includes('director'))
-    .map((member) => member.personName);
+    .filter((member) => member?.jobCategory?.toLowerCase().includes('director'))
+    .map((member) => member?.personName);
 };
 
 const extractWriters = (crew) => {
+  if (!Array.isArray(crew)) {
+    return [];
+  }
   const createdByWriters = crew
     .filter(
       (member) =>
-        member.jobCategory.toLowerCase().includes('writer') &&
-        member.role.toLowerCase() === 'created by',
+        member?.jobCategory?.toLowerCase().includes('writer') &&
+        member?.role?.toLowerCase() === 'created by',
     )
-    .map((member) => member.personName);
+    .map((member) => member?.personName);
 
   if (createdByWriters.length > 0) {
     return createdByWriters;
   }
 
   return crew
-    .filter((member) => member.jobCategory.toLowerCase().includes('writer'))
-    .map((member) => member.personName);
+    .filter((member) => member?.jobCategory?.toLowerCase().includes('writer'))
+    .map((member) => member?.personName);
 };
 
 const extractProducer = (crew) => {
+  if (!Array.isArray(crew)) {
+    return [];
+  }
   return crew
-    .filter((member) => member.jobCategory.toLowerCase().includes('producer'))
-    .map((member) => member.personName);
+    .filter((member) => member?.jobCategory?.toLowerCase().includes('producer'))
+    .map((member) => member?.personName);
 };
 
 export default function MediaDetailPage() {

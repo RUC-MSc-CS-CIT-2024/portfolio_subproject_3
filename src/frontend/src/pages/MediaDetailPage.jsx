@@ -5,7 +5,6 @@ import {
   fetchMediaById,
   fetchTitles,
   fetchMediaCrew,
-  //fetchMediaCast,
   fetchSimilarMedia,
   fetchReleases,
 } from '@/services';
@@ -45,13 +44,14 @@ export default function MediaDetailPage() {
   const [mediaData, setMediaData] = useState(null);
   const [titles, setTitles] = useState([]);
   const [crew, setCrew] = useState([]);
-  // To be implemented - const [cast, setCast] = useState([]);
   const [similarMedia, setSimilarMedia] = useState([]);
   const [releases, setReleases] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [loadingSimilarMedia, setLoadingSimilarMedia] = useState(true);
   const { showToastMessage } = useToast();
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const count = 6;
 
   useEffect(() => {
     const loadMedia = async () => {
@@ -63,35 +63,54 @@ export default function MediaDetailPage() {
         setTitles(titlesData);
         const crewData = await fetchMediaCrew(mediaId);
         setCrew(crewData);
-        //const castData = await fetchMediaCast(mediaId);
-        //setCast(castData);
         const releasesData = await fetchReleases(mediaId);
         setReleases(releasesData.items);
-      } catch {
-        showToastMessage('Error getting the media.', 'danger');
+      } catch (error) {
+        console.error('Error loading media details:', error);
+        showToastMessage('Error loading media details', 'error');
       } finally {
         setLoading(false);
       }
     };
 
-    loadMedia();
+    if (mediaId) {
+      loadMedia();
+    }
   }, [mediaId, showToastMessage]);
 
   useEffect(() => {
     const loadSimilarMedia = async () => {
+      setLoadingSimilarMedia(true);
       try {
-        setLoadingSimilarMedia(true);
-        const similarMediaData = await fetchSimilarMedia(mediaId);
-        setSimilarMedia(similarMediaData.items);
-      } catch {
-        showToastMessage('Error getting similar media.', 'danger');
+        const fetchedMedia = await fetchSimilarMedia({
+          id: mediaId,
+          page,
+          pageCount: count,
+        });
+        setSimilarMedia((prevMedia) =>
+          page === 1
+            ? fetchedMedia.items
+            : [...prevMedia, ...fetchedMedia.items],
+        );
+        setHasNextPage(!!fetchedMedia.nextPage);
+        console.log('test', fetchedMedia.items);
+      } catch (error) {
+        console.error('Error loading similar media:', error);
       } finally {
         setLoadingSimilarMedia(false);
       }
     };
 
-    loadSimilarMedia();
-  }, [mediaId, showToastMessage]);
+    if (mediaId) {
+      loadSimilarMedia();
+    }
+  }, [mediaId, page]);
+
+  const handleLoadMore = () => {
+    if (!loadingSimilarMedia && hasNextPage) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
 
   useEffect(() => {
     if (!loading && !mediaData) {
@@ -143,7 +162,13 @@ export default function MediaDetailPage() {
       <Row className="mt-5">
         <Col>
           <h5> Similar Media </h5>
-          <MediaCarousel media={similarMedia} loading={loadingSimilarMedia} />
+          <MediaCarousel
+            media={similarMedia}
+            loading={loadingSimilarMedia}
+            onLoadMore={handleLoadMore}
+            hasNextPage={hasNextPage}
+            count={count}
+          />
         </Col>
       </Row>
       <Row className="mt-5">

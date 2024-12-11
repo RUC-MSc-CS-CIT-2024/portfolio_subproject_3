@@ -1,67 +1,55 @@
+import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { MediaCarousel, MediaGrid } from '@/components';
-
-const titles = [
-  {
-    imageUri:
-      'https://m.media-amazon.com/images/M/MV5BYTU0ODc3NmMtMjliYy00YjE4LTg3ODctMmQxYmRlM2U2YmVhXkEyXkFqcGdeQXVyMTkzODUwNzk@._V1_SX300.jpg',
-    id: 1,
-    title: 'Movie Title 1',
-    releaseYear: '2023',
-  },
-  {
-    id: 2,
-    title: 'Movie Title 2',
-    releaseYear: '2022',
-  },
-  {
-    id: 3,
-    title: 'Movie Title 3',
-    releaseYear: '2021',
-  },
-  {
-    id: 4,
-    title: 'Movie Title 4',
-    releaseYear: '2020',
-  },
-  {
-    id: 5,
-    title: 'Movie Title 5',
-    releaseYear: '2019',
-  },
-  {
-    id: 6,
-    title: 'Movie Title 6',
-    releaseYear: '2018',
-  },
-  {
-    id: 7,
-    title: 'Movie Title 7',
-    releaseYear: '2017',
-  },
-  {
-    id: 8,
-    title: 'Movie Title 8',
-    releaseYear: '2016',
-  },
-  {
-    id: 9,
-    title: 'Movie Title 9',
-    releaseYear: '2015',
-  },
-  {
-    id: 10,
-    title: 'Movie Title 10',
-    releaseYear: '2014',
-  },
-];
+import { fetchMedia } from '@/services';
 
 export default function MediaOverviewPage() {
+  const [media, setMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const initialCount = 12;
+  const subsequentCount = 6;
+
+  useEffect(() => {
+    const loadMedia = async () => {
+      setLoading(true);
+      try {
+        const count = page === 1 ? initialCount : subsequentCount;
+        const fetchedMedia = await fetchMedia({ page, pageCount: count });
+        setMedia((prevMedia) =>
+          page === 1
+            ? fetchedMedia.items
+            : [...prevMedia, ...fetchedMedia.items],
+        );
+        setHasNextPage(!!fetchedMedia.nextPage);
+      } catch (error) {
+        console.error('Error loading media:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMedia();
+  }, [page]);
+
+  const handleLoadMore = () => {
+    if (!loading && hasNextPage) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
   return (
     <Container>
       <h1>Media</h1>
-      <MediaCarousel media={titles} />
-      <MediaGrid media={titles} />
+      <MediaCarousel
+        media={media}
+        loading={loading}
+        onLoadMore={handleLoadMore}
+        hasNextPage={hasNextPage}
+        initialCount={initialCount}
+      />
+      <MediaGrid media={media} />
     </Container>
   );
 }

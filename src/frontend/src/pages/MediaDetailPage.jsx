@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -18,25 +18,20 @@ import {
 import { useToast } from '@/contexts';
 import { extractMembersByJobCategory } from '@/utils';
 
-const extractDirectors = (crew) => {
-  return extractMembersByJobCategory(crew, 'director');
-};
-
+const extractDirectors = (crew) =>
+  extractMembersByJobCategory(crew, 'director');
 const extractWriters = (crew) => {
   const createdByWriters = extractMembersByJobCategory(
     crew,
     'writer',
     'created by',
   );
-  if (createdByWriters.length > 0) {
-    return createdByWriters;
-  }
-  return extractMembersByJobCategory(crew, 'writer');
+  return createdByWriters.length > 0
+    ? createdByWriters
+    : extractMembersByJobCategory(crew, 'writer');
 };
-
-const extractProducers = (crew) => {
-  return extractMembersByJobCategory(crew, 'producer');
-};
+const extractProducers = (crew) =>
+  extractMembersByJobCategory(crew, 'producer');
 
 export default function MediaDetailPage() {
   const { id: mediaId } = useParams();
@@ -49,9 +44,8 @@ export default function MediaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [loadingSimilarMedia, setLoadingSimilarMedia] = useState(true);
   const { showToastMessage } = useToast();
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const count = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
 
   useEffect(() => {
     const loadMedia = async () => {
@@ -84,16 +78,15 @@ export default function MediaDetailPage() {
       try {
         const fetchedMedia = await fetchSimilarMedia({
           id: mediaId,
-          page,
-          pageCount: count,
+          page: currentPage,
+          pageCount: 6,
         });
         setSimilarMedia((prevMedia) =>
-          page === 1
+          currentPage === 1
             ? fetchedMedia.items
             : [...prevMedia, ...fetchedMedia.items],
         );
-        setHasNextPage(!!fetchedMedia.nextPage);
-        console.log('test', fetchedMedia.items);
+        setHasMoreItems(!!fetchedMedia.nextPage);
       } catch (error) {
         console.error('Error loading similar media:', error);
       } finally {
@@ -104,13 +97,13 @@ export default function MediaDetailPage() {
     if (mediaId) {
       loadSimilarMedia();
     }
-  }, [mediaId, page]);
+  }, [mediaId, currentPage]);
 
-  const handleLoadMore = () => {
-    if (!loadingSimilarMedia && hasNextPage) {
-      setPage((prevPage) => prevPage + 1);
+  const handleLoadMore = useCallback(() => {
+    if (!loadingSimilarMedia && hasMoreItems) {
+      setCurrentPage((prevPage) => prevPage + 1);
     }
-  };
+  }, [loadingSimilarMedia, hasMoreItems]);
 
   useEffect(() => {
     if (!loading && !mediaData) {
@@ -161,13 +154,12 @@ export default function MediaDetailPage() {
       </Row>
       <Row className="mt-5">
         <Col>
-          <h5> Similar Media </h5>
+          <h5>Similar Media</h5>
           <MediaCarousel
             media={similarMedia}
             loading={loadingSimilarMedia}
             onLoadMore={handleLoadMore}
-            hasNextPage={hasNextPage}
-            count={count}
+            hasNextPage={hasMoreItems}
           />
         </Col>
       </Row>

@@ -17,44 +17,26 @@ import {
   InfoRow,
 } from '@/components';
 import { useToast } from '@/contexts';
+import { extractMembersByJobCategory } from '@/utils';
 
 const extractDirectors = (crew) => {
-  if (!Array.isArray(crew)) {
-    return [];
-  }
-  return crew
-    .filter((member) => member?.jobCategory?.toLowerCase().includes('director'))
-    .map((member) => member?.personName);
+  return extractMembersByJobCategory(crew, 'director');
 };
 
 const extractWriters = (crew) => {
-  if (!Array.isArray(crew)) {
-    return [];
-  }
-  const createdByWriters = crew
-    .filter(
-      (member) =>
-        member?.jobCategory?.toLowerCase().includes('writer') &&
-        member?.role?.toLowerCase() === 'created by',
-    )
-    .map((member) => member?.personName);
-
+  const createdByWriters = extractMembersByJobCategory(
+    crew,
+    'writer',
+    'created by',
+  );
   if (createdByWriters.length > 0) {
     return createdByWriters;
   }
-
-  return crew
-    .filter((member) => member?.jobCategory?.toLowerCase().includes('writer'))
-    .map((member) => member?.personName);
+  return extractMembersByJobCategory(crew, 'writer');
 };
 
-const extractProducer = (crew) => {
-  if (!Array.isArray(crew)) {
-    return [];
-  }
-  return crew
-    .filter((member) => member?.jobCategory?.toLowerCase().includes('producer'))
-    .map((member) => member?.personName);
+const extractProducers = (crew) => {
+  return extractMembersByJobCategory(crew, 'producer');
 };
 
 export default function MediaDetailPage() {
@@ -119,7 +101,7 @@ export default function MediaDetailPage() {
 
   const directors = extractDirectors(crew);
   const writers = extractWriters(crew);
-  const producers = extractProducer(crew);
+  const producers = extractProducers(crew);
 
   return (
     <Container>

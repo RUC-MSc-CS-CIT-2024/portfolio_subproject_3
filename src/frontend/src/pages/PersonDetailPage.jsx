@@ -8,13 +8,13 @@ import {
   MediaCard,
 } from '@/components';
 import { useState, useEffect, useCallback } from 'react';
-import { useToast } from '@/hooks';
 import {
-  createFollow,
   fetchPersonById,
   fetchPersonMedia,
   fetchPersonCoactors,
+  createFollow,
 } from '@/services';
+import { useToast } from '@/hooks';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
@@ -27,6 +27,21 @@ export default function PersonDetailPage() {
   const { showToastMessage } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
+
+  const fetchPersonData = async (personId, page) => {
+    try {
+      const response = await fetchPersonMedia(personId, page, 3);
+      setCredits((prevCredits) => {
+        const newCredits = response.items.filter(
+          (item) => !prevCredits.some((credit) => credit.id === item.id),
+        );
+        return [...prevCredits, ...newCredits];
+      });
+      setHasMoreItems(response.nextPage !== null);
+    } catch (error) {
+      console.error('Error fetching media:', error);
+    }
+  };
 
   useEffect(() => {
     const loadPerson = async () => {
@@ -46,22 +61,7 @@ export default function PersonDetailPage() {
   }, [id, showToastMessage, navigate]);
 
   useEffect(() => {
-    const loadMedia = async () => {
-      try {
-        const response = await fetchPersonMedia(id, currentPage, 3);
-        setCredits((prevCredits) => {
-          const newCredits = response.items.filter(
-            (item) => !prevCredits.some((credit) => credit.id === item.id),
-          );
-          return [...prevCredits, ...newCredits];
-        });
-        setHasMoreItems(response.nextPage !== null);
-      } catch (error) {
-        console.error('Error fetching media:', error);
-      }
-    };
-
-    loadMedia();
+    fetchPersonData(id, currentPage);
   }, [id, currentPage]);
 
   useEffect(() => {

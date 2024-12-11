@@ -1,4 +1,9 @@
-import { getTMDBImage, ImageSize, fetchPersonTMDB } from '@/services';
+import {
+  getTMDBImage,
+  ImageSize,
+  fetchPersonTMDB,
+  getTMDBPersonDetails,
+} from '@/services';
 import { ApiClient } from '@/utils';
 
 const BASE_PATH = '/api/persons/';
@@ -57,22 +62,24 @@ export const fetchPersonById = async (id) => {
     let knownFor = [];
 
     try {
-      const imageResponse = await getTMDBImage(
-        response.value.imdbId,
-        ImageSize.Normal,
-      );
-      imageUrl = imageResponse.imageUrl;
-      tmdbId = imageResponse.tmdbId;
-      knownFor = imageResponse.knownFor;
+      imageUrl = await getTMDBImage(response.value.imdbId, ImageSize.Normal);
     } catch (imageError) {
       console.error(`No image found for person with ID ${id}:`, imageError);
+    }
+
+    try {
+      const tmdbDetails = await getTMDBPersonDetails(response.value.imdbId);
+      tmdbId = tmdbDetails.tmdbId;
+      knownFor = tmdbDetails.knownFor;
+    } catch (detailsError) {
+      console.error(`No details found for person with ID ${id}:`, detailsError);
     }
 
     response.value.pictureUri = imageUrl;
     const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
 
     // Map the known_for movie data
-    const knownForMedia = knownFor.map((media) => ({
+    const knownForMedia = knownFor?.map((media) => ({
       id: media.id,
       title: media.title,
       backdropPath: media.backdrop_path,

@@ -19,8 +19,6 @@ export async function getTMDBImage(imdb_id, size) {
   }
   const val = resp.value;
   let path = '';
-  let tmdbId = null; // Initialize TMDBID
-  let knownFor = [];
 
   if (val.movie_results.length > 0) {
     path = val.movie_results[0].poster_path;
@@ -29,10 +27,7 @@ export async function getTMDBImage(imdb_id, size) {
   } else if (val.tv_episode_results.length > 0) {
     path = val.tv_episode_results[0].still_path;
   } else if (val.person_results.length > 0) {
-    const person = val.person_results[0];
-    path = person.profile_path;
-    tmdbId = person.id; // Set TMDBID from person results
-    knownFor = person.known_for;
+    path = val.person_results[0].profile_path;
   } else {
     throw new Error('No image found');
   }
@@ -42,7 +37,28 @@ export async function getTMDBImage(imdb_id, size) {
     import.meta.env.VITE_TMDB_IMAGE_BASE_URL,
   );
   const imageUrl = new URL(path.substring(1), imageUrlWithSize).href;
-  return { imageUrl, tmdbId, knownFor };
+  return imageUrl;
+}
+
+export async function getTMDBPersonDetails(imdb_id) {
+  const api = new ApiClient(baseUrl, accessKey);
+  const resp = await api.Get(`find/${imdb_id}?external_source=imdb_id`);
+  if (!resp.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const val = resp.value;
+  let tmdbId = null;
+  let knownFor = [];
+
+  if (val.person_results.length > 0) {
+    const person = val.person_results[0];
+    tmdbId = person.id;
+    knownFor = person.known_for;
+  } else {
+    throw new Error('No person found');
+  }
+
+  return { tmdbId, knownFor };
 }
 
 export async function fetchPersonTMDB(tmdbId) {

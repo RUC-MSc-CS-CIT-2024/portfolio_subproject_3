@@ -1,6 +1,5 @@
-import { getUserFromSession } from '@/utils/getUserFromSession';
-import { ApiClient } from '@/utils/apiClient';
-import { getTMDBImage, ImageSize } from './tmdbService';
+import { ApiClient, getUserFromSession } from '@/utils';
+import { getTMDBImage, ImageSize } from '@/services';
 
 export const updateUserById = async (data) => {
   const api = new ApiClient();
@@ -125,6 +124,7 @@ export const createMarkAsCompleted = async ({
 };
 
 export const createFollow = async (personId) => {
+  const api = new ApiClient();
   const user = getUserFromSession();
   if (!user) {
     throw new Error('No user found in session');
@@ -152,8 +152,8 @@ export const createFollow = async (personId) => {
 };
 
 export const getCurrentUserFollowing = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -181,8 +181,8 @@ export const getCurrentUserFollowing = async (page, count) => {
 };
 
 export const getCurrentUserBookmarks = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -203,8 +203,8 @@ export const getCurrentUserBookmarks = async (page, count) => {
 };
 
 export const getCurrentUserCompleted = async (page, count) => {
-  const user = getUserFromSession();
   const apiClient = new ApiClient();
+  const user = getUserFromSession();
 
   if (!user) {
     throw new Error('No user found in session');
@@ -216,6 +216,51 @@ export const getCurrentUserCompleted = async (page, count) => {
   if (count) queryParams.push({ key: 'count', value: count });
 
   const response = await apiClient.Get(path, queryParams);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};
+
+export const getUserSearchHistory = async (page, count) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user.id) {
+    throw new Error('User ID is required');
+  }
+
+  let path = `users/${user.id}/search_history`;
+
+  let queryParams = [];
+  if (page) queryParams.push({ key: 'page', value: page });
+  if (count) queryParams.push({ key: 'count', value: count });
+
+  const response = await apiClient.Get(path, queryParams);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};
+
+export const deleteUserSearchHistory = async (searchHistoryId) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user.id || !searchHistoryId) {
+    throw new Error('User ID and Search History ID are required');
+  }
+
+  let path = `users/${user.id}/search_history?searchHistoryId=${searchHistoryId}`;
+
+  const response = await apiClient.Delete(path, {
+    userId: user.id,
+    searchHistoryId: searchHistoryId,
+  });
 
   if (!response.ok) {
     throw new Error('Network response was not ok.');

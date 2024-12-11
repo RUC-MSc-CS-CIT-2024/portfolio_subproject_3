@@ -1,19 +1,47 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { PersonsCarousel, PersonInformation } from '@/components';
-import { useState, useEffect } from 'react';
-import { fetchPersonById, fetchPersonCoactors } from '@/services/personService';
-import { createFollow } from '@/services/userService';
+import {
+  PersonsCarousel,
+  PersonInformation,
+  CreditsList,
+  Rating,
+  MediaCard,
+} from '@/components';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  fetchPersonById,
+  fetchPersonMedia,
+  fetchPersonCoactors,
+  createFollow,
+} from '@/services';
 import { useToast } from '@/hooks';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [person, setPerson] = useState(null);
+  const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
   const [loadingPerson, setLoadingPerson] = useState(true);
   const [loadingCoActors, setLoadingCoActors] = useState(true);
   const { showToastMessage } = useToast();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
+
+  const fetchPersonData = async (personId, page) => {
+    try {
+      const response = await fetchPersonMedia(personId, page, 3);
+      setCredits((prevCredits) => {
+        const newCredits = response.items.filter(
+          (item) => !prevCredits.some((credit) => credit.id === item.id),
+        );
+        return [...prevCredits, ...newCredits];
+      });
+      setHasMoreItems(response.nextPage !== null);
+    } catch (error) {
+      console.error('Error fetching media:', error);
+    }
+  };
 
   useEffect(() => {
     const loadPerson = async () => {
@@ -30,7 +58,11 @@ export default function PersonDetailPage() {
     };
 
     loadPerson();
-  }, [id, showToastMessage]);
+  }, [id, showToastMessage, navigate]);
+
+  useEffect(() => {
+    fetchPersonData(id, currentPage);
+  }, [id, currentPage]);
 
   useEffect(() => {
     const loadCoActors = async () => {
@@ -46,7 +78,7 @@ export default function PersonDetailPage() {
     };
 
     loadCoActors();
-  }, [id]);
+  }, [id, showToastMessage]);
 
   useEffect(() => {
     if (!loadingPerson && !person) {
@@ -64,6 +96,27 @@ export default function PersonDetailPage() {
     }
   };
 
+  const handleLoadMore = useCallback(() => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  }, []);
+
+  const knownForMedia = person?.knownForMedia?.map((media) => ({
+    id: media?.id,
+    title: media?.title,
+    releaseYear: media?.releaseDate,
+    imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
+    type: media?.mediaType,
+  }));
+
+  const ratings = [
+    {
+      source: 'Popularity',
+      value: person?.popularity || 'No Rating Available',
+    },
+    { source: 'Score', value: person?.score || 'No Rating Available' },
+    { source: 'Name Rating', value: person?.rating || 'No Rating Available' },
+  ];
+
   return (
     <Container className="my-5">
       <Row className="mt-5">
@@ -74,9 +127,6 @@ export default function PersonDetailPage() {
             birthDate={person?.birthDate}
             deathDate={person?.deathDate}
             bio={person?.description}
-            rating={person?.nameRating}
-            score={person?.score}
-            popularity={person?.popularity}
             alsoKnownAs={person?.alsoKnownAs}
             homepage={person?.homepage}
             placeOfBirth={person?.placeOfBirth}
@@ -86,7 +136,7 @@ export default function PersonDetailPage() {
             isLoading={loadingPerson}
           />
         </Col>
-        <Row className="mt-5 gap-5">
+        <Row className="mt-5">
           <Col xs={12} md={3}>
             <Button
               variant="outline-dark"
@@ -96,14 +146,26 @@ export default function PersonDetailPage() {
               Follow
             </Button>
           </Col>
-          <Col md={6}>
-            {/*  Here the rating and the 3 media cards should be inserted  */}
+          <Col xs={12} sm={12} md={12} lg={5}>
+            <Rating ratings={ratings} noHeading />
           </Col>
+          {knownForMedia?.map((media, index) => (
+            <Col key={index} xs={12} sm={4} md={4} lg={1}>
+              <MediaCard {...media} />
+            </Col>
+          ))}
         </Row>
+        <Row></Row>
       </Row>
       <Row className="mt-5">
         <Col>
           <h5>Credits</h5>
+          <CreditsList items={credits} />
+          {hasMoreItems && (
+            <Button onClick={handleLoadMore} variant="link">
+              Load More
+            </Button>
+          )}
         </Col>
       </Row>
       <Row className="mt-5">

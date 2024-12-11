@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import debounce from '@/utils/debounce';
+import { debounce } from '@/utils';
 
 function getItemsPerRow(width) {
   if (width >= 1200) {

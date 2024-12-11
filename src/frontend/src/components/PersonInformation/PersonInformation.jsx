@@ -7,8 +7,8 @@ import {
   Placeholder,
   Button,
 } from 'react-bootstrap';
+import { formatDate } from '@/utils';
 import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
-import { formatDate } from '@/utils/date';
 import './PersonInformation.css';
 
 export default function PersonInformation({
@@ -17,9 +17,6 @@ export default function PersonInformation({
   birthDate,
   deathDate,
   bio,
-  rating,
-  score,
-  popularity,
   alsoKnownAs = [],
   homepage,
   placeOfBirth,
@@ -66,53 +63,32 @@ export default function PersonInformation({
               {isLoading ? (
                 <PlaceholderText as="h1" xs={6} />
               ) : (
-                <>
-                  <h1 className="title">{name || 'Unknown Name'}</h1>
-                  <p className="secondary-information">
-                    Born: {formattedBirthDate}
-                    {formattedDeathDate && ` - Died: ${formattedDeathDate}`}
-                  </p>
-                </>
+                <h1 className="title">{name || 'Unknown Name'}</h1>
               )}
             </Col>
           </Row>
-
-          {/* Popularity, Score, and Name Rating */}
-          <Row className="mt-3">
-            <Col>
-              {isLoading ? (
-                <PlaceholderText as="p" xs={6} />
-              ) : (
-                <div className="d-flex align-items-center justify-content-start gap-3">
-                  <InfoRow
-                    label="Popularity"
-                    value={popularity || 'No Rating Available'}
-                  />
-                  <InfoRow
-                    label="Score"
-                    value={score || 'No Rating Available'}
-                  />
-                  <InfoRow
-                    label="Name Rating"
-                    value={rating || 'No Rating Available'}
-                  />
-                </div>
-              )}
-            </Col>
-          </Row>
-
           {/* Roles */}
           <Row className="mt-3">
             <Col>
               {isLoading ? (
                 <PlaceholderText as="p" xs={6} />
               ) : (
-                <div className="d-flex mt-3 roles-information">
+                <>
+                  <InfoRow
+                    label="Birth Date"
+                    value={formattedBirthDate || 'Unknown'}
+                  />
+                  {formattedDeathDate && (
+                    <InfoRow
+                      label="Death Date"
+                      value={formattedDeathDate || 'Unknown'}
+                    />
+                  )}
                   <InfoRow
                     label="Roles"
                     value={roles.join(', ') || 'Unknown'}
                   />
-                </div>
+                </>
               )}
             </Col>
           </Row>

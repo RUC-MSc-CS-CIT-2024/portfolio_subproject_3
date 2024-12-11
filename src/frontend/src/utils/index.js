@@ -6,3 +6,4 @@ export { setCookie, getCookie, deleteCookie } from './cookie';
 export { formatDate } from './date';
 export { getUserFromSession } from './getUserFromSession';
 export { isEmailValid } from './validation';
+export { extractMembersByJobCategory } from './crew';

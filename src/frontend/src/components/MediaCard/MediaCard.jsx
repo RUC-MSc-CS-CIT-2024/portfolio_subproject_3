@@ -1,5 +1,5 @@
-import { Card, Placeholder } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Card, Placeholder } from 'react-bootstrap';
 import { DefaultImage, MediaCardBadge } from '@/components';
 import './MediaCard.css';
 

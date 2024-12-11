@@ -1,4 +1,4 @@
-import { getCookie } from '@/utils/cookie';
+import { getCookie } from '@/utils';
 
 export class ApiResponse {
   value;

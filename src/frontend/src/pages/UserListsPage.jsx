@@ -1,12 +1,12 @@
-import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useState } from 'react';
-import { FollowingList, BookmarkList, CompletedList } from '@/components';
+import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useAsyncEffect } from '@/hooks';
 import {
   getCurrentUserBookmarks,
   getCurrentUserCompleted,
   getCurrentUserFollowing,
-} from '@/services/userService';
+} from '@/services';
+import { FollowingList, BookmarkList, CompletedList } from '@/components';
 
 export default function UserListsPage() {
   const [key, setKey] = useState('following');
@@ -16,9 +16,9 @@ export default function UserListsPage() {
 
   useAsyncEffect(
     async () => {
-      const bookmarkResult = await getCurrentUserBookmarks();
-      const completedResult = await getCurrentUserCompleted();
-      const followingResult = await getCurrentUserFollowing();
+      const bookmarkResult = await getCurrentUserBookmarks(1, 10);
+      const completedResult = await getCurrentUserCompleted(1, 10);
+      const followingResult = await getCurrentUserFollowing(1, 10);
       return { bookmarkResult, completedResult, followingResult };
     },
     ({ bookmarkResult, completedResult, followingResult }) => {

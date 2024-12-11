@@ -10,13 +10,10 @@ import {
 } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
-import { formatDate } from '@/utils/date';
+import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
 import { useState, useEffect } from 'react';
-import {
-  removeBookmark,
-  markBookmarkAsCompleted,
-} from '@/services/userService';
+import { removeBookmark, markBookmarkAsCompleted } from '@/services';
 import { MediaCardBadge } from '@/components';
 
 export default function BookmarkList({ items }) {

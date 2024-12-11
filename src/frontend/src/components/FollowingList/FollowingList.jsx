@@ -1,9 +1,9 @@
+import { Link } from 'react-router-dom';
 import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Link } from 'react-router-dom';
-import { unfollowPerson } from '@/services/userService';
+import { unfollowPerson } from '@/services';
 import { useEffect, useState } from 'react';
-import { formatDate } from '@/utils/date';
+import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
 
 export default function FollowingList({ items }) {

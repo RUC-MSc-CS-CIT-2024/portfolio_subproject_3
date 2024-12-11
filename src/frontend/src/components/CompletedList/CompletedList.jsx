@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
-import { formatDate } from '@/utils/date';
+import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
-import { removeCompletedItem } from '@/services/userService';
+import { removeCompletedItem } from '@/services';
 import { MediaCardBadge } from '@/components';
 
 export default function CompletedList({ items }) {

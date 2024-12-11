@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Container, Row, Col, Carousel } from 'react-bootstrap';
-import { useItemsPerRow } from '@/hooks';
-import { formatDate } from '@/utils';
 import { MediaCard } from '@/components';
+import { useItemsPerRow } from '@/hooks';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { formatDate } from '@/utils';
 
 export default function MediaCarousel({
   media,
@@ -22,16 +22,11 @@ export default function MediaCarousel({
     return groups;
   }, [media, itemsPerRow]);
 
-  const shouldLoadMore = useMemo(() => {
-    const isLastGroup = index === groupedMedia.length - 1;
-    return isLastGroup;
-  }, [index, groupedMedia.length]);
-
   useEffect(() => {
-    if (shouldLoadMore && hasNextPage && !loading) {
+    if (index === groupedMedia.length - 1 && hasNextPage && !loading) {
       onLoadMore();
     }
-  }, [shouldLoadMore, hasNextPage, loading, onLoadMore]);
+  }, [index, groupedMedia.length, hasNextPage, loading, onLoadMore]);
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
@@ -57,9 +52,7 @@ export default function MediaCarousel({
                     imageUri={mediaItem.posterUri}
                     title={mediaItem.title}
                     releaseYear={
-                      mediaItem.releaseYear
-                        ? mediaItem.releaseYear
-                        : formatDate(mediaItem.releaseDate)
+                      mediaItem.releaseYear || formatDate(mediaItem.releaseDate)
                     }
                     isLoading={loading}
                     type={mediaItem.type}

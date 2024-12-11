@@ -60,11 +60,11 @@ export const fetchMediaCast = async (id) => {
   }
 };
 
-export const fetchSimilarMedia = async ({ id, page = 1, pageCount = 10 }) => {
+export const fetchSimilarMedia = async ({ id, page, count }) => {
   const api = new ApiClient();
   const queryParams = [
     { key: 'page', value: page },
-    { key: 'count', value: pageCount },
+    { key: 'count', value: count },
   ];
 
   const path = `/api/media/${id}/similar_media`;
@@ -97,14 +97,14 @@ export const fetchReleases = async (id) => {
 
 export const fetchMedia = async ({
   page = 1,
-  pageCount = 18,
+  count = 18,
   query = '',
   queryType = 'All',
 }) => {
   const api = new ApiClient();
   const queryParams = [
     { key: 'page', value: page },
-    { key: 'count', value: pageCount },
+    { key: 'count', value: count },
     { key: 'query_type', value: queryType },
     { key: 'query', value: query },
   ];

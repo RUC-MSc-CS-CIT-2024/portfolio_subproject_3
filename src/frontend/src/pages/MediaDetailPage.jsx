@@ -47,57 +47,57 @@ export default function MediaDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
 
-  useEffect(() => {
-    const loadMedia = async () => {
-      try {
-        setLoading(true);
-        const mediaData = await fetchMediaById(mediaId);
-        setMediaData(mediaData);
-        const titlesData = await fetchTitles(mediaId);
-        setTitles(titlesData);
-        const crewData = await fetchMediaCrew(mediaId);
-        setCrew(crewData);
-        const releasesData = await fetchReleases(mediaId);
-        setReleases(releasesData.items);
-      } catch (error) {
-        console.error('Error loading media details:', error);
-        showToastMessage('Error loading media details', 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (mediaId) {
-      loadMedia();
+  const loadMedia = useCallback(async () => {
+    try {
+      setLoading(true);
+      const mediaData = await fetchMediaById(mediaId);
+      setMediaData(mediaData);
+      const titlesData = await fetchTitles(mediaId);
+      setTitles(titlesData);
+      const crewData = await fetchMediaCrew(mediaId);
+      setCrew(crewData);
+      const releasesData = await fetchReleases(mediaId);
+      setReleases(releasesData.items);
+    } catch (error) {
+      console.error('Error loading media details:', error);
+      showToastMessage('Error loading media details', 'error');
+    } finally {
+      setLoading(false);
     }
   }, [mediaId, showToastMessage]);
 
-  useEffect(() => {
-    const loadSimilarMedia = async () => {
-      setLoadingSimilarMedia(true);
-      try {
-        const fetchedMedia = await fetchSimilarMedia({
-          id: mediaId,
-          page: currentPage,
-          pageCount: 6,
-        });
-        setSimilarMedia((prevMedia) =>
-          currentPage === 1
-            ? fetchedMedia.items
-            : [...prevMedia, ...fetchedMedia.items],
-        );
-        setHasMoreItems(!!fetchedMedia.nextPage);
-      } catch (error) {
-        console.error('Error loading similar media:', error);
-      } finally {
-        setLoadingSimilarMedia(false);
-      }
-    };
+  const loadSimilarMedia = useCallback(async () => {
+    setLoadingSimilarMedia(true);
+    try {
+      const fetchedMedia = await fetchSimilarMedia({
+        id: mediaId,
+        page: currentPage,
+        count: 12,
+      });
+      setSimilarMedia((prevMedia) =>
+        currentPage === 1
+          ? fetchedMedia.items
+          : [...prevMedia, ...fetchedMedia.items],
+      );
+      setHasMoreItems(!!fetchedMedia.nextPage);
+    } catch (error) {
+      console.error('Error loading similar media:', error);
+    } finally {
+      setLoadingSimilarMedia(false);
+    }
+  }, [mediaId, currentPage]);
 
+  useEffect(() => {
+    if (mediaId) {
+      loadMedia();
+    }
+  }, [mediaId, loadMedia]);
+
+  useEffect(() => {
     if (mediaId) {
       loadSimilarMedia();
     }
-  }, [mediaId, currentPage]);
+  }, [mediaId, currentPage, loadSimilarMedia]);
 
   const handleLoadMore = useCallback(() => {
     if (!loadingSimilarMedia && hasMoreItems) {

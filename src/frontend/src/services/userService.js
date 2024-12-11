@@ -223,3 +223,48 @@ export const getCurrentUserCompleted = async (page, count) => {
 
   return response.value;
 };
+
+export const getUserSearchHistory = async (page, count) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user.id) {
+    throw new Error('User ID is required');
+  }
+
+  let path = `users/${user.id}/search_history`;
+
+  let queryParams = [];
+  if (page) queryParams.push({ key: 'page', value: page });
+  if (count) queryParams.push({ key: 'count', value: count });
+
+  const response = await apiClient.Get(path, queryParams);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};
+
+export const deleteUserSearchHistory = async (searchHistoryId) => {
+  const user = getUserFromSession();
+  const apiClient = new ApiClient();
+
+  if (!user.id || !searchHistoryId) {
+    throw new Error('User ID and Search History ID are required');
+  }
+
+  let path = `users/${user.id}/search_history?searchHistoryId=${searchHistoryId}`;
+
+  const response = await apiClient.Delete(path, {
+    userId: user.id,
+    searchHistoryId: searchHistoryId,
+  });
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok.');
+  }
+
+  return response.value;
+};

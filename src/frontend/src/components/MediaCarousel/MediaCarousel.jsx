@@ -2,7 +2,6 @@ import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import { useItemsPerRow } from '@/hooks';
 import { formatDate } from '@/utils';
 import { MediaCard } from '@/components';
-import './MediaCarousel.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function MediaCarousel({ media, loading }) {

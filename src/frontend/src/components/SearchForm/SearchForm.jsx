@@ -1,122 +1,92 @@
-import { Form, FormControl, Button, Dropdown } from 'react-bootstrap';
-import { useEffect, useState, useRef } from 'react';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Container, Card, Spinner } from 'react-bootstrap';
+import { fetchMedia } from '@/services';
 import {
-  getUserSearchHistory,
-  deleteUserSearchHistory,
-} from '@/services/userService';
-import './SearchForm.css';
+  MediaGrid,
+  FilterMediaComponent,
+  AdvancedSearchForm,
+} from '@/components';
 
-export default function SearchForm({ btnVariant = 'dark', onSearch }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchHistory, setSearchHistory] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
-  const [refresh, setRefresh] = useState(false);
-  const formRef = useRef(null);
+export default function SearchPage() {
+  const location = useLocation();
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [filterCriteria, setFilterCriteria] = useState({
+    type: null,
+    year: null,
+  });
+  const [queryType, setQueryType] = useState('ExactMatch');
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim() !== '') {
-      onSearch(searchQuery);
-      setSearchQuery('');
-      setRefresh(!refresh);
-    }
-  };
-
-  const fetchSearchHistory = async (page) => {
-    try {
-      const history = await getUserSearchHistory(page, 5);
-      if (page === 1) {
-        setSearchHistory(history.items);
-      } else {
-        setSearchHistory((prevHistory) => [...prevHistory, ...history.items]);
+  const handleSearch = useCallback(
+    async (params) => {
+      setLoading(true);
+      try {
+        const resultList = await fetchMedia(params);
+        setResults(resultList);
+        applyFilters(resultList, filterCriteria);
+      } catch (error) {
+        console.error('Error searching:', error);
+      } finally {
+        setLoading(false);
       }
-      setHasMoreItems(history.nextPage !== null);
-    } catch {
-      console.error('Error getting the search history, you may need to log in');
-    }
+    },
+    [filterCriteria],
+  );
+
+  const applyFilters = (results, filterCriteria) => {
+    const { type, year } = filterCriteria;
+    const filtered = results.filter((item) => {
+      const matchesType = type ? item.type === type : true;
+      const matchesYear = year ? item.releaseYear === year : true;
+      return matchesType && matchesYear;
+    });
+    setFilteredResults(filtered);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteUserSearchHistory(id);
-      setSearchHistory((prevHistory) =>
-        prevHistory.filter((item) => item.searchHistoryId !== id),
-      );
-      setRefresh(!refresh);
-    } catch (error) {
-      console.error('Error deleting the search history item:', error);
-    }
-  };
+  const handleFilterChange = useCallback(
+    (newFilterCriteria) => {
+      setLoading(true);
+      setFilterCriteria(newFilterCriteria);
+      applyFilters(results, newFilterCriteria);
+      setLoading(false);
+    },
+    [results],
+  );
 
   useEffect(() => {
-    fetchSearchHistory(currentPage);
-  }, [currentPage, refresh]);
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
+    handleSearch({ query_type: queryType });
+  }, [location.search, handleSearch, queryType]);
 
   return (
-    <>
-      <div className="search-form-container" ref={formRef}>
-        <Form className="d-flex my-3" onSubmit={handleSearch}>
-          <FormControl
-            type="search"
-            placeholder="Search"
-            className="me-2"
-            aria-label="Search"
-            size="sm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-          />
-          <Button
-            variant={btnVariant}
-            size="sm"
-            onClick={handleSearch}
-            type="submit"
-          >
-            <span className="d-flex gap-2">
-              <i className="bi bi-search"></i> Search
-            </span>
-          </Button>
-        </Form>
-        {showDropdown && searchHistory.length > 0 && (
-          <Dropdown show={showDropdown} className="w-100">
-            <Dropdown.Menu className="w-100">
-              {searchHistory.map((item, index) => (
-                <Dropdown.Item
-                  key={index}
-                  className="d-flex justify-content-between align-items-center"
-                >
-                  <span onMouseDown={() => setSearchQuery(item.searchText)}>
-                    {item.searchText}
-                  </span>
-                  <i
-                    className="bi bi-x text-danger"
-                    style={{ cursor: 'pointer' }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => handleDelete(item.searchHistoryId)}
-                  />
-                </Dropdown.Item>
-              ))}
-              {hasMoreItems && (
-                <Dropdown.Item
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={handleNextPage}
-                  className="fw-bold"
-                >
-                  Load more...
-                </Dropdown.Item>
-              )}
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-      </div>
-    </>
+    <Container className="mt-5">
+      <h1 className="text-center fw-bold mb-4">Search Movies</h1>
+
+      <Card className="p-4 shadow-sm mb-4">
+        <AdvancedSearchForm
+          queryType={queryType}
+          setQueryType={setQueryType}
+          onSearch={handleSearch}
+        />
+      </Card>
+
+      <Card className="p-3 shadow-sm mb-4">
+        <h5 className="fw-bold">Filter Results</h5>
+        <FilterMediaComponent onFilterChange={handleFilterChange} />
+      </Card>
+
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <Spinner animation="border" variant="dark" />
+        </div>
+      ) : filteredResults.length === 0 ? (
+        <div className="d-flex flex-column align-items-center py-5">
+          <h2 className="text-muted">No matches found.</h2>
+        </div>
+      ) : (
+        <MediaGrid media={filteredResults} loading={loading} />
+      )}
+    </Container>
   );
 }

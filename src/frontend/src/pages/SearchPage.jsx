@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { fetchMedia } from '@/services';
-import { SearchForm, MediaGrid, FilterMediaComponent } from '@/components';
+import {
+  MediaGrid,
+  FilterMediaComponent,
+  AdvancedSearchForm,
+} from '@/components';
 
 export default function SearchPage() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -14,17 +17,18 @@ export default function SearchPage() {
     type: null,
     year: null,
   });
-
+  const [queryType, setQueryType] = useState('ExactMatch');
   const handleSearch = useCallback(
-    async (searchQuery, queryType) => {
-      if (!searchQuery) return;
-
+    async (params) => {
+      setLoading(true);
       try {
-        const resultList = await fetchMedia({ query: searchQuery, queryType });
+        const resultList = await fetchMedia(params);
         setResults(resultList);
         applyFilters(resultList, filterCriteria);
       } catch (error) {
         console.error('Error searching:', error);
+      } finally {
+        setLoading(false);
       }
     },
     [filterCriteria],
@@ -50,29 +54,17 @@ export default function SearchPage() {
     [results],
   );
 
-  const fetchData = useCallback(async () => {
-    const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
-    const queryType = location.search ? 'Simple' : 'All';
-    setLoading(true);
-    try {
-      await handleSearch(searchQuery, queryType);
-    } catch (err) {
-      console.error('Error during search:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [location.search, handleSearch]);
-
   useEffect(() => {
-    fetchData();
-  }, [location.search, fetchData]);
+    handleSearch({ query_type: queryType });
+  }, [location.search, handleSearch, queryType]);
 
   return (
     <Container>
       <h1>SearchPage</h1>
-      <SearchForm
-        btnVariant="dark"
-        onSearch={(query) => navigate(`/search?q=${encodeURIComponent(query)}`)}
+      <AdvancedSearchForm
+        queryType={queryType}
+        setQueryType={setQueryType}
+        onSearch={handleSearch}
       />
       <FilterMediaComponent onFilterChange={handleFilterChange} />
       {!loading && filteredResults.length === 0 && (

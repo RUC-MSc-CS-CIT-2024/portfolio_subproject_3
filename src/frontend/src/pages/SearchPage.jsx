@@ -20,7 +20,8 @@ export default function SearchPage() {
       if (!searchQuery) return;
 
       try {
-        const resultList = await fetchMedia({ query: searchQuery, queryType });
+        const response = await fetchMedia({ query: searchQuery, queryType });
+        const resultList = response.items;
         setResults(resultList);
         applyFilters(resultList, filterCriteria);
       } catch (error) {
@@ -49,6 +50,12 @@ export default function SearchPage() {
     },
     [results],
   );
+
+  const transformedResults = filteredResults.map((media) => ({
+    ...media,
+    imageUri: media.posterUri,
+    releaseYear: new Date(media.releaseDate).getFullYear(),
+  }));
 
   const fetchData = useCallback(async () => {
     const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
@@ -80,7 +87,7 @@ export default function SearchPage() {
           <h2>No matches found.</h2>
         </div>
       )}
-      <MediaGrid media={filteredResults} loading={loading} />
+      <MediaGrid media={transformedResults} loading={loading} />
     </Container>
   );
 }

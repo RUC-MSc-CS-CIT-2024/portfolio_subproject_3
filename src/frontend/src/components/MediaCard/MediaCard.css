@@ -11,6 +11,7 @@
   object-fit: cover;
   width: 100%;
   aspect-ratio: 2 / 3;
+  height: 100%;
 }
 
 .card-img {

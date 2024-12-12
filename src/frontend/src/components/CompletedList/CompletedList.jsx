@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
 import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
 import { removeCompletedItem } from '@/services';
-import { MediaCardBadge } from '@/components';
+import { MediaCardBadge, DefaultImage } from '@/components';
 
-export default function CompletedList({ items }) {
+export default function CompletedList({
+  items,
+  loadMoreCompleted,
+  hasMoreItems,
+}) {
   const [completedItems, setCompletedItems] = useState(items);
   const { showToastMessage } = useToast();
 
@@ -33,12 +37,18 @@ export default function CompletedList({ items }) {
 
     return (
       <tr key={`${item.media.id}-${index}`}>
-        <td>
-          <img
-            className="mx-2 responsive-img"
-            src={item.media.posterUri}
-            height={68}
-          />
+        <td className="d-flex align-items-center gap-3">
+          {item.media.posterUri ? (
+            <img
+              className="mx-2 responsive-img rounded"
+              src={item.media.posterUri}
+              height={68}
+            />
+          ) : (
+            <div className="default-image-container mx-2">
+              <DefaultImage />
+            </div>
+          )}
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
@@ -65,7 +75,7 @@ export default function CompletedList({ items }) {
   if (rows.length === 0) {
     rows = (
       <tr>
-        <td colSpan={6} height={100} className="text-center align-middle">
+        <td colSpan={7} height={100} className="text-center align-middle">
           It looks like you haven&apos;t completed anything yet. Use the search
           bar to find media you have completed and mark them as so!
         </td>
@@ -89,6 +99,13 @@ export default function CompletedList({ items }) {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
+      {hasMoreItems && completedItems.length > 0 && (
+        <div className="text-left">
+          <Button onClick={loadMoreCompleted} variant="link">
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

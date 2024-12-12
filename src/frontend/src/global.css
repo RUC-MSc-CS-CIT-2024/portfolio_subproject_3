@@ -54,21 +54,12 @@
   cursor: pointer;
 }
 
-.responsive-img {
-  height: 68px;
+.default-image-container {
+  max-width: 50px;
+  width: 100%;
+  height: auto;
 }
 
-@media (max-width: 768px) {
-  .responsive-img {
-    height: 50px;
-  }
-
-  .table-responsive {
-    overflow-x: auto;
-  }
-
-  .table th,
-  .table td {
-    white-space: nowrap;
-  }
+.default-image-container svg text {
+  font-size: 0.5rem;
 }

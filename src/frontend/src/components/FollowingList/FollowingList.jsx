@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
-import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Table, Tooltip, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { unfollowPerson } from '@/services';
 import { useEffect, useState } from 'react';
 import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
+import { DefaultImage } from '@/components';
 
-export default function FollowingList({ items }) {
+export default function FollowingList({
+  items,
+  loadMoreFollowing,
+  hasMoreItems,
+}) {
   const [following, setFollowing] = useState(items);
   const { showToastMessage } = useToast();
 
@@ -29,8 +34,14 @@ export default function FollowingList({ items }) {
 
   let rows = following.map((item) => (
     <tr key={item.followingId}>
-      <td>
-        <img className="mx-2 responsive-img" src={item?.pictureUri?.imageUrl} />
+      <td className="d-flex align-items-center gap-3">
+        {item?.pictureUri ? (
+          <img className="mx-2 responsive-img rounded" src={item?.pictureUri} />
+        ) : (
+          <div className="default-image-container mx-2">
+            <DefaultImage />
+          </div>
+        )}
         <Link to={`/persons/${item.person.id}`}>{item.person.name}</Link>
       </td>
       <td className="align-middle">{formatDate(item.followedSince)}</td>
@@ -70,6 +81,13 @@ export default function FollowingList({ items }) {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
+      {hasMoreItems && following.length > 0 && (
+        <div className="text-left">
+          <Button onClick={loadMoreFollowing} variant="link">
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

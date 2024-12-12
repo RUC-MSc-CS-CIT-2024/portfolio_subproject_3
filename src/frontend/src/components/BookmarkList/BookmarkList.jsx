@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   OverlayTrigger,
@@ -12,11 +12,14 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
 import { formatDate } from '@/utils';
 import { useToast } from '@/hooks';
-import { useState, useEffect } from 'react';
 import { removeBookmark, markBookmarkAsCompleted } from '@/services';
-import { MediaCardBadge } from '@/components';
+import { MediaCardBadge, DefaultImage } from '@/components';
 
-export default function BookmarkList({ items }) {
+export default function BookmarkList({
+  items,
+  loadMoreBookmarks,
+  hasMoreItems,
+}) {
   const [bookmarks, setBookmarks] = useState(items);
   const [expandedRow, setExpandedRow] = useState(null);
   const [rewatchability, setRewatchability] = useState(1);
@@ -64,12 +67,18 @@ export default function BookmarkList({ items }) {
   let rows = bookmarks.map((item) => (
     <React.Fragment key={item.bookmarkId}>
       <tr>
-        <td>
-          <img
-            className="mx-2 responsive-img"
-            src={item.media.posterUri}
-            height={68}
-          />
+        <td className="d-flex align-items-center gap-3">
+          {item.media.posterUri ? (
+            <img
+              className="mx-2 responsive-img rounded"
+              src={item.media.posterUri}
+              height={68}
+            />
+          ) : (
+            <div className="default-image-container mx-2">
+              <DefaultImage />
+            </div>
+          )}
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
@@ -169,6 +178,13 @@ export default function BookmarkList({ items }) {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
+      {hasMoreItems && bookmarks.length > 0 && (
+        <div className="text-left">
+          <Button onClick={loadMoreBookmarks} variant="link">
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

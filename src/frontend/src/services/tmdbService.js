@@ -29,7 +29,7 @@ export async function getTMDBImage(imdb_id, size) {
   } else if (val.person_results.length > 0) {
     path = val.person_results[0].profile_path;
   } else {
-    throw new Error('No image found');
+    return null;
   }
 
   const imageUrlWithSize = new URL(

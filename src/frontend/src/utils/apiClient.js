@@ -112,8 +112,13 @@ export class ApiClient {
     const returnResp = new ApiResponse(response.status);
     if (response.ok) {
       try {
-        returnResp.value = await response.json();
-      } catch {} // eslint-disable-line no-empty
+        const text = await response.text();
+        if (text) {
+          returnResp.value = JSON.parse(text);
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error);
+      }
     }
     return returnResp;
   }

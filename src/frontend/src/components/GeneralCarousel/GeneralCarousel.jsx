@@ -41,11 +41,18 @@ export default function GeneralCarousel({
         interval={null}
         wrap={false}
       >
-        {groupedItems.map((group, idx) => (
-          <Carousel.Item key={idx}>
+        {groupedItems.map((group, groupIndex) => (
+          <Carousel.Item key={groupIndex}>
             <Row>
-              {group.map((item) => (
-                <Col key={item.id} xs={12} sm={6} md={4} lg={3} xl={2}>
+              {group.map((item, itemIndex) => (
+                <Col
+                  key={`${item.id}-${itemIndex}`}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  xl={2}
+                >
                   {renderItem(item, loading)}
                 </Col>
               ))}

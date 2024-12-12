@@ -7,6 +7,7 @@ import {
   fetchMediaCrew,
   fetchSimilarMedia,
   fetchReleases,
+  fetchMediaCast,
 } from '@/services';
 import {
   MediaInformation,
@@ -14,9 +15,11 @@ import {
   MediaBadges,
   MediaCarousel,
   InfoRow,
+  PersonsCarousel,
 } from '@/components';
 import { useToast } from '@/contexts';
 import { extractMembersByJobCategory } from '@/utils';
+import { usePaginatedData } from '@/hooks';
 
 const extractDirectors = (crew) =>
   extractMembersByJobCategory(crew, 'director');
@@ -36,16 +39,32 @@ const extractProducers = (crew) =>
 export default function MediaDetailPage() {
   const { id: mediaId } = useParams();
   const navigate = useNavigate();
+  const { showToastMessage } = useToast();
   const [mediaData, setMediaData] = useState(null);
   const [titles, setTitles] = useState([]);
-  const [crew, setCrew] = useState([]);
-  const [similarMedia, setSimilarMedia] = useState([]);
   const [releases, setReleases] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingSimilarMedia, setLoadingSimilarMedia] = useState(true);
-  const { showToastMessage } = useToast();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
+
+  const {
+    data: crew,
+    loading: loadingCrew,
+    hasMore: hasMoreCrew,
+    handleLoadMore: handleLoadMoreCrew,
+  } = usePaginatedData(fetchMediaCrew, mediaId);
+
+  const {
+    data: cast,
+    loading: loadingCast,
+    hasMore: hasMoreCast,
+    handleLoadMore: handleLoadMoreCast,
+  } = usePaginatedData(fetchMediaCast, mediaId);
+
+  const {
+    data: similarMedia,
+    loading: loadingSimilarMedia,
+    hasMore: hasMoreItems,
+    handleLoadMore: handleLoadMoreSimilarMedia,
+  } = usePaginatedData(fetchSimilarMedia, mediaId);
 
   const loadMedia = useCallback(async () => {
     try {
@@ -54,8 +73,6 @@ export default function MediaDetailPage() {
       setMediaData(mediaData);
       const titlesData = await fetchTitles(mediaId);
       setTitles(titlesData);
-      const crewData = await fetchMediaCrew(mediaId);
-      setCrew(crewData);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);
     } catch (error) {
@@ -66,44 +83,11 @@ export default function MediaDetailPage() {
     }
   }, [mediaId, showToastMessage]);
 
-  const loadSimilarMedia = useCallback(async () => {
-    setLoadingSimilarMedia(true);
-    try {
-      const fetchedMedia = await fetchSimilarMedia({
-        id: mediaId,
-        page: currentPage,
-        count: 12,
-      });
-      setSimilarMedia((prevMedia) =>
-        currentPage === 1
-          ? fetchedMedia.items
-          : [...prevMedia, ...fetchedMedia.items],
-      );
-      setHasMoreItems(!!fetchedMedia.nextPage);
-    } catch (error) {
-      console.error('Error loading similar media:', error);
-    } finally {
-      setLoadingSimilarMedia(false);
-    }
-  }, [mediaId, currentPage]);
-
   useEffect(() => {
     if (mediaId) {
       loadMedia();
     }
   }, [mediaId, loadMedia]);
-
-  useEffect(() => {
-    if (mediaId) {
-      loadSimilarMedia();
-    }
-  }, [mediaId, currentPage, loadSimilarMedia]);
-
-  const handleLoadMore = useCallback(() => {
-    if (!loadingSimilarMedia && hasMoreItems) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  }, [loadingSimilarMedia, hasMoreItems]);
 
   useEffect(() => {
     if (!loading && !mediaData) {
@@ -154,17 +138,44 @@ export default function MediaDetailPage() {
       </Row>
       <Row className="mt-5">
         <Col>
+          <Tabs defaultActiveKey="crew" id="crew-cast-tabs" className="mb-3">
+            <Tab eventKey="crew" title="Crew">
+              <PersonsCarousel
+                persons={crew.map((person) => ({
+                  ...person,
+                  id: person.personId,
+                  name: person.personName,
+                }))}
+                loading={loadingCrew}
+                onLoadMore={handleLoadMoreCrew}
+                hasNextPage={hasMoreCrew}
+              />
+            </Tab>
+            <Tab eventKey="cast" title="Cast">
+              <PersonsCarousel
+                persons={cast.map((person) => ({
+                  ...person,
+                  id: person.personId,
+                  name: person.personName,
+                }))}
+                loading={loadingCast}
+                onLoadMore={handleLoadMoreCast}
+                hasNextPage={hasMoreCast}
+              />
+            </Tab>
+          </Tabs>
+        </Col>
+      </Row>
+      <Row className="mt-5">
+        <Col>
           <h5>Similar Media</h5>
           <MediaCarousel
             media={similarMedia}
             loading={loadingSimilarMedia}
-            onLoadMore={handleLoadMore}
+            onLoadMore={handleLoadMoreSimilarMedia}
             hasNextPage={hasMoreItems}
           />
         </Col>
-      </Row>
-      <Row className="mt-5">
-        <Col>{/* todo - cast and crew carousel */}</Col>
       </Row>
       <Row>
         <Col>

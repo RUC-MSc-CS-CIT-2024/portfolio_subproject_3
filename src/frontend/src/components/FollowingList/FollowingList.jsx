@@ -1,19 +1,58 @@
 import { Link } from 'react-router-dom';
-import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Table, Tooltip, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './FollowingList.css';
+import { unfollowPerson } from '@/services';
+import { useEffect, useState } from 'react';
+import { formatDate } from '@/utils';
+import { useToast } from '@/hooks';
+import { DefaultImage } from '@/components';
 
-export default function FollowingList({ items }) {
-  let rows = items.map((item) => (
+export default function FollowingList({
+  items,
+  loadMoreFollowing,
+  hasMoreItems,
+}) {
+  const [following, setFollowing] = useState(items);
+  const { showToastMessage } = useToast();
+
+  useEffect(() => {
+    setFollowing(items);
+  }, [items]);
+
+  const handleUnfollow = async (followingId) => {
+    try {
+      await unfollowPerson(followingId);
+      setFollowing(
+        following.filter((item) => item.followingId !== followingId),
+      );
+      showToastMessage('Unfollowed person.', 'success');
+    } catch (error) {
+      console.error('Error unfollowing person:', error);
+      showToastMessage('Error unfollowing person.', 'danger');
+    }
+  };
+
+  let rows = following.map((item) => (
     <tr key={item.followingId}>
-      <td>
-        <img className="mx-2" src={item.pictureUri} height={68} />
-        <Link to={`/person/${item.person.id}`}>{item.person.name}</Link>
+      <td className="d-flex align-items-center gap-3">
+        {item?.pictureUri ? (
+          <img className="mx-2 responsive-img rounded" src={item?.pictureUri} />
+        ) : (
+          <div className="default-image-container mx-2">
+            <DefaultImage />
+          </div>
+        )}
+        <Link to={`/persons/${item.person.id}`}>{item.person.name}</Link>
       </td>
-      <td className="align-middle">{item.followedSince}</td>
+      <td className="align-middle">{formatDate(item.followedSince)}</td>
       <td className="align-middle">
         <OverlayTrigger overlay={<Tooltip>Unfollow</Tooltip>}>
-          <i className="bi bi-person-dash text-danger" />
+          <span
+            onClick={() => handleUnfollow(item.followingId)}
+            className="cursor-pointer "
+          >
+            <i className="bi bi-person-dash text-danger" />
+          </span>
         </OverlayTrigger>
       </td>
     </tr>
@@ -31,15 +70,24 @@ export default function FollowingList({ items }) {
   }
 
   return (
-    <Table hover>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th className="w-25">Follow date</th>
-          <th className="action-col"></th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <div className="table-responsive">
+      <Table hover>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th className="w-25">Follow date</th>
+            <th className="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+      {hasMoreItems && following.length > 0 && (
+        <div className="text-left">
+          <Button onClick={loadMoreFollowing} variant="link">
+            Load More
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

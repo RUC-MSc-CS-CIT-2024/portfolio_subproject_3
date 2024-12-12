@@ -99,21 +99,47 @@ export const fetchMedia = async ({
   page,
   count,
   query = '',
-  queryType = 'All',
+  queryType = 'Simple',
+  keywords = [],
+  title = '',
+  plot = '',
+  character = '',
+  person = '',
+  type = null,
+  year = null,
 }) => {
   const api = new ApiClient();
+
   const queryParams = [
     { key: 'page', value: page },
     { key: 'count', value: count },
     { key: 'query_type', value: queryType },
-    { key: 'query', value: query },
   ];
+  if (queryType === 'Simple') {
+    if (query) {
+      queryParams.push({ key: 'query', value: query });
+    }
+  } else if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
+    const lowercasedKeywords = keywords.map((kw) => kw.toLowerCase());
+    lowercasedKeywords.forEach((kw) => {
+      queryParams.push({ key: 'keywords', value: kw });
+    });
+  } else if (queryType === 'Structured') {
+    if (title) queryParams.push({ key: 'title', value: title });
+    if (plot) queryParams.push({ key: 'plot', value: plot });
+    if (character) queryParams.push({ key: 'character', value: character });
+    if (person) queryParams.push({ key: 'person', value: person });
+  }
+  if (type) queryParams.push({ key: 'type', value: type });
+  if (year) queryParams.push({ key: 'year', value: year });
+
   const path = '/api/media';
   try {
     const response = await api.Get(path, queryParams);
     if (!response.ok) {
       throw new Error(`Failed to fetch media: ${response.statusCode}`);
     }
+    //console.log('response:', response);
     return response.value;
   } catch (error) {
     console.error('Error fetching media:', error);

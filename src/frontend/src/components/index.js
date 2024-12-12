@@ -29,4 +29,5 @@ export { default as PersonInformation } from './PersonInformation/PersonInformat
 export { default as PersonsCarousel } from './PersonsCarousel/PersonsCarousel';
 export { default as PersonsGrid } from './PersonsGrid/PersonsGrid';
 export { default as CreditsList } from './CreditsList/CreditsList';
+export { default as AdvancedSearchForm } from './AdvancedSearchForm/AdvancedSearchForm';
 export { default as GeneralCarousel } from './GeneralCarousel/GeneralCarousel';

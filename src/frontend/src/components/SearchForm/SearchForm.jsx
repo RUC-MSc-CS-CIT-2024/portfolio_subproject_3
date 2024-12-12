@@ -1,10 +1,8 @@
+// SearchForm.jsx
 import { Form, FormControl, Button, Dropdown } from 'react-bootstrap';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import {
-  getUserSearchHistory,
-  deleteUserSearchHistory,
-} from '@/services/userService';
+import { getUserSearchHistory, deleteUserSearchHistory } from '@/services';
 import './SearchForm.css';
 import { useAuth } from '@/hooks';
 

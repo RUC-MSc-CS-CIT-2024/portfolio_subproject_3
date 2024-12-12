@@ -1,0 +1,41 @@
+.advanced-search-form {
+    margin-bottom: 2rem; /* Adds space below the form for separation */
+  }
+  
+  .advanced-search-form .card {
+    border-radius: 10px;
+    border: none; /* Removes border for a cleaner look */
+  }
+  
+  .advanced-search-form .card .form-group label {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .advanced-search-form .form-control {
+    padding: 0.5rem 0.75rem; /* Adjust padding for a consistent look */
+    font-size: 0.95rem;
+  }
+  
+  .advanced-search-form .form-select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .advanced-search-form .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .advanced-search-form .btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .advanced-search-form .row {
+    margin: 0 -0.5rem; /* Ensures row padding consistency */
+  }
+  
+  .advanced-search-form .col {
+    padding: 0 0.5rem; /* Ensures columns have consistent spacing */
+  }
+  

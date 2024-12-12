@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Container, Spinner } from 'react-bootstrap';
 import { fetchMedia } from '@/services';
 import {
@@ -12,7 +12,6 @@ import { useToast } from '@/hooks';
 
 export default function SearchPage() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -81,7 +80,10 @@ export default function SearchPage() {
       applyFilters(resultList, filterCriteria);
     } catch (error) {
       console.error('Error searching:', error.message);
-      showToastMessage(error.message || 'Error occurred while searching.', 'danger');
+      showToastMessage(
+        error.message || 'Error occurred while searching.',
+        'danger',
+      );
       setResults([]);
       setFilteredResults([]);
     } finally {
@@ -154,11 +156,15 @@ export default function SearchPage() {
     <Container className="mt-5">
       <h1 className="text-center fw-bold mb-4">Search Movies</h1>
       <AdvancedSearchForm
+        className="mb-4" // Adds margin between form and results
         queryType={queryType}
         setQueryType={setQueryType}
         onSearch={handleAdvancedSearch}
       />
-      <FilterMediaComponent onFilterChange={handleFilterChange} />
+      <FilterMediaComponent
+        className="mb-4"
+        onFilterChange={handleFilterChange}
+      />
       {loading ? (
         <div className="d-flex justify-content-center align-items-center py-5">
           <Spinner animation="border" variant="dark" />

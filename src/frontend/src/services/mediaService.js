@@ -1,4 +1,5 @@
 import { ApiClient } from '@/utils';
+import { fetchPersonById } from '@/services';
 
 export const fetchMediaById = async (id) => {
   const api = new ApiClient();
@@ -30,30 +31,64 @@ export const fetchTitles = async (id) => {
   }
 };
 
-export const fetchMediaCrew = async (id) => {
+export const fetchMediaCrew = async ({ id, page, count }) => {
   const api = new ApiClient();
+  const queryParams = [
+    { key: 'page', value: page },
+    { key: 'count', value: count },
+  ];
+
   const path = `/api/media/${id}/crew`;
   try {
-    const response = await api.Get(path);
+    const response = await api.Get(path, queryParams);
     if (!response.ok) {
       throw new Error(`Failed to fetch crew for media ID ${id}.`);
     }
-    return response.value;
+
+    const crewData = response.value.items;
+
+    const crewWithImages = await Promise.all(
+      crewData.map(async (member) => {
+        const personDetails = await fetchPersonById(member.personId);
+        return { ...member, pictureUri: personDetails.pictureUri };
+      }),
+    );
+
+    const finalResponse = { ...response.value, items: crewWithImages };
+
+    return finalResponse;
   } catch (error) {
     console.error('Failed to fetch media crew:', error);
     throw error;
   }
 };
 
-export const fetchMediaCast = async (id) => {
+export const fetchMediaCast = async ({ id, page, count }) => {
   const api = new ApiClient();
+  const queryParams = [
+    { key: 'page', value: page },
+    { key: 'count', value: count },
+  ];
+
   const path = `/api/media/${id}/cast`;
   try {
-    const response = await api.Get(path);
+    const response = await api.Get(path, queryParams);
     if (!response.ok) {
       throw new Error(`Failed to fetch cast for media ID ${id}.`);
     }
-    return response.value;
+
+    const castData = response.value.items;
+
+    const castWithImages = await Promise.all(
+      castData.map(async (member) => {
+        const personDetails = await fetchPersonById(member.personId);
+        return { ...member, pictureUri: personDetails.pictureUri };
+      }),
+    );
+
+    const finalResponse = { ...response.value, items: castWithImages };
+
+    return finalResponse;
   } catch (error) {
     console.error('Failed to fetch media cast:', error);
     throw error;

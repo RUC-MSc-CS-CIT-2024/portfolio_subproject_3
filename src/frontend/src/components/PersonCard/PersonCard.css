@@ -23,6 +23,7 @@
   color: #555;
   font-size: 0.9rem;
   margin-top: 5px;
+  text-transform: capitalize;
 }
 
 .personCard-info {

@@ -25,10 +25,10 @@ export default function MediaGrid({ media, loading }) {
           >
             <MediaCard
               id={media.id}
-              imageUri={media.imageUri}
+              imageUri={media.posterUri}
               type={media.type}
               title={media.title}
-              releaseYear={media.releaseYear}
+              releaseYear={new Date(media.releaseDate).getFullYear()}
               isLoading={loading}
             />
             {index === firstRowMedia.length - 1 &&
@@ -57,11 +57,11 @@ export default function MediaGrid({ media, loading }) {
               className="position-relative"
             >
               <MediaCard
-                id={media.mediaId}
-                imageUri={media.imageUri}
+                id={media.id}
+                imageUri={media.posterUri}
                 type={media.type}
                 title={media.title}
-                releaseYear={media.releaseYear}
+                releaseYear={new Date(media.releaseDate).getFullYear()}
                 isLoading={loading}
               />
             </Col>

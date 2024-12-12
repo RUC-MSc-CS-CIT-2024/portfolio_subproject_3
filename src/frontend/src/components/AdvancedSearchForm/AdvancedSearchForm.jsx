@@ -1,3 +1,4 @@
+// AdvancedSearchForm.jsx
 import { useState } from 'react';
 import { Form, Button, Col, Row, Card } from 'react-bootstrap';
 import { SearchForm } from '@/components';
@@ -24,16 +25,17 @@ export default function AdvancedSearchForm({
     if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
       const keywords = query.trim().split(/\s+/);
       params = { ...params, keywords };
-    } else if (queryType === 'SimpleSearch') {
+    } else if (queryType === 'Simple') {
       params = { ...params, query };
     }
+
     onSearch(params);
   };
 
   const handleStructuredSubmit = (e) => {
     e.preventDefault();
     const params = {
-      query_type: 'StructuredSearch',
+      query_type: 'Structured',
       ...structuredFields,
     };
     onSearch(params);
@@ -53,19 +55,19 @@ export default function AdvancedSearchForm({
               >
                 <option value="ExactMatch">ExactMatch</option>
                 <option value="BestMatch">BestMatch</option>
-                <option value="SimpleSearch">SimpleSearch</option>
-                <option value="StructuredSearch">StructuredSearch</option>
+                <option value="Simple">Simple</option>
+                <option value="Structured">Structured</option>
               </Form.Select>
             </Form.Group>
           </Col>
           <Col xs="12" md="8">
-            {queryType !== 'StructuredSearch' && (
+            {queryType !== 'Structured' && (
               <SearchForm
                 btnVariant="dark"
                 onSearch={handleNonStructuredSearch}
               />
             )}
-            {queryType === 'StructuredSearch' && (
+            {queryType === 'Structured' && (
               <Form onSubmit={handleStructuredSubmit}>
                 <Row>
                   <Col xs="12" md="6" className="mb-3">

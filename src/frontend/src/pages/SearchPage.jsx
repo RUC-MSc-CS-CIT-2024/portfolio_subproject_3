@@ -1,29 +1,28 @@
-// SearchPage.jsx
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Spinner } from 'react-bootstrap';
 import { fetchMedia } from '@/services';
 import {
   MediaGrid,
   FilterMediaComponent,
   AdvancedSearchForm,
+  Pagination,
 } from '@/components';
+import { useToast } from '@/hooks';
 
 export default function SearchPage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [filteredResults, setFilteredResults] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState({
     type: null,
     year: null,
   });
 
-  // Default to 'Simple' since that's now the correct value
   const [queryType, setQueryType] = useState('Simple');
   const [query, setQuery] = useState('');
-
   const [keywords, setKeywords] = useState([]);
   const [structuredFields, setStructuredFields] = useState({
     title: '',
@@ -32,9 +31,16 @@ export default function SearchPage() {
     person: '',
   });
 
-  const applyFilters = useCallback((results, filterCriteria) => {
-    const { type, year } = filterCriteria;
-    const filtered = results.filter((item) => {
+  const [loading, setLoading] = useState(false);
+  const [currentMediaPage, setCurrentMediaPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const mediaItemsPerPage = 24;
+
+  const { showToastMessage } = useToast();
+
+  const applyFilters = useCallback((resultsToFilter, criteria) => {
+    const { type, year } = criteria;
+    const filtered = resultsToFilter.filter((item) => {
       const matchesType = type ? item.type === type : true;
       const matchesYear = year ? item.releaseYear === year : true;
       return matchesType && matchesYear;
@@ -56,6 +62,8 @@ export default function SearchPage() {
       let params = {
         queryType,
         ...filterCriteria,
+        page: currentMediaPage,
+        count: mediaItemsPerPage,
       };
 
       if (queryType === 'Simple') {
@@ -69,9 +77,13 @@ export default function SearchPage() {
       const response = await fetchMedia(params);
       const resultList = response.items || [];
       setResults(resultList);
+      setTotalItems(response.numberOfItems || resultList.length);
       applyFilters(resultList, filterCriteria);
     } catch (error) {
       console.error('Error searching:', error.message);
+      showToastMessage(error.message || 'Error occurred while searching.', 'danger');
+      setResults([]);
+      setFilteredResults([]);
     } finally {
       setLoading(false);
     }
@@ -81,7 +93,10 @@ export default function SearchPage() {
     filterCriteria,
     keywords,
     structuredFields,
+    currentMediaPage,
+    mediaItemsPerPage,
     applyFilters,
+    showToastMessage,
   ]);
 
   const handleAdvancedSearch = useCallback((params) => {
@@ -109,8 +124,13 @@ export default function SearchPage() {
       });
       setQuery('');
     }
-    // Do NOT call handleSearch here, It will break the search completely.
+
+    setCurrentMediaPage(1);
   }, []);
+
+  const handleMediaPageChange = (pageNumber) => {
+    setCurrentMediaPage(pageNumber);
+  };
 
   useEffect(() => {
     handleSearch();
@@ -120,6 +140,7 @@ export default function SearchPage() {
     keywords,
     structuredFields,
     filterCriteria,
+    currentMediaPage,
     handleSearch,
   ]);
 
@@ -149,7 +170,17 @@ export default function SearchPage() {
           </h2>
         </div>
       ) : (
-        <MediaGrid media={filteredResults} />
+        <>
+          <MediaGrid media={filteredResults} loading={loading} />
+          {totalItems > mediaItemsPerPage && (
+            <Pagination
+              totalItems={totalItems}
+              itemsPerPage={mediaItemsPerPage}
+              currentPage={currentMediaPage}
+              onPageChange={handleMediaPageChange}
+            />
+          )}
+        </>
       )}
     </Container>
   );

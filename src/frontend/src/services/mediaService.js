@@ -96,8 +96,8 @@ export const fetchReleases = async (id) => {
 };
 
 export const fetchMedia = async ({
-  page = 1,
-  count = 18,
+  page,
+  count,
   query = '',
   queryType = 'Simple',
   keywords = [],
@@ -115,7 +115,6 @@ export const fetchMedia = async ({
     { key: 'count', value: count },
     { key: 'query_type', value: queryType },
   ];
-
   if (queryType === 'Simple') {
     if (query) {
       queryParams.push({ key: 'query', value: query });
@@ -133,6 +132,7 @@ export const fetchMedia = async ({
   }
   if (type) queryParams.push({ key: 'type', value: type });
   if (year) queryParams.push({ key: 'year', value: year });
+
   const path = '/api/media';
   try {
     const response = await api.Get(path, queryParams);

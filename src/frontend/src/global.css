@@ -27,6 +27,25 @@
   color: black;
 }
 
+.responsive-img {
+  height: 68px;
+}
+
+@media (max-width: 768px) {
+  .responsive-img {
+    height: 50px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table th,
+  .table td {
+    white-space: nowrap;
+  }
+}
+
 .action-col {
   width: 0;
 }

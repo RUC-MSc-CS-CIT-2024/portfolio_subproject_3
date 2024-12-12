@@ -1,11 +1,14 @@
 .rating-headline {
   margin-top: 1.5rem;
 }
+.rating-margin {
+  margin-top: 1rem;
+}
+
 .rating-container {
   width: 100%;
   display: flex;
   gap: 3rem;
-  margin-top: 1rem;
 }
 
 .rating {

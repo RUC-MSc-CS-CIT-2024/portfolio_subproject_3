@@ -15,6 +15,7 @@ export default function PersonCard({
 
   const handleClick = () => {
     navigate(`/persons/${id}`);
+    window.scrollTo(0, 0);
   };
 
   const defaultName = 'Unknown Name';

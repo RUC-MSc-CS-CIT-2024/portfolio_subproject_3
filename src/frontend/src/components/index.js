@@ -1,4 +1,3 @@
-export { default as DynamicBreadcrumb } from './DynamicBreadcrumb/DynamicBreadcrumb';
 export { default as LoginForm } from './LoginForm/LoginForm';
 export { default as NavBar } from './NavBar/Navbar';
 export { default as SearchForm } from './SearchForm/SearchForm';
@@ -30,3 +29,4 @@ export { default as PersonInformation } from './PersonInformation/PersonInformat
 export { default as PersonsCarousel } from './PersonsCarousel/PersonsCarousel';
 export { default as PersonsGrid } from './PersonsGrid/PersonsGrid';
 export { default as CreditsList } from './CreditsList/CreditsList';
+export { default as GeneralCarousel } from './GeneralCarousel/GeneralCarousel';

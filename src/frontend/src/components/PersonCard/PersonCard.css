@@ -2,7 +2,7 @@
   cursor: pointer;
 }
 
-.personCard {
+.personCard.card {
   border: none;
   width: 100%;
 }

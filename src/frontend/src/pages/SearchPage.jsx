@@ -1,78 +1,64 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { fetchMedia } from '@/services';
-import { SearchForm, MediaGrid, FilterMediaComponent } from '@/components';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { SearchForm, MediaGrid, Pagination } from '@/components';
+import { useToast } from '@/hooks';
 
 export default function SearchPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [results, setResults] = useState([]);
+  const [mediaResults, setMediaResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [filterCriteria, setFilterCriteria] = useState({
-    type: null,
-    year: null,
-  });
+  const [currentMediaPage, setCurrentMediaPage] = useState(1);
+  const [isMediaExpanded, setIsMediaExpanded] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
+  const mediaItemsPerPage = 24;
 
-  const handleSearch = useCallback(
-    async (searchQuery, queryType) => {
-      if (!searchQuery) return;
+  const { showToastMessage } = useToast();
 
-      try {
-        const response = await fetchMedia({ query: searchQuery, queryType });
-        const resultList = response.items;
-        setResults(resultList);
-        applyFilters(resultList, filterCriteria);
-      } catch (error) {
-        console.error('Error searching:', error);
-      }
-    },
-    [filterCriteria],
-  );
-
-  const applyFilters = (results, filterCriteria) => {
-    const { type, year } = filterCriteria;
-    const filtered = results.filter((item) => {
-      const matchesType = type ? item.type === type : true;
-      const matchesYear = year ? item.releaseYear === year : true;
-      return matchesType && matchesYear;
-    });
-    setFilteredResults(filtered);
+  const handleMediaPageChange = (pageNumber) => {
+    setCurrentMediaPage(pageNumber);
+    console.log('Page number:', pageNumber);
   };
 
-  const handleFilterChange = useCallback(
-    (newFilterCriteria) => {
-      setLoading(true);
-      setFilterCriteria(newFilterCriteria);
-      applyFilters(results, newFilterCriteria);
-      setLoading(false);
-    },
-    [results],
-  );
-
-  const transformedResults = filteredResults.map((media) => ({
-    ...media,
-    imageUri: media.posterUri,
-    releaseYear: new Date(media.releaseDate).getFullYear(),
-  }));
-
-  const fetchData = useCallback(async () => {
-    const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
-    const queryType = location.search ? 'Simple' : 'All';
-    setLoading(true);
-    try {
-      await handleSearch(searchQuery, queryType);
-    } catch (err) {
-      console.error('Error during search:', err.message);
-    } finally {
-      setLoading(false);
+  const handleShowMore = (isExpanded) => {
+    if (!isExpanded) {
+      setIsMediaExpanded(true);
+    } else {
+      setIsMediaExpanded(false);
     }
-  }, [location.search, handleSearch]);
+  };
 
   useEffect(() => {
-    fetchData();
-  }, [location.search, fetchData]);
+    setLoading(true);
+    const searchQuery = new URLSearchParams(location.search).get('q');
+    if (!searchQuery) return;
+    const queryType = location.search ? 'Simple' : 'All';
+
+    const getMedia = async () => {
+      try {
+        const resultList = await fetchMedia({
+          page: currentMediaPage,
+          count: mediaItemsPerPage,
+          query: searchQuery,
+          queryType,
+        });
+        setMediaResults(resultList.items);
+        setTotalItems(resultList.numberOfItems);
+      } catch (error) {
+        showToastMessage(
+          error.message || 'Error occured while searching.',
+          'danger',
+        );
+        setMediaResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getMedia();
+  }, [currentMediaPage, location.search]);
 
   return (
     <Container>
@@ -81,13 +67,20 @@ export default function SearchPage() {
         btnVariant="dark"
         onSearch={(query) => navigate(`/search?q=${encodeURIComponent(query)}`)}
       />
-      <FilterMediaComponent onFilterChange={handleFilterChange} />
-      {!loading && filteredResults.length === 0 && (
-        <div className="d-flex justify-content-center align-items-center pt-5">
-          <h2>No matches found.</h2>
-        </div>
+      <h2 className="mt-5">Media results:</h2>
+      <MediaGrid
+        media={mediaResults}
+        loading={loading}
+        onShowMore={handleShowMore}
+      />
+      {isMediaExpanded && (
+        <Pagination
+          totalItems={totalItems}
+          itemsPerPage={mediaItemsPerPage}
+          currentPage={currentMediaPage}
+          onPageChange={handleMediaPageChange}
+        />
       )}
-      <MediaGrid media={transformedResults} loading={loading} />
     </Container>
   );
 }

@@ -96,8 +96,8 @@ export const fetchReleases = async (id) => {
 };
 
 export const fetchMedia = async ({
-  page = 1,
-  count = 18,
+  page,
+  count,
   query = '',
   queryType = 'All',
 }) => {
@@ -108,17 +108,12 @@ export const fetchMedia = async ({
     { key: 'query_type', value: queryType },
     { key: 'query', value: query },
   ];
-
   const path = '/api/media';
   try {
     const response = await api.Get(path, queryParams);
-
     if (!response.ok) {
       throw new Error(`Failed to fetch media: ${response.statusCode}`);
     }
-
-    console.log('response:', response);
-
     return response.value;
   } catch (error) {
     console.error('Error fetching media:', error);

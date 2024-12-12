@@ -1,8 +1,9 @@
 import { Container } from 'react-bootstrap';
-import { fetchMedia } from '../services/mediaService';
+import { fetchMedia } from '@/services';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { SearchForm, MediaGrid, Pagination } from '@/components';
+import { useToast } from '@/hooks';
 
 export default function SearchPage() {
   const location = useLocation();
@@ -13,6 +14,8 @@ export default function SearchPage() {
   const [isMediaExpanded, setIsMediaExpanded] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
   const mediaItemsPerPage = 24;
+
+  const { showToastMessage } = useToast();
 
   const handleMediaPageChange = (pageNumber) => {
     setCurrentMediaPage(pageNumber);
@@ -37,14 +40,17 @@ export default function SearchPage() {
       try {
         const resultList = await fetchMedia({
           page: currentMediaPage,
-          pageCount: mediaItemsPerPage,
+          count: mediaItemsPerPage,
           query: searchQuery,
           queryType,
         });
         setMediaResults(resultList.items);
         setTotalItems(resultList.numberOfItems);
       } catch (error) {
-        console.error('Error searching:', error);
+        showToastMessage(
+          error.message || 'Error occured while searching.',
+          'danger',
+        );
         setMediaResults([]);
       } finally {
         setLoading(false);

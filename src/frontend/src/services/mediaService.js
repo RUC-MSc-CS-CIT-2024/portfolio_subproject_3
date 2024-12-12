@@ -97,14 +97,14 @@ export const fetchReleases = async (id) => {
 
 export const fetchMedia = async ({
   page,
-  pageCount,
+  count,
   query = '',
   queryType = 'All',
 }) => {
   const api = new ApiClient();
   const queryParams = [
     { key: 'page', value: page },
-    { key: 'count', value: pageCount },
+    { key: 'count', value: count },
     { key: 'query_type', value: queryType },
     { key: 'query', value: query },
   ];

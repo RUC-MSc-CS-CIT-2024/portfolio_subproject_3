@@ -1,11 +1,13 @@
 // SearchForm.jsx
 import { Form, FormControl, Button, Dropdown } from 'react-bootstrap';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { getUserSearchHistory, deleteUserSearchHistory } from '@/services';
 import './SearchForm.css';
+import { useAuth } from '@/hooks';
 
 export default function SearchForm({ btnVariant = 'dark', onSearch }) {
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchHistory, setSearchHistory] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -23,19 +25,26 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
     }
   };
 
-  const fetchSearchHistory = async (page) => {
-    try {
-      const history = await getUserSearchHistory(page, 5);
-      if (page === 1) {
-        setSearchHistory(history.items);
-      } else {
-        setSearchHistory((prevHistory) => [...prevHistory, ...history.items]);
+  const fetchSearchHistory = useCallback(
+    async (page) => {
+      if (!isAuthenticated) {
+        return;
       }
-      setHasMoreItems(history.nextPage !== null);
-    } catch {
-      console.error('Error getting the search history, you may need to log in');
-    }
-  };
+
+      try {
+        const history = await getUserSearchHistory(page, 5);
+        if (page === 1) {
+          setSearchHistory(history.items);
+        } else {
+          setSearchHistory((prevHistory) => [...prevHistory, ...history.items]);
+        }
+        setHasMoreItems(history.nextPage !== null);
+      } catch {
+        console.error('Could not fetch search history');
+      }
+    },
+    [isAuthenticated],
+  );
 
   const handleDelete = async (id) => {
     try {
@@ -51,7 +60,7 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
 
   useEffect(() => {
     fetchSearchHistory(currentPage);
-  }, [currentPage, refresh]);
+  }, [currentPage, refresh, fetchSearchHistory]);
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);

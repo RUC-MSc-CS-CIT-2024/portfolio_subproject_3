@@ -45,3 +45,21 @@
     white-space: nowrap;
   }
 }
+
+.action-col {
+  width: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.default-image-container {
+  max-width: 50px;
+  width: 100%;
+  height: auto;
+}
+
+.default-image-container svg text {
+  font-size: 0.5rem;
+}

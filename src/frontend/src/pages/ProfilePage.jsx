@@ -3,11 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useAuth, useToast } from '@/hooks';
 import { updateUserById, deleteUserById } from '@/services';
 import { getUserFromSession } from '@/utils';
-import {
-  UpdateProfileForm,
-  ToastNotification,
-  DynamicBreadcrumb,
-} from '@/components';
+import { UpdateProfileForm, ToastNotification } from '@/components';
 
 export default function ProfilePage() {
   const { logout, refresh } = useAuth();
@@ -43,11 +39,8 @@ export default function ProfilePage() {
     }
   };
 
-  const breadcrumbItems = [{ title: 'Home', path: '/' }, { title: 'Profile' }];
-
   return (
     <Container className="d-flex flex-column min-vh-100 pb-4">
-      <DynamicBreadcrumb items={breadcrumbItems} />
       <h1>Profile settings</h1>
       <Row className="flex-grow-1">
         <Col xs={12} md={6}>

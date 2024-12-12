@@ -121,7 +121,8 @@ export const fetchMedia = async ({
       queryParams.push({ key: 'query', value: query });
     }
   } else if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
-    keywords.forEach((kw) => {
+    const lowercasedKeywords = keywords.map((kw) => kw.toLowerCase());
+    lowercasedKeywords.forEach((kw) => {
       queryParams.push({ key: 'keywords', value: kw });
     });
   } else if (queryType === 'Structured') {

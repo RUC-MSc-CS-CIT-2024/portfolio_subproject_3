@@ -129,10 +129,16 @@ export const fetchPersonMedia = async (id, page, count) => {
   }
 };
 
-export const fetchPersonCoactors = async (id) => {
+export const fetchPersonCoactors = async ({ id, page, count }) => {
   const api = new ApiClient();
+  const queryParams = [
+    { key: 'page', value: page },
+    { key: 'count', value: count },
+  ];
+
+  const path = `${BASE_PATH}${id}/coactors`;
   try {
-    const response = await api.Get(`${BASE_PATH}${id}/coactors`);
+    const response = await api.Get(path, queryParams);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch coactors for person with ID ${id}.`);
@@ -142,16 +148,26 @@ export const fetchPersonCoactors = async (id) => {
 
     const detailedCoactors = await Promise.all(
       coactors.map(async (coactor) => {
-        const coactorData = await fetchPersonById(coactor.id);
-        return {
-          ...coactor,
-          ...coactorData,
-          name: coactor.actorName || coactorData.name,
-          id: coactorData.id,
-        };
+        try {
+          const coactorDetails = await fetchPersonById(coactor.id);
+          return {
+            ...coactor,
+            ...coactorDetails,
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching details for coactor with ID ${coactor.id}:`,
+            error,
+          );
+          return coactor;
+        }
       }),
     );
-    return detailedCoactors;
+
+    return {
+      ...response.value,
+      items: detailedCoactors,
+    };
   } catch (error) {
     console.error(`Error fetching coactors for ID (${id}):`, error);
     throw error;

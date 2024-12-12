@@ -19,16 +19,16 @@ import { useToast } from '@/hooks';
 export default function PersonDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToastMessage } = useToast();
   const [person, setPerson] = useState(null);
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
   const [loadingPerson, setLoadingPerson] = useState(true);
   const [loadingCoActors, setLoadingCoActors] = useState(true);
-  const { showToastMessage } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
 
-  const fetchPersonData = async (personId, page) => {
+  const fetchPersonData = useCallback(async (personId, page) => {
     try {
       const response = await fetchPersonMedia(personId, page, 3);
       setCredits((prevCredits) => {
@@ -41,50 +41,68 @@ export default function PersonDetailPage() {
     } catch (error) {
       console.error('Error fetching media:', error);
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    const loadPerson = async () => {
-      try {
-        setLoadingPerson(true);
-        const personData = await fetchPersonById(id);
-        setPerson(personData);
-        setLoadingPerson(false);
-      } catch {
-        showToastMessage('Error getting the person.', 'danger');
-        setLoadingPerson(false);
-        navigate('/persons');
-      }
-    };
-
-    loadPerson();
-  }, [id, showToastMessage, navigate]);
-
-  useEffect(() => {
-    fetchPersonData(id, currentPage);
-  }, [id, currentPage]);
-
-  useEffect(() => {
-    const loadCoActors = async () => {
+  const fetchCoActorsData = useCallback(
+    async (personId, page) => {
       try {
         setLoadingCoActors(true);
-        const coActorsData = await fetchPersonCoactors(id);
-        setCoActors(coActorsData);
+        const coActorsData = await fetchPersonCoactors({
+          id: personId,
+          page: page,
+          count: 12,
+        });
+        setCoActors((prevCoActors) => [
+          ...prevCoActors,
+          ...coActorsData.items.filter(
+            (newCoactor) =>
+              !prevCoActors.some((coactor) => coactor.id === newCoactor.id),
+          ),
+        ]);
+        setHasMoreItems(!!coActorsData.nextPage);
       } catch {
         showToastMessage('Error getting the co-actors.', 'danger');
       } finally {
         setLoadingCoActors(false);
       }
-    };
+    },
+    [showToastMessage],
+  );
 
-    loadCoActors();
-  }, [id, showToastMessage]);
+  const loadPerson = useCallback(async () => {
+    try {
+      setLoadingPerson(true);
+      const personData = await fetchPersonById(id);
+      setPerson(personData);
+      setLoadingPerson(false);
+      fetchCoActorsData(id, 1);
+    } catch {
+      showToastMessage('Error getting the person.', 'danger');
+      setLoadingPerson(false);
+      navigate('/persons');
+    }
+  }, [id, navigate, showToastMessage, fetchCoActorsData]);
+
+  useEffect(() => {
+    loadPerson();
+  }, [id, loadPerson]);
+
+  useEffect(() => {
+    fetchPersonData(id, currentPage);
+  }, [id, currentPage, fetchPersonData]);
 
   useEffect(() => {
     if (!loadingPerson && !person) {
       navigate('/NotFound');
     }
   }, [loadingPerson, person, navigate]);
+
+  useEffect(() => {
+    setCoActors([]);
+    setCredits([]);
+    setCurrentPage(1);
+    setHasMoreItems(true);
+  }, [id]);
 
   const handleFollow = async () => {
     try {
@@ -99,6 +117,13 @@ export default function PersonDetailPage() {
   const handleLoadMore = useCallback(() => {
     setCurrentPage((prevPage) => prevPage + 1);
   }, []);
+
+  const handleLoadMoreCoActors = useCallback(() => {
+    if (hasMoreItems && !loadingCoActors) {
+      fetchCoActorsData(id, currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  }, [id, currentPage, hasMoreItems, loadingCoActors, fetchCoActorsData]);
 
   const knownForMedia = person?.knownForMedia?.map((media) => ({
     id: media?.id,
@@ -182,6 +207,8 @@ export default function PersonDetailPage() {
                 id: actor.id,
               }))}
               loading={loadingCoActors}
+              onLoadMore={handleLoadMoreCoActors}
+              hasMoreItems={hasMoreItems}
             />
           ) : (
             <p>No co-actors found.</p>

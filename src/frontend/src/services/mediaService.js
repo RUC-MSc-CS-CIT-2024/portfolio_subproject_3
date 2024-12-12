@@ -60,11 +60,16 @@ export const fetchMediaCast = async (id) => {
   }
 };
 
-export const fetchSimilarMedia = async (id) => {
+export const fetchSimilarMedia = async ({ id, page, count }) => {
   const api = new ApiClient();
+  const queryParams = [
+    { key: 'page', value: page },
+    { key: 'count', value: count },
+  ];
+
   const path = `/api/media/${id}/similar_media`;
   try {
-    const response = await api.Get(path);
+    const response = await api.Get(path, queryParams);
     if (!response.ok) {
       throw new Error(`Failed to fetch similar media for ID ${id}.`);
     }
@@ -92,14 +97,14 @@ export const fetchReleases = async (id) => {
 
 export const fetchMedia = async ({
   page = 1,
-  pageCount = 18,
+  count = 18,
   query = '',
   queryType = 'All',
 }) => {
   const api = new ApiClient();
   const queryParams = [
-    { key: 'Page.page', value: page },
-    { key: 'Page.count', value: pageCount },
+    { key: 'page', value: page },
+    { key: 'count', value: count },
     { key: 'query_type', value: queryType },
     { key: 'query', value: query },
   ];
@@ -114,21 +119,12 @@ export const fetchMedia = async ({
 
     console.log('response:', response);
 
-    const transformedResults = response.value.map((media) => ({
-      id: media.id,
-      title: media.title,
-      type: media.type,
-      imageUri: media.posterUri,
-      releaseYear: new Date(media.releaseDate).getFullYear().toString(),
-    }));
-
-    return transformedResults;
+    return response.value;
   } catch (error) {
     console.error('Error fetching media:', error);
     throw error;
   }
 };
-
 /*
  export const fetchMedia = async () => {};
 

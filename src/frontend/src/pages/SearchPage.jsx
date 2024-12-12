@@ -22,7 +22,9 @@ export default function SearchPage() {
     async (params) => {
       setLoading(true);
       try {
-        const resultList = await fetchMedia(params);
+
+        const response = await fetchMedia({ query: searchQuery, queryType });
+        const resultList = response.items;
         setResults(resultList);
         applyFilters(resultList, filterCriteria);
       } catch (error) {
@@ -54,6 +56,25 @@ export default function SearchPage() {
     [results],
   );
 
+  const transformedResults = filteredResults.map((media) => ({
+    ...media,
+    imageUri: media.posterUri,
+    releaseYear: new Date(media.releaseDate).getFullYear(),
+  }));
+
+  const fetchData = useCallback(async () => {
+    const searchQuery = new URLSearchParams(location.search).get('q') || 'all';
+    const queryType = location.search ? 'Simple' : 'All';
+    setLoading(true);
+    try {
+      await handleSearch(searchQuery, queryType);
+    } catch (err) {
+      console.error('Error during search:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [location.search, handleSearch]);
+
   useEffect(() => {
     handleSearch({ query_type: queryType });
   }, [location.search, handleSearch, queryType]);
@@ -72,7 +93,7 @@ export default function SearchPage() {
           <h2>No matches found.</h2>
         </div>
       )}
-      <MediaGrid media={filteredResults} loading={loading} />
+      <MediaGrid media={transformedResults} loading={loading} />
     </Container>
   );
 }

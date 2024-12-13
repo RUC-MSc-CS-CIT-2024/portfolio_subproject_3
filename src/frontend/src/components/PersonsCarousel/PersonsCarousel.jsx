@@ -12,7 +12,11 @@ export default function PersonsCarousel({
       pictureUri={person.pictureUri}
       name={person.name}
       role={Array.isArray(person.role) ? person.role.join(', ') : person.role}
-      additionalInfo={person.additionalInfo}
+      additionalInfo={
+        person.character
+          ? `Character: ${person.character}`
+          : person.additionalInfo
+      }
       isLoading={loading}
     />
   );

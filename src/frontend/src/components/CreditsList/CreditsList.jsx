@@ -1,7 +1,7 @@
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
-import { MediaCardBadge } from '@/components';
+import { MediaCardBadge, DefaultImage } from '@/components';
 
 export default function CreditsList({ items = [] }) {
   const sortedItems = items.sort(
@@ -11,18 +11,24 @@ export default function CreditsList({ items = [] }) {
   let rows = sortedItems.map((item, index) => (
     <tr key={`${item.id}${index}`}>
       <td className="d-flex align-items-center">
-        <img
-          className="mx-2 responsive-img"
-          src={`https://image.tmdb.org/t/p/w500${item.posterUri}`}
-          height={68}
-        />
-        <p to={`/media/${item.id}`}>{item.title}</p>
+        {item.media.posterUri ? (
+          <img
+            className="mx-2 responsive-img"
+            src={`${item?.media?.posterUri}`}
+            height={68}
+          />
+        ) : (
+          <div className="default-image-container mx-2">
+            <DefaultImage />
+          </div>
+        )}
+        <p to={`/media/${item.id}`}>{item.media.title}</p>
       </td>
       <td className="align-middle">
-        <MediaCardBadge type={item?.type} />
+        <MediaCardBadge type={item?.media.type} />
       </td>
-      <td className="align-middle">{item.character}</td>
-      <td className="align-middle">{formatDate(item.releaseDate)}</td>
+      <td className="align-middle text-capitalize ">{item?.role}</td>
+      <td className="align-middle">{formatDate(item?.media?.releaseDate)}</td>
     </tr>
   ));
 
@@ -43,7 +49,7 @@ export default function CreditsList({ items = [] }) {
           <tr>
             <th>Title</th>
             <th>Type</th>
-            <th>Character name</th>
+            <th>Role</th>
             <th>Release Date</th>
           </tr>
         </thead>

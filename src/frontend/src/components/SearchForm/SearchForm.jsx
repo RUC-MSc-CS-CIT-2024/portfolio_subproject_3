@@ -6,9 +6,9 @@ import { getUserSearchHistory, deleteUserSearchHistory } from '@/services';
 import './SearchForm.css';
 import { useAuth, useSearch } from '@/hooks';
 
-export default function SearchForm({ btnVariant = 'dark' }) {
+export default function SearchForm({ btnVariant = 'dark', onSearch }) {
   const { isAuthenticated } = useAuth();
-  const { query, search } = useSearch();
+  const { query } = useSearch();
 
   const [searchQuery, setSearchQuery] = useState(query);
   const [searchHistory, setSearchHistory] = useState([]);
@@ -21,7 +21,7 @@ export default function SearchForm({ btnVariant = 'dark' }) {
   const handleSearch = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    search(e.target.query.value);
+    onSearch(e.target.query.value);
   };
 
   const fetchSearchHistory = useCallback(

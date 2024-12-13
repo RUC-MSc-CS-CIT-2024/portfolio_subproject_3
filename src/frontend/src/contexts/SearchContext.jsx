@@ -8,8 +8,13 @@ export const SearchProvider = ({ children }) => {
   const { pathname } = useLocation();
 
   const [query, setQuery] = useState('');
-  const search = (query) => {
+
+  const updateQuery = (query) => {
     query = query.trim();
+    setQuery(query);
+  };
+
+  const searchWithNavigation = (query) => {
     setQuery(query);
 
     if (query !== '') {
@@ -20,15 +25,15 @@ export const SearchProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(pathname);
     if (pathname === '/') {
-      console.log('clearing query');
       setQuery('');
     }
   }, [pathname]);
 
   return (
-    <SearchContext.Provider value={{ query, search }}>
+    <SearchContext.Provider
+      value={{ query, setQuery: updateQuery, searchWithNavigation }}
+    >
       {children}
     </SearchContext.Provider>
   );

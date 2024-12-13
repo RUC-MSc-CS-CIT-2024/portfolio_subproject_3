@@ -3,12 +3,21 @@ import { Card, Placeholder } from 'react-bootstrap';
 import { DefaultImage, MediaTypeBadge } from '@/components';
 import './MediaCard.css';
 
-export default function MediaCard({ id, imageUri, title, type, releaseYear }) {
+export default function MediaCard({
+  id,
+  imageUri,
+  title,
+  type,
+  releaseYear,
+  clickable = true,
+}) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/media/${id}`);
-    window.scrollTo(0, 0);
+    if (clickable) {
+      navigate(`/media/${id}`);
+      window.scrollTo(0, 0);
+    }
   };
 
   const defaultTitle = 'Unknown Title';
@@ -16,7 +25,11 @@ export default function MediaCard({ id, imageUri, title, type, releaseYear }) {
   const isLoading = !id;
 
   return (
-    <div onClick={handleClick} className="mediaCard-clickable">
+    <div
+      onClick={clickable ? handleClick : undefined}
+      className={`mediaCard-clickable ${clickable ? '' : 'mediaCard-disabled'}`}
+      style={{ cursor: clickable ? 'pointer' : 'default' }}
+    >
       <Card className="mediaCard">
         {isLoading ? (
           <Placeholder as={Card.Img} className="mediaCard-img" />

@@ -3,7 +3,8 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: calc(100vh - 79px);
+  height: calc(100vh - 56px);
+  min-height: 600px;
 }
 
 @media (max-width: 992px) {

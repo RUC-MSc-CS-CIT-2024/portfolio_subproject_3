@@ -1,39 +1,45 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Container, Spinner } from 'react-bootstrap';
-import { fetchMedia } from '@/services';
+import { fetchMedia, fetchPersons } from '@/services';
 import {
   MediaGrid,
   FilterMediaComponent,
   AdvancedSearchForm,
   Pagination,
+  PersonsGrid,
 } from '@/components';
 import { useToast } from '@/hooks';
+import { useSearchParams } from 'react-router-dom';
 
 export default function SearchPage() {
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mediaResults, setMediaResults] = useState({
+    items: [],
+    numberOfItems: 0,
+  });
+  const [mediaPage, setMediaPage] = useState({ page: 1, count: 24 });
   const [filteredResults, setFilteredResults] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState({
     type: null,
     year: null,
   });
 
-  const [queryType, setQueryType] = useState('Simple');
-  const [query, setQuery] = useState('');
-  const [keywords, setKeywords] = useState([]);
-  const [structuredFields, setStructuredFields] = useState({
-    title: '',
-    plot: '',
-    character: '',
-    person: '',
+  const [personResults, setPersonResults] = useState({
+    items: [],
+    numberOfItems: 0,
   });
+  const [personPage, setPersonPage] = useState({ page: 1, count: 24 });
 
-  const [loading, setLoading] = useState(false);
-  const [currentMediaPage, setCurrentMediaPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const mediaItemsPerPage = 24;
+  const [query, setQuery] = useState({
+    query: searchParams.get('query') || '',
+    query_type: searchParams.get('query_type') || 'Simple',
+    title: searchParams.get('title') || '',
+    plot: searchParams.get('plot') || '',
+    character: searchParams.get('character') || '',
+    person: searchParams.get('person') || '',
+  });
 
   const { showToastMessage } = useToast();
 
@@ -50,143 +56,125 @@ export default function SearchPage() {
   const handleFilterChange = useCallback(
     (newFilterCriteria) => {
       setFilterCriteria(newFilterCriteria);
-      applyFilters(results, newFilterCriteria);
+      applyFilters(mediaResults, newFilterCriteria);
     },
-    [results, applyFilters],
+    [mediaResults, applyFilters],
   );
 
-  const handleSearch = useCallback(async () => {
-    setLoading(true);
-    try {
-      let params = {
-        queryType,
-        ...filterCriteria,
-        page: currentMediaPage,
-        count: mediaItemsPerPage,
-      };
-
-      if (queryType === 'Simple') {
-        params.query = query;
-      } else if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
-        params.keywords = keywords;
-      } else if (queryType === 'Structured') {
-        params = { ...params, ...structuredFields };
-      }
-
-      const response = await fetchMedia(params);
-      const resultList = response.items || [];
-      setResults(resultList);
-      setTotalItems(response.numberOfItems || resultList.length);
-      applyFilters(resultList, filterCriteria);
-    } catch (error) {
-      console.error('Error searching:', error.message);
-      showToastMessage(
-        error.message || 'Error occurred while searching.',
-        'danger',
-      );
-      setResults([]);
-      setFilteredResults([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    query,
-    queryType,
-    filterCriteria,
-    keywords,
-    structuredFields,
-    currentMediaPage,
-    mediaItemsPerPage,
-    applyFilters,
-    showToastMessage,
-  ]);
-
-  const handleAdvancedSearch = useCallback((params) => {
-    if (params.query_type) setQueryType(params.query_type);
-
-    if (params.query_type === 'Simple' && params.query) {
-      setQuery(params.query);
-    }
-
-    if (
-      (params.query_type === 'ExactMatch' ||
-        params.query_type === 'BestMatch') &&
-      params.keywords
-    ) {
-      setKeywords(params.keywords);
-      setQuery('');
-    }
-
-    if (params.query_type === 'Structured') {
-      setStructuredFields({
-        title: params.title || '',
-        plot: params.plot || '',
-        character: params.character || '',
-        person: params.person || '',
-      });
-      setQuery('');
-    }
-
-    setCurrentMediaPage(1);
-  }, []);
-
-  const handleMediaPageChange = (pageNumber) => {
-    setCurrentMediaPage(pageNumber);
+  const handleSearch = (query_data) => {
+    setMediaPage({ ...mediaPage, page: 1 });
+    setQuery(query_data);
   };
 
-  useEffect(() => {
-    handleSearch();
-  }, [
-    query,
-    queryType,
-    keywords,
-    structuredFields,
-    filterCriteria,
-    currentMediaPage,
-    handleSearch,
-  ]);
+  const performSearch = useCallback(
+    async (query_data) => {
+      setLoading(true);
+      let params = {
+        ...query_data,
+        ...filterCriteria,
+        page: mediaPage.page,
+        count: mediaPage.count,
+      };
+      try {
+        const response = await fetchMedia(params);
+        setMediaResults(response);
+        applyFilters(response.items, filterCriteria);
+
+        if (params.query_type !== 'Structured') {
+          let q = params.query;
+          if (params.query_type !== 'Simple') {
+            q = params.keywords.join(' ');
+          }
+          const personResponse = await fetchPersons(
+            { name: q },
+            personPage.page,
+            personPage.count,
+          );
+          setPersonResults(personResponse);
+        }
+      } catch (error) {
+        console.error('Error searching:', error.message);
+        showToastMessage(
+          error.message || 'Error occurred while searching.',
+          'danger',
+        );
+        setMediaResults();
+        setFilteredResults([]);
+        setPersonResults();
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      applyFilters,
+      filterCriteria,
+      mediaPage.count,
+      mediaPage.page,
+      personPage.count,
+      personPage.page,
+      showToastMessage,
+    ],
+  );
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const queryValue = searchParams.get('q') || '';
-    setQuery(queryValue);
-  }, [location.search]);
+    performSearch(query);
+  }, [performSearch, query]);
+
+  let resultBody = <></>;
+  if (filteredResults.length === 0 || personResults.length === 0) {
+    resultBody = (
+      <div className="d-flex justify-content-center align-items-center py-5">
+        <h2 className="text-muted">
+          No matches found. Try a different search.
+        </h2>
+      </div>
+    );
+  } else {
+    resultBody = (
+      <>
+        <h3 className="mt-2">Media</h3>
+        <FilterMediaComponent
+          className="mb-4"
+          onFilterChange={handleFilterChange}
+        />
+        <MediaGrid media={filteredResults} loading={loading} />
+        {filteredResults.length > 0 &&
+          personResults.numberOfItems > personPage.count && (
+            <Pagination
+              totalItems={mediaResults.numberOfItems}
+              itemsPerPage={mediaPage.count}
+              currentPage={mediaPage.page}
+              onPageChange={(pageNumber) =>
+                setMediaPage({ ...mediaPage, page: pageNumber })
+              }
+            />
+          )}
+        <h3 className="mt-2">Persons</h3>
+        <PersonsGrid persons={personResults.items} />
+        {personResults.items.length > 0 &&
+          personResults.numberOfItems > personPage.count && (
+            <Pagination
+              totalItems={personResults.numberOfItems}
+              itemsPerPage={personPage.count}
+              currentPage={personPage.page}
+              onPageChange={(pageNumber) =>
+                setPersonPage({ ...personPage, page: pageNumber })
+              }
+            />
+          )}
+      </>
+    );
+  }
 
   return (
-    <Container className="mt-5">
-      <h1 className="text-center fw-bold mb-4">Search Movies</h1>
-      <AdvancedSearchForm
-        className="mb-4" // Adds margin between form and results
-        queryType={queryType}
-        setQueryType={setQueryType}
-        onSearch={handleAdvancedSearch}
-      />
-      <FilterMediaComponent
-        className="mb-4"
-        onFilterChange={handleFilterChange}
-      />
+    <Container className="mt-3">
+      <AdvancedSearchForm className="mb-4" onSearch={handleSearch} />
       {loading ? (
         <div className="d-flex justify-content-center align-items-center py-5">
           <Spinner animation="border" variant="dark" />
         </div>
-      ) : filteredResults.length === 0 ? (
-        <div className="d-flex justify-content-center align-items-center py-5">
-          <h2 className="text-muted">
-            No matches found. Try a different search.
-          </h2>
-        </div>
       ) : (
-        <>
-          <MediaGrid media={filteredResults} loading={loading} />
-          {totalItems > mediaItemsPerPage && (
-            <Pagination
-              totalItems={totalItems}
-              itemsPerPage={mediaItemsPerPage}
-              currentPage={currentMediaPage}
-              onPageChange={handleMediaPageChange}
-            />
-          )}
-        </>
+        resultBody
       )}
     </Container>
   );

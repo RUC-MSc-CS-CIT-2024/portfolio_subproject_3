@@ -1,14 +1,16 @@
 // AdvancedSearchForm.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Card } from 'react-bootstrap';
 import { SearchForm } from '@/components';
 import './AdvancedSearchForm.css';
+import { useSearchParams } from 'react-router-dom';
+import { useSearch } from '@/hooks';
 
-export default function AdvancedSearchForm({
-  queryType,
-  setQueryType,
-  onSearch,
-}) {
+export default function AdvancedSearchForm({ onSearch, className = '' }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { setQuery } = useSearch();
+
+  const [queryType, setQueryType] = useState('Simple');
   const [structuredFields, setStructuredFields] = useState({
     title: '',
     plot: '',
@@ -22,6 +24,7 @@ export default function AdvancedSearchForm({
 
   const handleNonStructuredSearch = (query) => {
     let params = { query_type: queryType };
+    setSearchParams({ ...params, query });
 
     if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
       const keywords = query.trim().split(/\s+/);
@@ -29,7 +32,7 @@ export default function AdvancedSearchForm({
     } else if (queryType === 'Simple') {
       params = { ...params, query };
     }
-
+    setQuery(query);
     onSearch(params);
   };
 
@@ -39,11 +42,30 @@ export default function AdvancedSearchForm({
       query_type: 'Structured',
       ...structuredFields,
     };
+    setSearchParams(params);
     onSearch(params);
   };
 
+  useEffect(() => {
+    const urlQueryType = searchParams.get('query_type') || 'Simple';
+    setQueryType(urlQueryType);
+
+    if (urlQueryType === 'Structured') {
+      const urlTitle = searchParams.get('title') || '';
+      const urlPlot = searchParams.get('plot') || '';
+      const urlCharacter = searchParams.get('character') || '';
+      const urlPerson = searchParams.get('person') || '';
+      setStructuredFields({
+        title: urlTitle,
+        plot: urlPlot,
+        character: urlCharacter,
+        person: urlPerson,
+      });
+    }
+  }, [searchParams]);
+
   return (
-    <div className="advanced-search-form mt-4">
+    <div className={`advanced-search-form ${className}`}>
       <Card className="shadow-sm p-4">
         <Col xs="12" md="2" className="mb-3">
           <Form.Group controlId="queryTypeSelect">

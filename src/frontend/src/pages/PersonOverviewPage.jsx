@@ -13,7 +13,7 @@ export default function PersonsOverviewPage() {
     const loadPersons = async () => {
       try {
         const personsData = await fetchPersons();
-        setPersons(personsData);
+        setPersons(personsData.items);
       } catch {
         showToastMessage('Error getting persons.', 'danger');
       } finally {

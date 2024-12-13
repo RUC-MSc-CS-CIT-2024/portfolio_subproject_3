@@ -12,7 +12,7 @@ export default function MediaGrid({ media, loading, onShowMore }) {
 
   const handleShowMore = () => {
     setShowMore(!showMore);
-    onShowMore(showMore);
+    onShowMore?.(showMore);
   };
 
   return (

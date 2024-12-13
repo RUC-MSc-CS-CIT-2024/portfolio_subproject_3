@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap/';
-import { useAuth, useToast } from '@/hooks';
+import { useAuth, useSearch, useToast } from '@/hooks';
 import { SearchForm, LoginForm, ToastNotification } from '@/components';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
 
 export default function NavBar({ username }) {
   const { isAuthenticated } = useAuth();
-  const [showLogin, setShowLogin] = useState(false);
+  const { searchWithNavigation } = useSearch();
   const { showToastMessage } = useToast();
-  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [showLogin, setShowLogin] = useState(false);
 
   const handleLoginResult = (success, message) => {
     showToastMessage(message, success ? 'success' : 'danger');
@@ -29,6 +31,9 @@ export default function NavBar({ username }) {
     }
   }, [isAuthenticated]);
 
+  const isSearchHidden =
+    location.pathname === '/search' || location.pathname === '/';
+
   return (
     <>
       <Navbar expand="lg" className="bg-body-tertiary">
@@ -39,11 +44,9 @@ export default function NavBar({ username }) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <SearchForm
-                onSearch={(query) =>
-                  navigate(`/search?q=${encodeURIComponent(query)}`)
-                }
-              />
+              {!isSearchHidden && (
+                <SearchForm onSearch={(e) => searchWithNavigation(e)} />
+              )}
             </Nav>
             {isAuthenticated ? (
               <Nav className="ms-auto d-flex flex-column flex-lg-row gap-3">

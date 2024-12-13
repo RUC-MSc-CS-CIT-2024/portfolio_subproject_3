@@ -90,7 +90,6 @@ export default function SearchPage() {
             personPage.page,
             personPage.count,
           );
-          console.log(personResponse);
           setPersonResults(personResponse);
         }
       } catch (error) {
@@ -133,6 +132,11 @@ export default function SearchPage() {
   } else {
     resultBody = (
       <>
+        <h3 className="mt-2">Media</h3>
+        <FilterMediaComponent
+          className="mb-4"
+          onFilterChange={handleFilterChange}
+        />
         <MediaGrid media={filteredResults} loading={loading} />
         {filteredResults.length > 0 &&
           personResults.numberOfItems > personPage.count && (
@@ -145,6 +149,7 @@ export default function SearchPage() {
               }
             />
           )}
+        <h3 className="mt-2">Persons</h3>
         <PersonsGrid persons={personResults.items} />
         {personResults.items.length > 0 &&
           personResults.numberOfItems > personPage.count && (
@@ -162,13 +167,8 @@ export default function SearchPage() {
   }
 
   return (
-    <Container className="mt-5">
-      <h1 className="text-center fw-bold mb-4">Search Movies</h1>
+    <Container className="mt-3">
       <AdvancedSearchForm className="mb-4" onSearch={handleSearch} />
-      <FilterMediaComponent
-        className="mb-4"
-        onFilterChange={handleFilterChange}
-      />
       {loading ? (
         <div className="d-flex justify-content-center align-items-center py-5">
           <Spinner animation="border" variant="dark" />

@@ -6,7 +6,7 @@ import './AdvancedSearchForm.css';
 import { useSearchParams } from 'react-router-dom';
 import { useSearch } from '@/hooks';
 
-export default function AdvancedSearchForm({ onSearch }) {
+export default function AdvancedSearchForm({ onSearch, className = '' }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { setQuery } = useSearch();
 
@@ -65,7 +65,7 @@ export default function AdvancedSearchForm({ onSearch }) {
   }, [searchParams]);
 
   return (
-    <div className="advanced-search-form mt-4">
+    <div className={`advanced-search-form ${className}`}>
       <Card className="shadow-sm p-4">
         <Col xs="12" md="2" className="mb-3">
           <Form.Group controlId="queryTypeSelect">

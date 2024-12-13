@@ -15,20 +15,22 @@ export default function SearchPage() {
   const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState([]);
+  const [mediaResults, setMediaResults] = useState({
+    items: [],
+    numberOfItems: 0,
+  });
+  const [mediaPage, setMediaPage] = useState({ page: 1, count: 24 });
   const [filteredResults, setFilteredResults] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState({
     type: null,
     year: null,
   });
-  const [currentMediaPage, setCurrentMediaPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
 
   const [personResults, setPersonResults] = useState({
     items: [],
     numberOfItems: 0,
   });
-  const [personPage, setPersonPage] = useState({ page: 1, count: 10 });
+  const [personPage, setPersonPage] = useState({ page: 1, count: 24 });
 
   const [query, setQuery] = useState({
     query: searchParams.get('query') || '',
@@ -38,8 +40,6 @@ export default function SearchPage() {
     character: searchParams.get('character') || '',
     person: searchParams.get('person') || '',
   });
-
-  const mediaItemsPerPage = 24;
 
   const { showToastMessage } = useToast();
 
@@ -56,13 +56,13 @@ export default function SearchPage() {
   const handleFilterChange = useCallback(
     (newFilterCriteria) => {
       setFilterCriteria(newFilterCriteria);
-      applyFilters(results, newFilterCriteria);
+      applyFilters(mediaResults, newFilterCriteria);
     },
-    [results, applyFilters],
+    [mediaResults, applyFilters],
   );
 
   const handleSearch = (query_data) => {
-    setCurrentMediaPage(1);
+    setMediaPage({ ...mediaPage, page: 1 });
     setQuery(query_data);
   };
 
@@ -72,15 +72,13 @@ export default function SearchPage() {
       let params = {
         ...query_data,
         ...filterCriteria,
-        page: currentMediaPage,
-        count: mediaItemsPerPage,
+        page: mediaPage.page,
+        count: mediaPage.count,
       };
       try {
         const response = await fetchMedia(params);
-        const resultList = response.items || [];
-        setResults(resultList);
-        setTotalItems(response.numberOfItems || resultList.length);
-        applyFilters(resultList, filterCriteria);
+        setMediaResults(response);
+        applyFilters(response.items, filterCriteria);
 
         if (params.query_type !== 'Structured') {
           let q = params.query;
@@ -101,16 +99,18 @@ export default function SearchPage() {
           error.message || 'Error occurred while searching.',
           'danger',
         );
-        setResults([]);
+        setMediaResults();
         setFilteredResults([]);
+        setPersonResults();
       } finally {
         setLoading(false);
       }
     },
     [
       applyFilters,
-      currentMediaPage,
       filterCriteria,
+      mediaPage.count,
+      mediaPage.page,
       personPage.count,
       personPage.page,
       showToastMessage,
@@ -134,14 +134,17 @@ export default function SearchPage() {
     resultBody = (
       <>
         <MediaGrid media={filteredResults} loading={loading} />
-        {filteredResults.length > 0 && totalItems > mediaItemsPerPage && (
-          <Pagination
-            totalItems={totalItems}
-            itemsPerPage={mediaItemsPerPage}
-            currentPage={currentMediaPage}
-            onPageChange={(pageNumber) => setCurrentMediaPage(pageNumber)}
-          />
-        )}
+        {filteredResults.length > 0 &&
+          personResults.numberOfItems > personPage.count && (
+            <Pagination
+              totalItems={mediaResults.numberOfItems}
+              itemsPerPage={mediaPage.count}
+              currentPage={mediaPage.page}
+              onPageChange={(pageNumber) =>
+                setMediaPage({ ...mediaPage, page: pageNumber })
+              }
+            />
+          )}
         <PersonsGrid persons={personResults.items} />
         {personResults.items.length > 0 &&
           personResults.numberOfItems > personPage.count && (

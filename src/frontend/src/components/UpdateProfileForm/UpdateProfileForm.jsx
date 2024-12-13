@@ -3,7 +3,11 @@ import { Form, Button } from 'react-bootstrap';
 import { useToast } from '@/hooks';
 import { isEmailValid } from '@/utils';
 
-export default function UpdateProfileForm({ onSubmit, initialData }) {
+export default function UpdateProfileForm({
+  onSubmit,
+  initialData,
+  className,
+}) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +38,7 @@ export default function UpdateProfileForm({ onSubmit, initialData }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className={className}>
       <Form.Group controlId="formUsername" className="mb-3">
         <Form.Label>Username</Form.Label>
         <Form.Control

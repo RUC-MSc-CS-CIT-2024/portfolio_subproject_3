@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
-import { formatDate } from '@/utils';
+import { formatDate, rewatchabilityMap } from '@/utils';
 import { useToast } from '@/hooks';
 import { removeCompletedItem } from '@/services';
 import { MediaCardBadge, DefaultImage } from '@/components';
@@ -55,7 +55,9 @@ export default function CompletedList({
           <MediaCardBadge type={item.media.type} />
         </td>
         <td className="align-middle">{formatDate(item.completedDate)}</td>
-        <td className="align-middle">{item.rewatchability}</td>
+        <td className="align-middle">
+          {rewatchabilityMap[item.rewatchability] || 'Unknown'}
+        </td>
         <td className="align-middle">{item.score?.value}</td>
         <td className="align-middle">{item.score?.reviewText || item.note}</td>
         <td className="align-middle">

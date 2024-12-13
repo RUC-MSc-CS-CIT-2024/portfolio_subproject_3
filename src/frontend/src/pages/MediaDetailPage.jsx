@@ -36,6 +36,27 @@ const extractWriters = (crew) => {
 const extractProducers = (crew) =>
   extractMembersByJobCategory(crew, 'producer');
 
+const mergeRoles = (people) => {
+  const merged = {};
+
+  people.forEach((person) => {
+    if (merged[person.personId]) {
+      merged[person.personId].role = Array.from(
+        new Set([...merged[person.personId].role, person.role]),
+      );
+    } else {
+      merged[person.personId] = {
+        ...person,
+        id: person.personId,
+        name: person.personName,
+        role: [person.role],
+      };
+    }
+  });
+
+  return Object.values(merged);
+};
+
 export default function MediaDetailPage() {
   const { id: mediaId } = useParams();
   const navigate = useNavigate();
@@ -99,6 +120,8 @@ export default function MediaDetailPage() {
   const writers = extractWriters(crew);
   const producers = extractProducers(crew);
 
+  const mergedCrew = mergeRoles(crew);
+  const mergedCast = mergeRoles(cast);
   return (
     <Container>
       <MediaInformation
@@ -139,30 +162,34 @@ export default function MediaDetailPage() {
       <Row className="mt-5">
         <Col>
           <Tabs defaultActiveKey="crew" id="crew-cast-tabs" className="mb-3">
-            <Tab eventKey="crew" title="Crew">
-              <PersonsCarousel
-                persons={crew.map((person) => ({
-                  ...person,
-                  id: person.personId,
-                  name: person.personName,
-                }))}
-                loading={loadingCrew}
-                onLoadMore={handleLoadMoreCrew}
-                hasNextPage={hasMoreCrew}
-              />
-            </Tab>
-            <Tab eventKey="cast" title="Cast">
-              <PersonsCarousel
-                persons={cast.map((person) => ({
-                  ...person,
-                  id: person.personId,
-                  name: person.personName,
-                }))}
-                loading={loadingCast}
-                onLoadMore={handleLoadMoreCast}
-                hasNextPage={hasMoreCast}
-              />
-            </Tab>
+            {mergedCrew.length > 0 && (
+              <Tab eventKey="crew" title="Crew">
+                <PersonsCarousel
+                  persons={mergedCrew.map((person) => ({
+                    ...person,
+                    id: person.personId,
+                    name: person.personName,
+                  }))}
+                  loading={loadingCrew}
+                  onLoadMore={handleLoadMoreCrew}
+                  hasNextPage={hasMoreCrew}
+                />
+              </Tab>
+            )}
+            {mergedCast.length > 0 && (
+              <Tab eventKey="cast" title="Cast">
+                <PersonsCarousel
+                  persons={mergedCast.map((person) => ({
+                    ...person,
+                    id: person.personId,
+                    name: person.personName,
+                  }))}
+                  loading={loadingCast}
+                  onLoadMore={handleLoadMoreCast}
+                  hasNextPage={hasMoreCast}
+                />
+              </Tab>
+            )}
           </Tabs>
         </Col>
       </Row>

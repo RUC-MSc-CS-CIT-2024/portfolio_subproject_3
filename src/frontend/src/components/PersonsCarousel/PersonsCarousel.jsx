@@ -11,7 +11,7 @@ export default function PersonsCarousel({
       id={person.id}
       pictureUri={person.pictureUri}
       name={person.name}
-      role={person.role}
+      role={Array.isArray(person.role) ? person.role.join(', ') : person.role}
       additionalInfo={person.additionalInfo}
       isLoading={loading}
     />

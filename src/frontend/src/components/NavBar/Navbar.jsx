@@ -72,7 +72,7 @@ export default function NavBar({ username }) {
                   onToggle={handleToggle}
                   className="no-caret"
                 >
-                  <div onClick={handleFormClick}>
+                  <div onClick={handleFormClick} className="login-container">
                     <LoginForm onLoginResult={handleLoginResult} />
                   </div>
                 </NavDropdown>

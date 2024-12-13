@@ -1,8 +1,9 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ButtonGroup } from 'react-bootstrap';
 import { createBookmark, createMarkAsCompleted, createScore } from '@/services';
 import { useToast } from '@/contexts';
 import { ActionDropdown } from '@/components';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { rewatchabilityMap } from '@/utils';
 
 export default function MediaActions({ id }) {
   const { showToastMessage } = useToast();
@@ -43,6 +44,14 @@ export default function MediaActions({ id }) {
     }
   };
 
+  const rewatchabilityOptions = [
+    { value: '0', label: 'Select rewatchability' },
+    ...Object.entries(rewatchabilityMap).map(([value, label]) => ({
+      value,
+      label,
+    })),
+  ];
+
   return (
     <ButtonGroup className="d-flex flex-column">
       <ActionDropdown
@@ -60,14 +69,7 @@ export default function MediaActions({ id }) {
           {
             name: 'rewatchability',
             type: 'select',
-            options: [
-              { value: '0', label: 'Select rewatchability' },
-              { value: '1', label: 'Very Low' },
-              { value: '2', label: 'Low' },
-              { value: '3', label: 'Medium' },
-              { value: '4', label: 'High' },
-              { value: '5', label: 'Very High' },
-            ],
+            options: rewatchabilityOptions,
           },
           { name: 'completedNote', type: 'text', placeholder: 'Enter note' },
           { name: 'rating', type: 'rating' },

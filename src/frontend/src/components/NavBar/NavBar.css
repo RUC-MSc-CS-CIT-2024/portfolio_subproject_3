@@ -6,3 +6,20 @@
   left: auto !important;
   right: 0;
 }
+
+.dropdown-menu.show {
+  width: fit-content;
+}
+
+.login-container {
+  width: 400px;
+}
+
+@media (max-width: 983px) {
+  .dropdown-menu.show {
+    width: 100%;
+  }
+  .login-container {
+    width: 100%;
+  }
+}

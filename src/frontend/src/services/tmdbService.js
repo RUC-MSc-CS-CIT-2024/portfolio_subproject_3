@@ -36,7 +36,7 @@ export async function getTMDBImage(imdb_id, size) {
     size + '/',
     import.meta.env.VITE_TMDB_IMAGE_BASE_URL,
   );
-  const imageUrl = new URL(path.substring(1), imageUrlWithSize).href;
+  const imageUrl = new URL(path?.substring(1), imageUrlWithSize).href;
   return imageUrl;
 }
 

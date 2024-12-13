@@ -4,9 +4,11 @@ import { Form, Button, Col, Row, Card } from 'react-bootstrap';
 import { SearchForm } from '@/components';
 import './AdvancedSearchForm.css';
 import { useSearchParams } from 'react-router-dom';
+import { useSearch } from '@/hooks';
 
 export default function AdvancedSearchForm({ onSearch }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { setQuery } = useSearch();
 
   const [queryType, setQueryType] = useState('Simple');
   const [structuredFields, setStructuredFields] = useState({
@@ -30,7 +32,7 @@ export default function AdvancedSearchForm({ onSearch }) {
     } else if (queryType === 'Simple') {
       params = { ...params, query };
     }
-
+    setQuery(query);
     onSearch(params);
   };
 

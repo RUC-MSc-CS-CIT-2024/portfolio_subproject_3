@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
@@ -74,7 +74,7 @@ export default function CreditsList({ items = [] }) {
           </div>
         )}
         <div className="single-title">
-          <p to={`/media/${item.id}`}>{item.media.title}</p>
+          <p>{item.media.title}</p>
         </div>
       </td>
       <td className="align-middle">
@@ -105,7 +105,7 @@ export default function CreditsList({ items = [] }) {
             </div>
           )}
           <div className="single-title">
-            <p to={`/media/${group[0].media.id}`}>{seriesMedia.title}</p>
+            <p>{seriesMedia.title}</p>
           </div>
         </td>
         <td className="align-middle">
@@ -169,7 +169,7 @@ export default function CreditsList({ items = [] }) {
                   </div>
                 )}
                 <div className="nested-title">
-                  <p to={`/media/${item.id}`}>{item.media.title}</p>
+                  <p>{item.media.title}</p>
                 </div>
               </td>
               <td className="align-middle">
@@ -208,7 +208,9 @@ export default function CreditsList({ items = [] }) {
         </thead>
         <tbody>
           {rows.length > 0 ? (
-            rows
+            rows.map((row, index) => (
+              <React.Fragment key={`row-${index}`}>{row}</React.Fragment>
+            ))
           ) : (
             <tr>
               <td colSpan={4} height={100} className="text-center align-middle">

@@ -41,10 +41,16 @@ const mergeRoles = (people) => {
 
   people.forEach((person) => {
     const role = person.role ? person.role : undefined;
+    const character = person.character ? person.character : undefined;
     if (merged[person.personId]) {
       if (role) {
         merged[person.personId].role = Array.from(
           new Set([...merged[person.personId].role, role]),
+        );
+      }
+      if (character) {
+        merged[person.personId].character = Array.from(
+          new Set([...merged[person.personId].character, character]),
         );
       }
     } else {
@@ -53,6 +59,7 @@ const mergeRoles = (people) => {
         id: person.personId,
         name: person.personName,
         role: role ? [role] : [],
+        character: character ? [character] : [],
       };
     }
   });

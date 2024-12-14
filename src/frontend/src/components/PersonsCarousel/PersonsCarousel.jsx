@@ -13,8 +13,8 @@ export default function PersonsCarousel({
       name={person.name}
       role={Array.isArray(person.role) ? person.role.join(', ') : person.role}
       additionalInfo={
-        person.character
-          ? `Character: ${person.character}`
+        person.character.length > 0
+          ? `Character: ${Array.isArray(person.character) ? person.character.join(', ') : person.character}`
           : person.additionalInfo
       }
       isLoading={loading}

@@ -1,14 +1,13 @@
 import { Container, Col, Row } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import {
   BackgroundContainer,
   SearchForm,
   ToastNotification,
 } from '@/components';
+import { useSearch } from '@/hooks';
 
 export default function HomePage() {
-  const navigate = useNavigate();
-
+  const { searchWithNavigation } = useSearch();
   return (
     <div>
       <BackgroundContainer>
@@ -20,9 +19,7 @@ export default function HomePage() {
               </h1>
               <SearchForm
                 btnVariant="light"
-                onSearch={(query) =>
-                  navigate(`/search?q=${encodeURIComponent(query)}`)
-                }
+                onSearch={(e) => searchWithNavigation(e)}
               />
             </Col>
           </Row>

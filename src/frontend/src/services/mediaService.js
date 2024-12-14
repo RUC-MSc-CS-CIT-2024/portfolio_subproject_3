@@ -131,10 +131,10 @@ export const fetchReleases = async (id) => {
 };
 
 export const fetchMedia = async ({
-  page,
-  count,
+  page = 1,
+  count = 10,
   query = '',
-  queryType = 'Simple',
+  query_type = 'Simple',
   keywords = [],
   title = '',
   plot = '',
@@ -148,18 +148,18 @@ export const fetchMedia = async ({
   const queryParams = [
     { key: 'page', value: page },
     { key: 'count', value: count },
-    { key: 'query_type', value: queryType },
+    { key: 'query_type', value: query_type },
   ];
-  if (queryType === 'Simple') {
+  if (query_type === 'Simple') {
     if (query) {
       queryParams.push({ key: 'query', value: query });
     }
-  } else if (queryType === 'ExactMatch' || queryType === 'BestMatch') {
+  } else if (query_type === 'ExactMatch' || query_type === 'BestMatch') {
     const lowercasedKeywords = keywords.map((kw) => kw.toLowerCase());
     lowercasedKeywords.forEach((kw) => {
       queryParams.push({ key: 'keywords', value: kw });
     });
-  } else if (queryType === 'Structured') {
+  } else if (query_type === 'Structured') {
     if (title) queryParams.push({ key: 'title', value: title });
     if (plot) queryParams.push({ key: 'plot', value: plot });
     if (character) queryParams.push({ key: 'character', value: character });
@@ -167,7 +167,6 @@ export const fetchMedia = async ({
   }
   if (type) queryParams.push({ key: 'type', value: type });
   if (year) queryParams.push({ key: 'year', value: year });
-
   const path = '/api/media';
   try {
     const response = await api.Get(path, queryParams);

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Tab, Tabs } from 'react-bootstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAsyncEffect, useToast } from '@/hooks';
 import {
   getCurrentUserBookmarks,
@@ -9,7 +10,6 @@ import {
 import { FollowingList, BookmarkList, CompletedList } from '@/components';
 
 export default function UserListsPage() {
-  const [key, setKey] = useState('following');
   const [bookmarks, setBookmarks] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [following, setFollowing] = useState([]);
@@ -20,6 +20,21 @@ export default function UserListsPage() {
   const [hasMoreCompleted, setHasMoreCompleted] = useState(true);
   const [hasMoreBookmarks, setHasMoreBookmarks] = useState(true);
   const { showToastMessage } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('following');
+
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      setActiveTab(hash);
+    }
+  }, [location.hash]);
+
+  const handleTabSelect = (key) => {
+    setActiveTab(key);
+    navigate(`#${key}`);
+  };
 
   useAsyncEffect(
     async () => {
@@ -81,7 +96,11 @@ export default function UserListsPage() {
   return (
     <Container>
       <h1>Lists</h1>
-      <Tabs activeKey={key} onSelect={(k) => setKey(k)} className="mb-3">
+      <Tabs
+        activeKey={activeTab}
+        onSelect={handleTabSelect}
+        id="user-lists-tabs"
+      >
         <Tab eventKey="following" title="Following">
           <FollowingList
             items={following}

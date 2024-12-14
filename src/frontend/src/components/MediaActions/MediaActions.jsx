@@ -1,12 +1,38 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useState, useEffect } from 'react';
 import { ButtonGroup } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { createBookmark, createMarkAsCompleted, createScore } from '@/services';
-import { useToast } from '@/contexts';
+import { useToast, useUserData } from '@/contexts';
 import { ActionDropdown } from '@/components';
 import { rewatchabilityMap } from '@/utils';
 
 export default function MediaActions({ id }) {
   const { showToastMessage } = useToast();
+  const { bookmarks, completed } = useUserData();
+
+  const [mediaDetails, setMediaDetails] = useState({
+    isBookmarked: false,
+    bookmarkedTitle: '',
+    isCompleted: false,
+    completedTitle: '',
+  });
+
+  useEffect(() => {
+    const bookmarked = bookmarks.find(
+      (bookmark) => bookmark.mediaId === parseInt(id),
+    );
+    const completedItem = completed.find(
+      (item) => item.mediaId === parseInt(id),
+    );
+
+    setMediaDetails({
+      isBookmarked: !!bookmarked,
+      bookmarkedTitle: bookmarked ? bookmarked.media.title : '',
+      isCompleted: !!completedItem,
+      completedTitle: completedItem ? completedItem.media.title : '',
+    });
+  }, [bookmarks, completed, id]);
 
   const handleAddToWatchlist = async (formData) => {
     try {
@@ -54,30 +80,54 @@ export default function MediaActions({ id }) {
 
   return (
     <ButtonGroup className="d-flex flex-column">
-      <ActionDropdown
-        title="Add to Watchlist"
-        formFields={[
-          { name: 'watchlistNote', type: 'text', placeholder: 'Enter a note' },
-        ]}
-        handleSubmit={handleAddToWatchlist}
-        buttonText="Submit to Watchlist"
-      />
+      {mediaDetails.isBookmarked ? (
+        <div className="alert alert-info">
+          You have already bookmarked &quot;{mediaDetails.bookmarkedTitle}
+          &quot;. See all bookmarks:
+          <Link className="m-lg-1" to="/profile/lists#bookmarked">
+            here
+          </Link>
+        </div>
+      ) : (
+        <ActionDropdown
+          title="Add to Watchlist"
+          formFields={[
+            {
+              name: 'watchlistNote',
+              type: 'text',
+              placeholder: 'Enter a note',
+            },
+          ]}
+          handleSubmit={handleAddToWatchlist}
+          buttonText="Submit to Watchlist"
+        />
+      )}
 
-      <ActionDropdown
-        title="Mark as Completed"
-        formFields={[
-          {
-            name: 'rewatchability',
-            type: 'select',
-            options: rewatchabilityOptions,
-          },
-          { name: 'completedNote', type: 'text', placeholder: 'Enter note' },
-          { name: 'rating', type: 'rating' },
-          { name: 'review', type: 'text', placeholder: 'Enter review text' },
-        ]}
-        handleSubmit={handleComplete}
-        buttonText="Submit as Completed"
-      />
+      {mediaDetails.isCompleted ? (
+        <div className="alert alert-info">
+          You have already completed &ldquo;{mediaDetails.completedTitle}&quot;.
+          See all completed titles:
+          <Link className="m-lg-1" to="/profile/lists#completed">
+            here
+          </Link>
+        </div>
+      ) : (
+        <ActionDropdown
+          title="Mark as Completed"
+          formFields={[
+            {
+              name: 'rewatchability',
+              type: 'select',
+              options: rewatchabilityOptions,
+            },
+            { name: 'completedNote', type: 'text', placeholder: 'Enter note' },
+            { name: 'rating', type: 'rating' },
+            { name: 'review', type: 'text', placeholder: 'Enter review text' },
+          ]}
+          handleSubmit={handleComplete}
+          buttonText="Submit as Completed"
+        />
+      )}
     </ButtonGroup>
   );
 }

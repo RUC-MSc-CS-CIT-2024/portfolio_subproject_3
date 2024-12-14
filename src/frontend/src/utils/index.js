@@ -8,3 +8,4 @@ export { getUserFromSession } from './getUserFromSession';
 export { isEmailValid } from './validation';
 export { extractMembersByJobCategory } from './crew';
 export { rewatchabilityMap } from './rewatchabilityMap';
+export { fetchAllPages } from './fetchAllPages';

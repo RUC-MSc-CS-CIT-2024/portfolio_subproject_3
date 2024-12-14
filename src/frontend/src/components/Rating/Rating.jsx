@@ -63,7 +63,12 @@ export default function Rating({ ratings }) {
             ) : rating.source === 'Popularity' ? (
               <div className="d-flex flex-column">
                 <p className="mb-0 fs-5">
-                  <span className="fw-bold">{rating.value}</span>
+                  <span className="fw-bold">
+                    {' '}
+                    {typeof rating.value === 'number'
+                      ? rating.value.toFixed(1)
+                      : rating.value}
+                  </span>
                 </p>
               </div>
             ) : (

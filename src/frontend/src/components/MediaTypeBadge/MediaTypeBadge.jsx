@@ -1,7 +1,6 @@
 import { Badge } from 'react-bootstrap';
-import './MediaCardBadge.css';
 
-export default function MediaCardBadge({ type }) {
+export default function MediaTypeBadge({ type }) {
   let content;
 
   switch (type) {

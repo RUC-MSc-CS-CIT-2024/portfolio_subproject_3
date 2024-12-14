@@ -10,26 +10,25 @@ const BASE_PATH = '/api/persons/';
 
 const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   try {
-    const { imageUrl } = await getTMDBImage(person.imdbId, imgSize);
+    const imageUrl = await getTMDBImage(person.imdbId, imgSize);
     person.pictureUri = imageUrl;
-    console.log('Picture was found for person: ', person);
   } catch (error) {
     console.error(
       `Failed to fetch image for person with ID ${person.imdbId}:`,
       error,
     );
     person.pictureUri = null;
-    console.log('No pictureUri for person: ', person);
   }
   return person;
 };
 
-export const fetchPersons = async (page, count) => {
+export const fetchPersons = async (filter, page, count) => {
   const api = new ApiClient();
   try {
     const queryParams = [];
     if (page) queryParams.push({ key: 'page', value: page });
     if (count) queryParams.push({ key: 'count', value: count });
+    if (filter?.name) queryParams.push({ key: 'name', value: filter.name });
 
     const response = await api.Get(BASE_PATH, queryParams);
 
@@ -37,12 +36,12 @@ export const fetchPersons = async (page, count) => {
       throw new Error('Failed to fetch persons.');
     }
 
-    const persons = response.value.items;
-    const enhancedPersons = await Promise.all(
-      persons.map((person) => enhancePersonWithImage(person)),
+    const result = response.value;
+    result.items = await Promise.all(
+      response.value.items.map((person) => enhancePersonWithImage(person)),
     );
 
-    return enhancedPersons;
+    return result;
   } catch (error) {
     console.error('Error fetching persons:', error);
     throw error;

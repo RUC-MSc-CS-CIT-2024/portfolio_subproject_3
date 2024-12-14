@@ -1,6 +1,22 @@
 # portfolio_subproject_3
 
-## How to run
+## Hot to run (without Docker)
+
+*Requires the .NET 8 runtime as well as Node.js v22*
+
+- Create `.env.local` in `src/frontend` and set TMDB read token (alternativly set `VITE_TMDB_READ_TOKEN` environment variable)
+  ```
+  VITE_TMDB_READ_TOKEN=<token>
+  ```
+- In repo root run `git submodule update --init` afterwards navigate to `src/backend/src/CitMovie.Api` and update postgres connection string in `appsettings.Development.json`
+
+The frontend is started by navigating to `src/frontend` and running `npm run dev`.
+
+The backend is started by navigating to `src/backend/src` and running `dotnet run --project CitMovie.Api`.
+
+## How to run (with Docker)
+
+*Docker Desktop must be installed and running.*
 
 ```bash
 docker compose up -d
@@ -8,7 +24,7 @@ docker compose up -d
 
 The backend uses HTTPS, this requires you to trust a dev certificate which the backend uses for SSL. This can be done with the commands below:
 
-> [!INFO]
+> [!NOTE]
 > .NET 9 SDK or later is required on Unix systems (Mac & Linux)
 
 ```bash
@@ -23,10 +39,11 @@ When new version of either the database or backend is released you can update by
 
 ```bash
 docker compose down
+docker compose pull
 docker compose up -d
 ```
 
-If you are running the development compose you can build new versions by using the `--build` flag:
+If you are running the development compose you can build new versions by using the `--build` flag (this requires that you have downloaded the submodules for the backend and database):
 
 ```bash
 docker compose -f ./compose.development.yaml down

@@ -1,19 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Collapse, Form } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import ReactStarsRating from 'react-awesome-stars-rating';
 
-export default function ActionDropdown({ title, formFields, handleSubmit }) {
+export default function ActionDropdown({
+  title,
+  formFields = [],
+  handleSubmit,
+}) {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(
-    formFields.reduce((acc, field) => {
-      acc[field.name] = field.defaultValue || '';
-      return acc;
-    }, {}),
-  );
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    const initialFormData = {};
+    formFields.forEach((field) => {
+      initialFormData[field.name] = field.defaultValue || '';
+    });
+    setFormData(initialFormData);
+  }, [formFields]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleRatingChange = (value) => {
+    const ratingValue = value * 2;
+    setFormData((prevData) => ({ ...prevData, rating: ratingValue }));
   };
 
   const handleFormSubmit = async () => {
@@ -41,14 +54,44 @@ export default function ActionDropdown({ title, formFields, handleSubmit }) {
           <Form className="p-3">
             {formFields.map((field) => (
               <Form.Group controlId={field.name} key={field.name}>
-                <Form.Control
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
+                {field.type === 'select' ? (
+                  <Form.Control
+                    as="select"
+                    name={field.name}
+                    value={formData[field.name] || ''}
+                    onChange={handleChange}
+                    className="mb-2"
+                  >
+                    {field.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Form.Control>
+                ) : field.type === 'rating' ? (
+                  <Form.Group controlId="rating" className="d-flex flex-column">
+                    <Form.Label>Rating</Form.Label>
+                    <ReactStarsRating
+                      value={formData.rating / 2 || 0}
+                      onChange={handleRatingChange}
+                      count={5}
+                      size={30}
+                      isHalf={true}
+                      primaryColor="orange"
+                      secondaryColor="grey"
+                      className="mb-2"
+                    />
+                  </Form.Group>
+                ) : (
+                  <Form.Control
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    name={field.name}
+                    value={formData[field.name] || ''}
+                    onChange={handleChange}
+                    className="mb-2"
+                  />
+                )}
               </Form.Group>
             ))}
             <Button

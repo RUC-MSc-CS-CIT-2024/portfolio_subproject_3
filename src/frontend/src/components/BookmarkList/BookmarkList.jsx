@@ -9,11 +9,16 @@ import {
   Col,
 } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import ReactStarsRating from 'react-awesome-stars-rating';
 import { Link } from 'react-router-dom';
-import { formatDate } from '@/utils';
+import { formatDate, rewatchabilityMap } from '@/utils';
 import { useToast } from '@/hooks';
-import { removeBookmark, markBookmarkAsCompleted } from '@/services';
-import { MediaCardBadge, DefaultImage } from '@/components';
+import {
+  removeBookmark,
+  markBookmarkAsCompleted,
+  createScore,
+} from '@/services';
+import { MediaTypeBadge, DefaultImage } from '@/components';
 
 export default function BookmarkList({
   items,
@@ -22,8 +27,10 @@ export default function BookmarkList({
 }) {
   const [bookmarks, setBookmarks] = useState(items);
   const [expandedRow, setExpandedRow] = useState(null);
-  const [rewatchability, setRewatchability] = useState(1);
+  const [rewatchability, setRewatchability] = useState('');
   const [note, setNote] = useState('');
+  const [rating, setRating] = useState('');
+  const [review, setReview] = useState('');
   const { showToastMessage } = useToast();
 
   useEffect(() => {
@@ -41,7 +48,7 @@ export default function BookmarkList({
     }
   };
 
-  const handleMarkAsCompleted = async (bookmarkId) => {
+  const handleMarkAsCompleted = async (bookmarkId, mediaId) => {
     const completedDate = new Date().toISOString();
 
     try {
@@ -51,17 +58,40 @@ export default function BookmarkList({
         rewatchability,
         note,
       );
+
+      if (rating || review) {
+        await createScore({
+          mediaId: mediaId,
+          score: rating,
+          reviewText: review,
+        });
+      }
+
       setBookmarks(bookmarks.filter((item) => item.bookmarkId !== bookmarkId));
-      showToastMessage('Bookmark marked as completed.', 'success');
+      showToastMessage(
+        'Bookmark marked as completed and rating submitted.',
+        'success',
+      );
       setExpandedRow(null);
     } catch (error) {
-      console.error('Error marking bookmark as completed:', error);
-      showToastMessage('Failed to mark bookmark as completed.', 'danger');
+      console.error(
+        'Error marking bookmark as completed and submitting rating:',
+        error,
+      );
+      showToastMessage(
+        'Failed to mark bookmark as completed and submit rating.',
+        'danger',
+      );
     }
   };
 
   const toggleRow = (bookmarkId) => {
     setExpandedRow(expandedRow === bookmarkId ? null : bookmarkId);
+  };
+
+  const handleRatingChange = (value) => {
+    const ratingValue = value * 2;
+    setRating(ratingValue);
   };
 
   let rows = bookmarks.map((item) => (
@@ -82,7 +112,7 @@ export default function BookmarkList({
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
-          <MediaCardBadge type={item.media.type} />
+          <MediaTypeBadge type={item.media.type} />
         </td>
         <td className="align-middle">{formatDate(item.media.releaseDate)}</td>
         <td className="align-middle">{item.media.ageRating}</td>
@@ -116,11 +146,20 @@ export default function BookmarkList({
                   <Form.Group controlId="rewatchability">
                     <Form.Label>Rewatchability</Form.Label>
                     <Form.Control
-                      type="number"
+                      as="select"
                       value={rewatchability}
                       onChange={(e) => setRewatchability(e.target.value)}
                       className="ml-2"
-                    />
+                    >
+                      <option value="">Select rewatchability</option>
+                      {Object.entries(rewatchabilityMap).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
+                    </Form.Control>
                   </Form.Group>
                 </Col>
                 <Col>
@@ -135,9 +174,37 @@ export default function BookmarkList({
                   </Form.Group>
                 </Col>
                 <Col>
+                  <Form.Group controlId="rating" className="d-flex flex-column">
+                    <Form.Label>Rating</Form.Label>
+                    <ReactStarsRating
+                      value={rating / 2 || 0}
+                      onChange={handleRatingChange}
+                      count={5}
+                      size={30}
+                      isHalf={true}
+                      primaryColor="orange"
+                      secondaryColor="grey"
+                      className="mt-1"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group controlId="review">
+                    <Form.Label>Review</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                      className="ml-2"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
                   <Button
                     variant="outline-dark"
-                    onClick={() => handleMarkAsCompleted(item.bookmarkId)}
+                    onClick={() =>
+                      handleMarkAsCompleted(item.bookmarkId, item.media.id)
+                    }
                     className="ml-2"
                   >
                     Submit

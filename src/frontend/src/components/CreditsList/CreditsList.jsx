@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
-import { MediaCardBadge, DefaultImage } from '@/components';
+import { MediaTypeBadge, DefaultImage } from '@/components';
 import { fetchMediaById } from '@/services';
 
 export default function CreditsList({ items = [] }) {
@@ -78,7 +78,7 @@ export default function CreditsList({ items = [] }) {
         </div>
       </td>
       <td className="align-middle">
-        <MediaCardBadge type={item.media.type} />
+        <MediaTypeBadge type={item.media.type} />
       </td>
       <td className="align-middle text-capitalize">
         {item.character && <p>Character: {item.character}</p>}
@@ -109,7 +109,7 @@ export default function CreditsList({ items = [] }) {
           </div>
         </td>
         <td className="align-middle">
-          <MediaCardBadge type={seriesMedia.type} />
+          <MediaTypeBadge type={seriesMedia.type} />
         </td>
         <td className="align-middle text-capitalize">
           {characters && <p>Character: {characters}</p>}
@@ -148,7 +148,7 @@ export default function CreditsList({ items = [] }) {
             </div>
           </td>
           <td className="align-middle">
-            <MediaCardBadge type={seriesMedia.type} />
+            <MediaTypeBadge type={seriesMedia.type} />
           </td>
           <td className="align-middle text-capitalize"></td>
           <td className="align-middle"></td>
@@ -173,7 +173,7 @@ export default function CreditsList({ items = [] }) {
                 </div>
               </td>
               <td className="align-middle">
-                <MediaCardBadge type={item.media.type} />
+                <MediaTypeBadge type={item.media.type} />
               </td>
               <td className="align-middle text-capitalize">
                 {item.character && <p>Character: {item.character}</p>}

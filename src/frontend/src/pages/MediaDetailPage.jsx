@@ -16,6 +16,7 @@ import {
   MediaCarousel,
   InfoRow,
   PersonsCarousel,
+  MediaTypeBadge,
 } from '@/components';
 import { useToast } from '@/contexts';
 import { extractMembersByJobCategory } from '@/utils';
@@ -36,6 +37,37 @@ const extractWriters = (crew) => {
 const extractProducers = (crew) =>
   extractMembersByJobCategory(crew, 'producer');
 
+const mergeRoles = (people) => {
+  const merged = {};
+
+  people.forEach((person) => {
+    const role = person.role ? person.role : undefined;
+    const character = person.character ? person.character : undefined;
+    if (merged[person.personId]) {
+      if (role) {
+        merged[person.personId].role = Array.from(
+          new Set([...merged[person.personId].role, role]),
+        );
+      }
+      if (character) {
+        merged[person.personId].character = Array.from(
+          new Set([...merged[person.personId].character, character]),
+        );
+      }
+    } else {
+      merged[person.personId] = {
+        ...person,
+        id: person.personId,
+        name: person.personName,
+        role: role ? [role] : [],
+        character: character ? [character] : [],
+      };
+    }
+  });
+
+  return Object.values(merged);
+};
+
 export default function MediaDetailPage() {
   const { id: mediaId } = useParams();
   const navigate = useNavigate();
@@ -47,21 +79,18 @@ export default function MediaDetailPage() {
 
   const {
     data: crew,
-    loading: loadingCrew,
     hasMore: hasMoreCrew,
     handleLoadMore: handleLoadMoreCrew,
   } = usePaginatedData(fetchMediaCrew, mediaId);
 
   const {
     data: cast,
-    loading: loadingCast,
     hasMore: hasMoreCast,
     handleLoadMore: handleLoadMoreCast,
   } = usePaginatedData(fetchMediaCast, mediaId);
 
   const {
     data: similarMedia,
-    loading: loadingSimilarMedia,
     hasMore: hasMoreItems,
     handleLoadMore: handleLoadMoreSimilarMedia,
   } = usePaginatedData(fetchSimilarMedia, mediaId);
@@ -99,11 +128,12 @@ export default function MediaDetailPage() {
   const writers = extractWriters(crew);
   const producers = extractProducers(crew);
 
+  const mergedCrew = mergeRoles(crew);
+  const mergedCast = mergeRoles(cast);
   return (
     <Container>
       <MediaInformation
         {...mediaData}
-        isLoading={loading}
         director={directors}
         writer={writers}
         producer={producers}
@@ -139,30 +169,32 @@ export default function MediaDetailPage() {
       <Row className="mt-5">
         <Col>
           <Tabs defaultActiveKey="crew" id="crew-cast-tabs" className="mb-3">
-            <Tab eventKey="crew" title="Crew">
-              <PersonsCarousel
-                persons={crew.map((person) => ({
-                  ...person,
-                  id: person.personId,
-                  name: person.personName,
-                }))}
-                loading={loadingCrew}
-                onLoadMore={handleLoadMoreCrew}
-                hasNextPage={hasMoreCrew}
-              />
-            </Tab>
-            <Tab eventKey="cast" title="Cast">
-              <PersonsCarousel
-                persons={cast.map((person) => ({
-                  ...person,
-                  id: person.personId,
-                  name: person.personName,
-                }))}
-                loading={loadingCast}
-                onLoadMore={handleLoadMoreCast}
-                hasNextPage={hasMoreCast}
-              />
-            </Tab>
+            {mergedCrew.length > 0 && (
+              <Tab eventKey="crew" title="Crew">
+                <PersonsCarousel
+                  persons={mergedCrew.map((person) => ({
+                    ...person,
+                    id: person.personId,
+                    name: person.personName,
+                  }))}
+                  onLoadMore={handleLoadMoreCrew}
+                  hasNextPage={hasMoreCrew}
+                />
+              </Tab>
+            )}
+            {mergedCast.length > 0 && (
+              <Tab eventKey="cast" title="Cast">
+                <PersonsCarousel
+                  persons={mergedCast.map((person) => ({
+                    ...person,
+                    id: person.personId,
+                    name: person.personName,
+                  }))}
+                  onLoadMore={handleLoadMoreCast}
+                  hasNextPage={hasMoreCast}
+                />
+              </Tab>
+            )}
           </Tabs>
         </Col>
       </Row>
@@ -171,7 +203,6 @@ export default function MediaDetailPage() {
           <h5>Similar Media</h5>
           <MediaCarousel
             media={similarMedia}
-            loading={loadingSimilarMedia}
             onLoadMore={handleLoadMoreSimilarMedia}
             hasNextPage={hasMoreItems}
           />
@@ -180,7 +211,10 @@ export default function MediaDetailPage() {
       <Row>
         <Col>
           <h5>Extra Information</h5>
-          <InfoRow label="Type" value={mediaData?.type} />
+          <InfoRow
+            label="Type"
+            value={<MediaTypeBadge type={mediaData?.type} />}
+          />
           <InfoRow label="Box Office" value={mediaData?.boxoffice} />
           <InfoRow label="Awards" value={mediaData?.awardText} />
           <InfoRow

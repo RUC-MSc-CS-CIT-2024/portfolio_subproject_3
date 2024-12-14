@@ -21,7 +21,6 @@ export default function PersonInformation({
   homepage,
   placeOfBirth,
   roles = [],
-  isLoading,
 }) {
   const [showMore, setShowMore] = useState(false);
 
@@ -31,6 +30,7 @@ export default function PersonInformation({
 
   const formattedBirthDate = birthDate ? formatDate(birthDate) : 'Unknown';
   const formattedDeathDate = deathDate ? formatDate(deathDate) : null;
+  const isLoading = !name;
 
   return (
     <Container className="person-layout">

@@ -6,18 +6,15 @@ import { useToast } from '@/contexts/ToastContext';
 
 export default function PersonsOverviewPage() {
   const [persons, setPersons] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { showToastMessage } = useToast();
 
   useEffect(() => {
     const loadPersons = async () => {
       try {
         const personsData = await fetchPersons();
-        setPersons(personsData);
+        setPersons(personsData.items);
       } catch {
         showToastMessage('Error getting persons.', 'danger');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -27,8 +24,8 @@ export default function PersonsOverviewPage() {
   return (
     <Container>
       <h1>Persons</h1>
-      <PersonsCarousel persons={persons} loading={loading} />
-      <PersonsGrid persons={persons} loading={loading} />
+      <PersonsCarousel persons={persons} />
+      <PersonsGrid persons={persons} />
     </Container>
   );
 }

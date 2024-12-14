@@ -13,19 +13,23 @@ export const UserDataProvider = ({ children }) => {
   const [completed, setCompleted] = useState([]);
   const [following, setFollowing] = useState([]);
 
+  const fetchData = async () => {
+    const bookmarkResult = await fetchAllPages(getCurrentUserBookmarks);
+    const completedResult = await fetchAllPages(getCurrentUserCompleted);
+    const followingResult = await fetchAllPages(getCurrentUserFollowing);
+
+    setBookmarks(bookmarkResult);
+    setCompleted(completedResult);
+    setFollowing(followingResult);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const bookmarkResult = await fetchAllPages(getCurrentUserBookmarks);
-      const completedResult = await fetchAllPages(getCurrentUserCompleted);
-      const followingResult = await fetchAllPages(getCurrentUserFollowing);
-
-      setBookmarks(bookmarkResult);
-      setCompleted(completedResult);
-      setFollowing(followingResult);
-    };
-
     fetchData();
   }, []);
+
+  const refreshUserData = () => {
+    fetchData();
+  };
 
   return (
     <UserDataContext.Provider
@@ -36,6 +40,7 @@ export const UserDataProvider = ({ children }) => {
         setBookmarks,
         setCompleted,
         setFollowing,
+        refreshUserData,
       }}
     >
       {children}

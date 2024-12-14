@@ -20,7 +20,7 @@ export default function PersonDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToastMessage } = useToast();
-  const { following } = useUserData();
+  const { following, refreshUserData } = useUserData();
   const [person, setPerson] = useState(null);
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
@@ -109,6 +109,7 @@ export default function PersonDetailPage() {
     try {
       await createFollow(id);
       showToastMessage('Successfully followed the person', 'success');
+      refreshUserData();
     } catch (error) {
       console.error('Error following the person', error);
       showToastMessage('Error following the person', 'danger');

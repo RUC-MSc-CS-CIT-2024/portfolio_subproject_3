@@ -1,28 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Container, Tab, Tabs } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAsyncEffect, useToast } from '@/hooks';
+import { useToast } from '@/hooks';
+import { useUserData } from '@/contexts';
+import { FollowingList, BookmarkList, CompletedList } from '@/components';
 import {
   getCurrentUserBookmarks,
   getCurrentUserCompleted,
   getCurrentUserFollowing,
 } from '@/services';
-import { FollowingList, BookmarkList, CompletedList } from '@/components';
 
 export default function UserListsPage() {
-  const [bookmarks, setBookmarks] = useState([]);
-  const [completed, setCompleted] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const [currentPageFollowing, setCurrentPageFollowing] = useState(1);
-  const [currentPageCompleted, setCurrentPageCompleted] = useState(1);
-  const [currentPageBookmarks, setCurrentPageBookmarks] = useState(1);
-  const [hasMoreFollowing, setHasMoreFollowing] = useState(true);
-  const [hasMoreCompleted, setHasMoreCompleted] = useState(true);
-  const [hasMoreBookmarks, setHasMoreBookmarks] = useState(true);
+  const {
+    bookmarks,
+    completed,
+    following,
+    setBookmarks,
+    setCompleted,
+    setFollowing,
+    refreshUserData,
+  } = useUserData();
   const { showToastMessage } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('following');
+  const [pagination, setPagination] = useState({
+    following: { currentPage: 1, hasMore: true },
+    completed: { currentPage: 1, hasMore: true },
+    bookmarks: { currentPage: 1, hasMore: true },
+  });
 
   useEffect(() => {
     const hash = location.hash.replace('#', '');
@@ -36,60 +42,40 @@ export default function UserListsPage() {
     navigate(`#${key}`);
   };
 
-  useAsyncEffect(
-    async () => {
-      const bookmarkResult = await getCurrentUserBookmarks(1, 5);
-      const completedResult = await getCurrentUserCompleted(1, 5);
-      const followingResult = await getCurrentUserFollowing(1, 5);
-      return { bookmarkResult, completedResult, followingResult };
-    },
-    ({ bookmarkResult, completedResult, followingResult }) => {
-      setBookmarks(bookmarkResult.items);
-      setCompleted(completedResult.items);
-      setFollowing(followingResult.items);
-      setHasMoreFollowing(followingResult.items.length === 5);
-      setHasMoreCompleted(completedResult.items.length === 5);
-      setHasMoreBookmarks(bookmarkResult.items.length === 5);
-    },
-    [],
-  );
+  useEffect(() => {
+    refreshUserData();
+  }, [refreshUserData]);
 
-  const loadMoreFollowing = async () => {
+  const loadMoreItems = async (type) => {
     try {
-      const nextPage = currentPageFollowing + 1;
-      const response = await getCurrentUserFollowing(nextPage, 5);
-      setFollowing((prevFollowing) => [...prevFollowing, ...response.items]);
-      setCurrentPageFollowing(nextPage);
-      setHasMoreFollowing(response.items.length === 5);
+      const nextPage = pagination[type].currentPage + 1;
+      let response;
+      switch (type) {
+        case 'following':
+          response = await getCurrentUserFollowing(nextPage, 5);
+          setFollowing((prev) => [...prev, ...response.items]);
+          break;
+        case 'completed':
+          response = await getCurrentUserCompleted(nextPage, 5);
+          setCompleted((prev) => [...prev, ...response.items]);
+          break;
+        case 'bookmarks':
+          response = await getCurrentUserBookmarks(nextPage, 5);
+          setBookmarks((prev) => [...prev, ...response.items]);
+          break;
+        default:
+          return;
+      }
+      setPagination((prev) => ({
+        ...prev,
+        [type]: {
+          currentPage: nextPage,
+          hasMore: response.items.length === 5,
+        },
+      }));
     } catch (error) {
-      console.error('Error loading more following:', error);
-      showToastMessage('Error loading more following.', 'danger');
-    }
-  };
-
-  const loadMoreCompleted = async () => {
-    try {
-      const nextPage = currentPageCompleted + 1;
-      const response = await getCurrentUserCompleted(nextPage, 5);
-      setCompleted((prevCompleted) => [...prevCompleted, ...response.items]);
-      setCurrentPageCompleted(nextPage);
-      setHasMoreCompleted(response.items.length === 5);
-    } catch (error) {
-      console.error('Error loading more completed:', error);
-      showToastMessage('Error loading more completed.', 'danger');
-    }
-  };
-
-  const loadMoreBookmarks = async () => {
-    try {
-      const nextPage = currentPageBookmarks + 1;
-      const response = await getCurrentUserBookmarks(nextPage, 5);
-      setBookmarks((prevBookmarks) => [...prevBookmarks, ...response.items]);
-      setCurrentPageBookmarks(nextPage);
-      setHasMoreBookmarks(response.items.length === 5);
-    } catch (error) {
-      console.error('Error loading more bookmarks:', error);
-      showToastMessage('Error loading more bookmarks.', 'danger');
+      console.error(`Error loading more ${type}:`, error);
+      showToastMessage(`Error loading more ${type}.`, 'danger');
     }
   };
 
@@ -104,22 +90,22 @@ export default function UserListsPage() {
         <Tab eventKey="following" title="Following">
           <FollowingList
             items={following}
-            loadMoreFollowing={loadMoreFollowing}
-            hasMoreItems={hasMoreFollowing}
+            loadMoreFollowing={() => loadMoreItems('following')}
+            hasMoreItems={pagination.following.hasMore}
           />
         </Tab>
         <Tab eventKey="bookmarked" title="Bookmarked">
           <BookmarkList
             items={bookmarks}
-            loadMoreBookmarks={loadMoreBookmarks}
-            hasMoreItems={hasMoreBookmarks}
+            loadMoreBookmarks={() => loadMoreItems('bookmarks')}
+            hasMoreItems={pagination.bookmarks.hasMore}
           />
         </Tab>
         <Tab eventKey="completed" title="Completed">
           <CompletedList
             items={completed}
-            loadMoreCompleted={loadMoreCompleted}
-            hasMoreItems={hasMoreCompleted}
+            loadMoreCompleted={() => loadMoreItems('completed')}
+            hasMoreItems={pagination.completed.hasMore}
           />
         </Tab>
       </Tabs>

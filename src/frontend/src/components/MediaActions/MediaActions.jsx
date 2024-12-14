@@ -9,7 +9,7 @@ import { rewatchabilityMap } from '@/utils';
 
 export default function MediaActions({ id }) {
   const { showToastMessage } = useToast();
-  const { bookmarks, completed } = useUserData();
+  const { bookmarks, completed, refreshUserData } = useUserData();
 
   const [mediaDetails, setMediaDetails] = useState({
     isBookmarked: false,
@@ -19,25 +19,30 @@ export default function MediaActions({ id }) {
   });
 
   useEffect(() => {
-    const bookmarked = bookmarks.find(
-      (bookmark) => bookmark.mediaId === parseInt(id),
-    );
-    const completedItem = completed.find(
-      (item) => item.mediaId === parseInt(id),
-    );
+    const updateMediaDetails = () => {
+      const bookmarked = bookmarks.find(
+        (bookmark) => bookmark.mediaId === parseInt(id),
+      );
+      const completedItem = completed.find(
+        (item) => item.mediaId === parseInt(id),
+      );
 
-    setMediaDetails({
-      isBookmarked: !!bookmarked,
-      bookmarkedTitle: bookmarked ? bookmarked.media.title : '',
-      isCompleted: !!completedItem,
-      completedTitle: completedItem ? completedItem.media.title : '',
-    });
+      setMediaDetails({
+        isBookmarked: !!bookmarked,
+        bookmarkedTitle: bookmarked ? bookmarked.media.title : '',
+        isCompleted: !!completedItem,
+        completedTitle: completedItem ? completedItem.media.title : '',
+      });
+    };
+
+    updateMediaDetails();
   }, [bookmarks, completed, id]);
 
   const handleAddToWatchlist = async (formData) => {
     try {
       await createBookmark({ mediaId: id, note: formData.watchlistNote });
       showToastMessage('Added to watchlist', 'success');
+      refreshUserData();
     } catch (error) {
       console.error('Error adding to watchlist', error);
       showToastMessage('Error adding to watchlist', 'danger');
@@ -61,6 +66,7 @@ export default function MediaActions({ id }) {
       }
 
       showToastMessage('Marked as completed and rating submitted', 'success');
+      refreshUserData();
     } catch (error) {
       console.error('Error marking as completed and submitting rating', error);
       showToastMessage(
@@ -105,7 +111,7 @@ export default function MediaActions({ id }) {
 
       {mediaDetails.isCompleted ? (
         <div className="alert alert-info">
-          You have already completed &ldquo;{mediaDetails.completedTitle}&quot;.
+          You have already completed &quot;{mediaDetails.completedTitle}&quot;.
           See all completed titles:
           <Link className="m-lg-1" to="/profile/lists#completed">
             here

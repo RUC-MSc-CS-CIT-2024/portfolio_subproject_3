@@ -47,21 +47,18 @@ export default function MediaDetailPage() {
 
   const {
     data: crew,
-    loading: loadingCrew,
     hasMore: hasMoreCrew,
     handleLoadMore: handleLoadMoreCrew,
   } = usePaginatedData(fetchMediaCrew, mediaId);
 
   const {
     data: cast,
-    loading: loadingCast,
     hasMore: hasMoreCast,
     handleLoadMore: handleLoadMoreCast,
   } = usePaginatedData(fetchMediaCast, mediaId);
 
   const {
     data: similarMedia,
-    loading: loadingSimilarMedia,
     hasMore: hasMoreItems,
     handleLoadMore: handleLoadMoreSimilarMedia,
   } = usePaginatedData(fetchSimilarMedia, mediaId);
@@ -103,7 +100,6 @@ export default function MediaDetailPage() {
     <Container>
       <MediaInformation
         {...mediaData}
-        isLoading={loading}
         director={directors}
         writer={writers}
         producer={producers}
@@ -146,7 +142,6 @@ export default function MediaDetailPage() {
                   id: person.personId,
                   name: person.personName,
                 }))}
-                loading={loadingCrew}
                 onLoadMore={handleLoadMoreCrew}
                 hasNextPage={hasMoreCrew}
               />
@@ -158,7 +153,6 @@ export default function MediaDetailPage() {
                   id: person.personId,
                   name: person.personName,
                 }))}
-                loading={loadingCast}
                 onLoadMore={handleLoadMoreCast}
                 hasNextPage={hasMoreCast}
               />
@@ -171,7 +165,6 @@ export default function MediaDetailPage() {
           <h5>Similar Media</h5>
           <MediaCarousel
             media={similarMedia}
-            loading={loadingSimilarMedia}
             onLoadMore={handleLoadMoreSimilarMedia}
             hasNextPage={hasMoreItems}
           />

@@ -16,6 +16,7 @@ import {
   MediaCarousel,
   InfoRow,
   PersonsCarousel,
+  MediaTypeBadge,
 } from '@/components';
 import { useToast } from '@/contexts';
 import { extractMembersByJobCategory } from '@/utils';
@@ -210,7 +211,10 @@ export default function MediaDetailPage() {
       <Row>
         <Col>
           <h5>Extra Information</h5>
-          <InfoRow label="Type" value={mediaData?.type} />
+          <InfoRow
+            label="Type"
+            value={<MediaTypeBadge type={mediaData?.type} />}
+          />
           <InfoRow label="Box Office" value={mediaData?.boxoffice} />
           <InfoRow label="Awards" value={mediaData?.awardText} />
           <InfoRow

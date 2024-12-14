@@ -1,7 +1,7 @@
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
-import { MediaCardBadge } from '@/components';
+import { MediaTypeBadge } from '@/components';
 
 export default function CreditsList({ items = [] }) {
   const sortedItems = items.sort(
@@ -19,7 +19,7 @@ export default function CreditsList({ items = [] }) {
         <p to={`/media/${item.id}`}>{item.title}</p>
       </td>
       <td className="align-middle">
-        <MediaCardBadge type={item?.type} />
+        <MediaTypeBadge type={item?.type} />
       </td>
       <td className="align-middle">{item.character}</td>
       <td className="align-middle">{formatDate(item.releaseDate)}</td>

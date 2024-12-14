@@ -139,7 +139,6 @@ export default function PersonDetailPage() {
       type: media?.mediaType,
     };
   });
-  console.log('Final knownForMedia array:', knownForMedia);
 
   const ratings = [
     {
@@ -181,7 +180,12 @@ export default function PersonDetailPage() {
           <Col xs={12} sm={12} md={12} lg={5}>
             <Rating ratings={ratings} noHeading />
           </Col>
-          <Col xs={12} sm={12} lg={4} className="d-flex justify-content-between">
+          <Col
+            xs={12}
+            sm={12}
+            lg={4}
+            className="d-flex justify-content-between"
+          >
             {knownForMedia?.map((media, index) => (
               <div key={index} className="flex-fill mx-2">
                 <MediaCard {...media} clickable={false} />

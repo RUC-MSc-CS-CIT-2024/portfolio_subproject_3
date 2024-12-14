@@ -137,7 +137,7 @@ export default function SearchPage() {
           className="mb-4"
           onFilterChange={handleFilterChange}
         />
-        <MediaGrid media={filteredResults} loading={loading} />
+        <MediaGrid media={filteredResults} />
         {filteredResults.length > 0 &&
           personResults.numberOfItems > personPage.count && (
             <Pagination

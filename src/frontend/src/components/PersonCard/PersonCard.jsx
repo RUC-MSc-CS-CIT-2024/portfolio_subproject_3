@@ -9,7 +9,6 @@ export default function PersonCard({
   name,
   role,
   additionalInfo,
-  isLoading,
 }) {
   const navigate = useNavigate();
 
@@ -20,6 +19,7 @@ export default function PersonCard({
 
   const defaultName = 'Unknown Name';
   const defaultRole = 'Unknown Role';
+  const isLoading = !id;
 
   return (
     <div onClick={handleClick} className="personCard-clickable">

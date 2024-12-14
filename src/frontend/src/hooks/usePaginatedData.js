@@ -7,12 +7,10 @@ export default function usePaginatedData(
   count = 12,
 ) {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(initialPage);
   const [hasMore, setHasMore] = useState(true);
 
   const loadData = useCallback(async () => {
-    setLoading(true);
     try {
       const response = await fetchData({ id, page, count });
       setData((prevData) =>
@@ -21,8 +19,6 @@ export default function usePaginatedData(
       setHasMore(!!response.nextPage);
     } catch (error) {
       console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
     }
   }, [fetchData, id, page, count]);
 
@@ -33,10 +29,10 @@ export default function usePaginatedData(
   }, [id, page, loadData]);
 
   const handleLoadMore = useCallback(() => {
-    if (!loading && hasMore) {
+    if (hasMore) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [loading, hasMore]);
+  }, [hasMore]);
 
-  return { data, loading, hasMore, handleLoadMore };
+  return { data, hasMore, handleLoadMore };
 }

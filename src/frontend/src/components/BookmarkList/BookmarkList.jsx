@@ -18,7 +18,7 @@ import {
   markBookmarkAsCompleted,
   createScore,
 } from '@/services';
-import { MediaCardBadge, DefaultImage } from '@/components';
+import { MediaTypeBadge, DefaultImage } from '@/components';
 
 export default function BookmarkList({
   items,
@@ -112,7 +112,7 @@ export default function BookmarkList({
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
-          <MediaCardBadge type={item.media.type} />
+          <MediaTypeBadge type={item.media.type} />
         </td>
         <td className="align-middle">{formatDate(item.media.releaseDate)}</td>
         <td className="align-middle">{item.media.ageRating}</td>

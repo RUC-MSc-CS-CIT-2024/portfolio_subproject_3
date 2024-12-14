@@ -1,19 +1,13 @@
 import { MediaCard, GeneralCarousel } from '@/components';
 import { formatDate } from '@/utils';
 
-export default function MediaCarousel({
-  media,
-  loading,
-  onLoadMore,
-  hasNextPage,
-}) {
-  const renderItem = (mediaItem, loading) => (
+export default function MediaCarousel({ media, onLoadMore, hasNextPage }) {
+  const renderItem = (mediaItem) => (
     <MediaCard
       id={mediaItem.id}
       imageUri={mediaItem.posterUri}
       title={mediaItem.title}
       releaseYear={mediaItem.releaseYear || formatDate(mediaItem.releaseDate)}
-      isLoading={loading}
       type={mediaItem.type}
     />
   );
@@ -21,7 +15,6 @@ export default function MediaCarousel({
   return (
     <GeneralCarousel
       items={media}
-      loading={loading}
       onLoadMore={onLoadMore}
       hasNextPage={hasNextPage}
       renderItem={renderItem}

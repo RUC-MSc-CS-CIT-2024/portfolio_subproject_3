@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { formatDate, rewatchabilityMap } from '@/utils';
 import { useToast } from '@/hooks';
 import { removeCompletedItem } from '@/services';
-import { MediaCardBadge, DefaultImage } from '@/components';
+import { MediaTypeBadge, DefaultImage } from '@/components';
 
 export default function CompletedList({
   items,
@@ -52,7 +52,7 @@ export default function CompletedList({
           <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </td>
         <td className="align-middle">
-          <MediaCardBadge type={item.media.type} />
+          <MediaTypeBadge type={item.media.type} />
         </td>
         <td className="align-middle">{formatDate(item.completedDate)}</td>
         <td className="align-middle">

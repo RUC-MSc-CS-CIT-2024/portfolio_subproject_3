@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, Placeholder } from 'react-bootstrap';
-import { DefaultImage, MediaCardBadge } from '@/components';
+import { DefaultImage, MediaTypeBadge } from '@/components';
 import './MediaCard.css';
 
 export default function MediaCard({
@@ -29,7 +29,7 @@ export default function MediaCard({
         ) : (
           <div className="mediaCard-img">
             {imageUri ? <Card.Img src={imageUri} /> : <DefaultImage />}
-            <MediaCardBadge type={type} />
+            <MediaTypeBadge type={type} />
           </div>
         )}
         <Card.Body className="mediaCard-body">

@@ -1,20 +1,71 @@
+import { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
 import { MediaCardBadge, DefaultImage } from '@/components';
+import { fetchMediaById } from '@/services';
 
 export default function CreditsList({ items = [] }) {
-  const sortedItems = items.sort(
-    (a, b) => new Date(b.releaseDate) - new Date(a.releaseDate),
-  );
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const [mediaData, setMediaData] = useState({});
 
-  let rows = sortedItems.map((item, index) => (
-    <tr key={`${item.id}${index}`}>
+  useEffect(() => {
+    const fetchMediaData = async () => {
+      const seriesIds = [
+        ...new Set(items.map((item) => item.media.seriesId).filter(Boolean)),
+      ];
+      const mediaPromises = seriesIds.map((id) => fetchMediaById(id));
+      const mediaResults = await Promise.all(mediaPromises);
+      const mediaMap = mediaResults.reduce((acc, media) => {
+        acc[media.id] = media;
+        return acc;
+      }, {});
+      setMediaData(mediaMap);
+    };
+
+    fetchMediaData();
+  }, [items]);
+
+  const groupedItems = items.reduce((acc, item, index) => {
+    const key = item.media.seriesId || item.media.id;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push({ ...item, originalIndex: index });
+    return acc;
+  }, {});
+
+  const toggleGroup = (key) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const getCharacters = (group) =>
+    group
+      .map((item) => item.character)
+      .filter(Boolean)
+      .join(', ');
+
+  const isSameMedia = (group) => {
+    const firstItem = group[0].media;
+    return group.every(
+      (item) =>
+        item.media.id === firstItem.id &&
+        item.media.title === firstItem.title &&
+        item.media.type === firstItem.type &&
+        item.media.releaseDate === firstItem.releaseDate,
+    );
+  };
+
+  const renderSingleRow = (item, index) => (
+    <tr key={index} className="single-row">
       <td className="d-flex align-items-center">
         {item.media.posterUri ? (
           <img
             className="mx-2 responsive-img"
-            src={`${item?.media?.posterUri}`}
+            src={item.media.posterUri}
             height={68}
           />
         ) : (
@@ -22,25 +73,127 @@ export default function CreditsList({ items = [] }) {
             <DefaultImage />
           </div>
         )}
-        <p to={`/media/${item.id}`}>{item.media.title}</p>
+        <div className="single-title">
+          <p to={`/media/${item.id}`}>{item.media.title}</p>
+        </div>
       </td>
       <td className="align-middle">
-        <MediaCardBadge type={item?.media.type} />
+        <MediaCardBadge type={item.media.type} />
       </td>
-      <td className="align-middle text-capitalize ">{item?.role}</td>
-      <td className="align-middle">{formatDate(item?.media?.releaseDate)}</td>
+      <td className="align-middle text-capitalize">
+        {item.character && <p>Character: {item.character}</p>}
+      </td>
+      <td className="align-middle">{formatDate(item.media.releaseDate)}</td>
     </tr>
-  ));
+  );
 
-  if (rows.length === 0) {
-    rows = (
-      <tr>
-        <td colSpan={3} height={100} className="text-center align-middle">
-          No known works available.
+  const renderGroupRow = (key, group, index) => {
+    const seriesMedia = mediaData[group[0].media.seriesId] || group[0].media;
+    const characters = getCharacters(group);
+    return isSameMedia(group) ? (
+      <tr key={index} className="single-row">
+        <td className="d-flex align-items-center">
+          {seriesMedia.posterUri ? (
+            <img
+              className="mx-2 responsive-img"
+              src={seriesMedia.posterUri}
+              height={68}
+            />
+          ) : (
+            <div className="default-image-container mx-2">
+              <DefaultImage />
+            </div>
+          )}
+          <div className="single-title">
+            <p to={`/media/${group[0].media.id}`}>{seriesMedia.title}</p>
+          </div>
         </td>
+        <td className="align-middle">
+          <MediaCardBadge type={seriesMedia.type} />
+        </td>
+        <td className="align-middle text-capitalize">
+          {characters && <p>Character: {characters}</p>}
+        </td>
+        <td className="align-middle">{formatDate(seriesMedia.releaseDate)}</td>
       </tr>
+    ) : (
+      <>
+        <tr
+          key={index}
+          className="cursor-pointer"
+          onClick={() => toggleGroup(key)}
+        >
+          <td className="d-flex align-items-center">
+            {seriesMedia.posterUri ? (
+              <img
+                className="mx-2 responsive-img"
+                src={seriesMedia.posterUri}
+                height={68}
+              />
+            ) : (
+              <div className="default-image-container mx-2">
+                <DefaultImage />
+              </div>
+            )}
+            <div className="flex-grow-1">
+              <p>
+                {seriesMedia.title}{' '}
+                {group.length > 1 ? `(${group.length} titles)` : '(1 title)'}
+              </p>
+            </div>
+            <div className="dropdown-arrow">
+              <i
+                className={`bi ${expandedGroups[key] ? 'bi-chevron-up' : 'bi-chevron-down'}`}
+              ></i>
+            </div>
+          </td>
+          <td className="align-middle">
+            <MediaCardBadge type={seriesMedia.type} />
+          </td>
+          <td className="align-middle text-capitalize"></td>
+          <td className="align-middle"></td>
+        </tr>
+        {expandedGroups[key] &&
+          group.map((item, idx) => (
+            <tr key={`${key}-${idx}`} className="nested-row">
+              <td className="d-flex align-items-center">
+                {item.media.posterUri ? (
+                  <img
+                    className="mx-2 responsive-img"
+                    src={item.media.posterUri}
+                    height={68}
+                  />
+                ) : (
+                  <div className="default-image-container mx-2">
+                    <DefaultImage />
+                  </div>
+                )}
+                <div className="nested-title">
+                  <p to={`/media/${item.id}`}>{item.media.title}</p>
+                </div>
+              </td>
+              <td className="align-middle">
+                <MediaCardBadge type={item.media.type} />
+              </td>
+              <td className="align-middle text-capitalize">
+                {item.character && <p>Character: {item.character}</p>}
+              </td>
+              <td className="align-middle">
+                {formatDate(item.media.releaseDate)}
+              </td>
+            </tr>
+          ))}
+      </>
     );
-  }
+  };
+
+  const rows = Object.entries(groupedItems)
+    .sort((a, b) => a[1][0].originalIndex - b[1][0].originalIndex)
+    .map(([key, group], index) =>
+      group.length === 1
+        ? renderSingleRow(group[0], index)
+        : renderGroupRow(key, group, index),
+    );
 
   return (
     <div className="table-responsive">
@@ -53,7 +206,17 @@ export default function CreditsList({ items = [] }) {
             <th>Release Date</th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody>
+          {rows.length > 0 ? (
+            rows
+          ) : (
+            <tr>
+              <td colSpan={4} height={100} className="text-center align-middle">
+                No known works available.
+              </td>
+            </tr>
+          )}
+        </tbody>
       </Table>
     </div>
   );

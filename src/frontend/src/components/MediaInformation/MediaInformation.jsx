@@ -27,7 +27,6 @@ export default function MediaInformation({
   writer,
   producer,
   scores,
-  isLoading,
 }) {
   const [showMore, setShowMore] = useState(false);
 
@@ -35,6 +34,8 @@ export default function MediaInformation({
 
   const plotPreview =
     plot?.length > 200 ? plot.substring(0, 200) + '...' : plot;
+
+  const isLoading = !title;
 
   return (
     <Container className="container-layout">

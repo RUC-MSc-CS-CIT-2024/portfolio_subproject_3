@@ -44,7 +44,6 @@ export default function MediaOverviewPage() {
       <h1>Media</h1>
       <MediaCarousel
         media={media}
-        loading={loading}
         onLoadMore={handleLoadMore}
         hasNextPage={hasNextPage}
         initialCount={initialCount}

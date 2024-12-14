@@ -23,10 +23,9 @@ export default function PersonDetailPage() {
   const [person, setPerson] = useState(null);
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
-  const [loadingPerson, setLoadingPerson] = useState(true);
-  const [loadingCoActors, setLoadingCoActors] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const fetchPersonData = useCallback(async (personId, page) => {
     try {
@@ -46,7 +45,6 @@ export default function PersonDetailPage() {
   const fetchCoActorsData = useCallback(
     async (personId, page) => {
       try {
-        setLoadingCoActors(true);
         const coActorsData = await fetchPersonCoactors({
           id: personId,
           page: page,
@@ -62,24 +60,22 @@ export default function PersonDetailPage() {
         setHasMoreItems(!!coActorsData.nextPage);
       } catch {
         showToastMessage('Error getting the co-actors.', 'danger');
-      } finally {
-        setLoadingCoActors(false);
       }
     },
     [showToastMessage],
   );
 
   const loadPerson = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoadingPerson(true);
       const personData = await fetchPersonById(id);
       setPerson(personData);
-      setLoadingPerson(false);
       fetchCoActorsData(id, 1);
     } catch {
       showToastMessage('Error getting the person.', 'danger');
-      setLoadingPerson(false);
       navigate('/persons');
+    } finally {
+      setLoading(false);
     }
   }, [id, navigate, showToastMessage, fetchCoActorsData]);
 
@@ -92,10 +88,10 @@ export default function PersonDetailPage() {
   }, [id, currentPage, fetchPersonData]);
 
   useEffect(() => {
-    if (!loadingPerson && !person) {
+    if (!loading && !person) {
       navigate('/NotFound');
     }
-  }, [loadingPerson, person, navigate]);
+  }, [loading, person, navigate]);
 
   useEffect(() => {
     setCoActors([]);
@@ -119,11 +115,11 @@ export default function PersonDetailPage() {
   }, []);
 
   const handleLoadMoreCoActors = useCallback(() => {
-    if (hasMoreItems && !loadingCoActors) {
+    if (hasMoreItems) {
       fetchCoActorsData(id, currentPage + 1);
       setCurrentPage((prevPage) => prevPage + 1);
     }
-  }, [id, currentPage, hasMoreItems, loadingCoActors, fetchCoActorsData]);
+  }, [id, currentPage, hasMoreItems, fetchCoActorsData]);
 
   const knownForMedia = person?.knownForMedia?.map((media) => ({
     id: media?.id,
@@ -158,7 +154,6 @@ export default function PersonDetailPage() {
             roles={
               person?.knownForDepartment ? [person?.knownForDepartment] : []
             }
-            isLoading={loadingPerson}
           />
         </Col>
         <Row className="mt-5">
@@ -206,7 +201,6 @@ export default function PersonDetailPage() {
                 imageUri: actor?.pictureUri,
                 id: actor.id,
               }))}
-              loading={loadingCoActors}
               onLoadMore={handleLoadMoreCoActors}
               hasMoreItems={hasMoreItems}
             />

@@ -3,7 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useItemsPerRow } from '@/hooks';
 import { MediaCard } from '@/components';
 
-export default function MediaGrid({ media, loading, onShowMore }) {
+export default function MediaGrid({ media, onShowMore }) {
   const [showMore, setShowMore] = useState(false);
   const itemsPerRow = useItemsPerRow();
 
@@ -34,7 +34,6 @@ export default function MediaGrid({ media, loading, onShowMore }) {
               type={media.type}
               title={media.title}
               releaseYear={new Date(media.releaseDate).getFullYear().toString()}
-              isLoading={loading}
             />
             {index === firstRowMedia.length - 1 &&
               remainingMedia.length > 0 && (
@@ -69,7 +68,6 @@ export default function MediaGrid({ media, loading, onShowMore }) {
                 releaseYear={new Date(media.releaseDate)
                   .getFullYear()
                   .toString()}
-                isLoading={loading}
               />
             </Col>
           ))}

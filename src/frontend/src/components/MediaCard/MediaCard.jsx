@@ -3,14 +3,7 @@ import { Card, Placeholder } from 'react-bootstrap';
 import { DefaultImage, MediaCardBadge } from '@/components';
 import './MediaCard.css';
 
-export default function MediaCard({
-  id,
-  imageUri,
-  title,
-  type,
-  releaseYear,
-  isLoading,
-}) {
+export default function MediaCard({ id, imageUri, title, type, releaseYear }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -20,6 +13,7 @@ export default function MediaCard({
 
   const defaultTitle = 'Unknown Title';
   const defaultReleaseYear = 'Unknown Year';
+  const isLoading = !id;
 
   return (
     <div onClick={handleClick} className="mediaCard-clickable">

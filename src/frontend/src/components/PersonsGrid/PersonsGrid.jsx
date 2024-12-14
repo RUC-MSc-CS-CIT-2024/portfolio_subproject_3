@@ -4,7 +4,7 @@ import { PersonCard } from '@/components';
 import { useItemsPerRow } from '@/hooks';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function PersonsGrid({ persons, loading }) {
+export default function PersonsGrid({ persons }) {
   const [showMore, setShowMore] = useState(false);
   const itemsPerRow = useItemsPerRow();
 
@@ -30,7 +30,6 @@ export default function PersonsGrid({ persons, loading }) {
               name={person.name}
               role={person.role}
               additionalInfo={person.additionalInfo}
-              isLoading={loading}
             />
             {index === firstRowPersons.length - 1 &&
               remainingPersons.length > 0 && (
@@ -63,7 +62,6 @@ export default function PersonsGrid({ persons, loading }) {
                 name={person.name}
                 role={person.role}
                 additionalInfo={person.additionalInfo}
-                isLoading={loading}
               />
             </Col>
           ))}

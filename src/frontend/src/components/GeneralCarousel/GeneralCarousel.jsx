@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function GeneralCarousel({
   items,
-  loading,
   onLoadMore,
   hasNextPage,
   renderItem,
@@ -22,10 +21,10 @@ export default function GeneralCarousel({
   }, [items, itemsPerRow]);
 
   useEffect(() => {
-    if (index === groupedItems.length - 1 && hasNextPage && !loading) {
+    if (index === groupedItems.length - 1 && hasNextPage && !items.length) {
       onLoadMore();
     }
-  }, [index, groupedItems.length, hasNextPage, loading, onLoadMore]);
+  }, [index, groupedItems.length, hasNextPage, items.length, onLoadMore]);
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
@@ -53,7 +52,7 @@ export default function GeneralCarousel({
                   lg={3}
                   xl={2}
                 >
-                  {renderItem(item, loading)}
+                  {renderItem(item)}
                 </Col>
               ))}
             </Row>

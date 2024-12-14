@@ -15,6 +15,7 @@ import {
   createFollow,
 } from '@/services';
 import { useToast } from '@/hooks';
+import { fetchAllPages } from '@/utils';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
@@ -23,21 +24,27 @@ export default function PersonDetailPage() {
   const [person, setPerson] = useState(null);
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
-  const [loadingPerson, setLoadingPerson] = useState(true);
-  const [loadingCoActors, setLoadingCoActors] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [fetchAll, setFetchAll] = useState(false);
 
-  const fetchPersonData = useCallback(async (personId, page) => {
+  const fetchPersonData = useCallback(async (personId, page, fetchAll) => {
     try {
-      const response = await fetchPersonMedia(personId, page, 3);
-      setCredits((prevCredits) => {
-        const newCredits = response.items.filter(
-          (item) => !prevCredits.some((credit) => credit.id === item.id),
-        );
-        return [...prevCredits, ...newCredits];
-      });
-      setHasMoreItems(response.nextPage !== null);
+      if (fetchAll) {
+        const allCredits = await fetchAllPages(fetchPersonMedia, personId, 3);
+        setCredits(allCredits);
+        setHasMoreItems(false);
+      } else {
+        const response = await fetchPersonMedia(personId, page, 3);
+        setCredits((prevCredits) => {
+          const newCredits = response.items.filter(
+            (item) => !prevCredits.some((credit) => credit.id === item.id),
+          );
+          return [...prevCredits, ...newCredits];
+        });
+        setHasMoreItems(response.nextPage !== null);
+      }
     } catch (error) {
       console.error('Error fetching media:', error);
     }
@@ -46,7 +53,6 @@ export default function PersonDetailPage() {
   const fetchCoActorsData = useCallback(
     async (personId, page) => {
       try {
-        setLoadingCoActors(true);
         const coActorsData = await fetchPersonCoactors({
           id: personId,
           page: page,
@@ -62,24 +68,22 @@ export default function PersonDetailPage() {
         setHasMoreItems(!!coActorsData.nextPage);
       } catch {
         showToastMessage('Error getting the co-actors.', 'danger');
-      } finally {
-        setLoadingCoActors(false);
       }
     },
     [showToastMessage],
   );
 
   const loadPerson = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoadingPerson(true);
       const personData = await fetchPersonById(id);
       setPerson(personData);
-      setLoadingPerson(false);
       fetchCoActorsData(id, 1);
     } catch {
       showToastMessage('Error getting the person.', 'danger');
-      setLoadingPerson(false);
       navigate('/persons');
+    } finally {
+      setLoading(false);
     }
   }, [id, navigate, showToastMessage, fetchCoActorsData]);
 
@@ -88,14 +92,14 @@ export default function PersonDetailPage() {
   }, [id, loadPerson]);
 
   useEffect(() => {
-    fetchPersonData(id, currentPage);
-  }, [id, currentPage, fetchPersonData]);
+    fetchPersonData(id, currentPage, fetchAll);
+  }, [id, currentPage, fetchAll, fetchPersonData]);
 
   useEffect(() => {
-    if (!loadingPerson && !person) {
+    if (!loading && !person) {
       navigate('/NotFound');
     }
-  }, [loadingPerson, person, navigate]);
+  }, [loading, person, navigate]);
 
   useEffect(() => {
     setCoActors([]);
@@ -115,23 +119,26 @@ export default function PersonDetailPage() {
   };
 
   const handleLoadMore = useCallback(() => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    setFetchAll(true);
   }, []);
 
   const handleLoadMoreCoActors = useCallback(() => {
-    if (hasMoreItems && !loadingCoActors) {
+    if (hasMoreItems) {
       fetchCoActorsData(id, currentPage + 1);
       setCurrentPage((prevPage) => prevPage + 1);
     }
-  }, [id, currentPage, hasMoreItems, loadingCoActors, fetchCoActorsData]);
+  }, [id, currentPage, hasMoreItems, fetchCoActorsData]);
 
-  const knownForMedia = person?.knownForMedia?.map((media) => ({
-    id: media?.id,
-    title: media?.title,
-    releaseYear: media?.releaseDate,
-    imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
-    type: media?.mediaType,
-  }));
+  const knownForMedia = person?.knownForMedia?.map((media) => {
+    console.log('Processing media:', media);
+    return {
+      id: media?.id,
+      title: media?.title,
+      releaseYear: media?.releaseDate,
+      imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
+      type: media?.mediaType,
+    };
+  });
 
   const ratings = [
     {
@@ -158,10 +165,9 @@ export default function PersonDetailPage() {
             roles={
               person?.knownForDepartment ? [person?.knownForDepartment] : []
             }
-            isLoading={loadingPerson}
           />
         </Col>
-        <Row className="mt-5">
+        <Row className="mt-5 align-items-start">
           <Col xs={12} md={3}>
             <Button
               variant="outline-dark"
@@ -174,11 +180,18 @@ export default function PersonDetailPage() {
           <Col xs={12} sm={12} md={12} lg={5}>
             <Rating ratings={ratings} noHeading />
           </Col>
-          {knownForMedia?.map((media, index) => (
-            <Col key={index} xs={12} sm={4} md={4} lg={1}>
-              <MediaCard {...media} />
-            </Col>
-          ))}
+          <Col
+            xs={12}
+            sm={12}
+            lg={4}
+            className="d-flex justify-content-between"
+          >
+            {knownForMedia?.map((media, index) => (
+              <div key={index} className="flex-fill mx-2">
+                <MediaCard {...media} clickable={false} />
+              </div>
+            ))}
+          </Col>
         </Row>
         <Row></Row>
       </Row>
@@ -188,7 +201,7 @@ export default function PersonDetailPage() {
           <CreditsList items={credits} />
           {hasMoreItems && (
             <Button onClick={handleLoadMore} variant="link">
-              Load More
+              Show all
             </Button>
           )}
         </Col>
@@ -206,7 +219,6 @@ export default function PersonDetailPage() {
                 imageUri: actor?.pictureUri,
                 id: actor.id,
               }))}
-              loading={loadingCoActors}
               onLoadMore={handleLoadMoreCoActors}
               hasMoreItems={hasMoreItems}
             />

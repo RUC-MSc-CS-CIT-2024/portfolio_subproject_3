@@ -1,4 +1,9 @@
-import { AuthProvider, ToastProvider, SearchProvider } from '@/contexts';
+import {
+  AuthProvider,
+  ToastProvider,
+  SearchProvider,
+  UserDataProvider,
+} from '@/contexts';
 import { Route, Routes } from 'react-router-dom';
 import { Layout, PrivateRoute } from '@/components';
 import {
@@ -19,28 +24,30 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <SearchProvider>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="search" element={<SearchPage />} />
-              <Route path="signup" element={<SignUpPage />} />
-              <Route element={<PrivateRoute />}>
-                <Route path="profile">
-                  <Route index element={<ProfilePage />} />
-                  <Route path="lists" element={<UserListsPage />} />
+          <UserDataProvider>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="search" element={<SearchPage />} />
+                <Route path="signup" element={<SignUpPage />} />
+                <Route element={<PrivateRoute />}>
+                  <Route path="profile">
+                    <Route index element={<ProfilePage />} />
+                    <Route path="lists" element={<UserListsPage />} />
+                  </Route>
                 </Route>
+                <Route path="media">
+                  <Route index element={<MediaOverviewPage />} />
+                  <Route path=":id" element={<MediaDetailPage />} />
+                </Route>
+                <Route path="persons">
+                  <Route index element={<PersonOverviewPage />} />
+                  <Route path=":id" element={<PersonDetailPage />} />
+                </Route>
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
-              <Route path="media">
-                <Route index element={<MediaOverviewPage />} />
-                <Route path=":id" element={<MediaDetailPage />} />
-              </Route>
-              <Route path="persons">
-                <Route index element={<PersonOverviewPage />} />
-                <Route path=":id" element={<PersonDetailPage />} />
-              </Route>
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
+            </Routes>
+          </UserDataProvider>
         </SearchProvider>
       </ToastProvider>
     </AuthProvider>

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import {
   PersonsCarousel,
@@ -14,13 +14,14 @@ import {
   fetchPersonCoactors,
   createFollow,
 } from '@/services';
-import { useToast } from '@/hooks';
+import { useToast, useUserData } from '@/contexts';
 import { fetchAllPages } from '@/utils';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToastMessage } = useToast();
+  const { following, refreshUserData } = useUserData();
   const [person, setPerson] = useState(null);
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
@@ -29,10 +30,14 @@ export default function PersonDetailPage() {
   const [loading, setLoading] = useState(true);
   const [fetchAll, setFetchAll] = useState(false);
 
+  const isFollowed = following.some(
+    (follow) => follow.personId === parseInt(id),
+  );
+
   const fetchPersonData = useCallback(async (personId, page, fetchAll) => {
     try {
       if (fetchAll) {
-        const allCredits = await fetchAllPages(fetchPersonMedia, personId, 3);
+        const allCredits = await fetchAllPages(fetchPersonMedia, 3, personId);
         setCredits(allCredits);
         setHasMoreItems(false);
       } else {
@@ -112,6 +117,7 @@ export default function PersonDetailPage() {
     try {
       await createFollow(id);
       showToastMessage('Successfully followed the person', 'success');
+      refreshUserData();
     } catch (error) {
       console.error('Error following the person', error);
       showToastMessage('Error following the person', 'danger');
@@ -169,13 +175,20 @@ export default function PersonDetailPage() {
         </Col>
         <Row className="mt-5 align-items-start">
           <Col xs={12} md={3}>
-            <Button
-              variant="outline-dark"
-              onClick={handleFollow}
-              className="w-100 mb-2 rounded"
-            >
-              Follow
-            </Button>
+            {isFollowed ? (
+              <div className="alert alert-info">
+                You are already following {person?.name}. See people you are
+                following: <Link to="/profile/lists#following">here</Link>
+              </div>
+            ) : (
+              <Button
+                variant="outline-dark"
+                onClick={handleFollow}
+                className="w-100 mb-2 rounded"
+              >
+                Follow
+              </Button>
+            )}
           </Col>
           <Col xs={12} sm={12} md={12} lg={5}>
             <Rating ratings={ratings} noHeading />

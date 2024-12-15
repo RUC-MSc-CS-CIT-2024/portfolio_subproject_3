@@ -20,11 +20,7 @@ import {
 } from '@/services';
 import { MediaTypeBadge, DefaultImage } from '@/components';
 
-export default function BookmarkList({
-  items,
-  loadMoreBookmarks,
-  hasMoreItems,
-}) {
+export default function BookmarkList({ items }) {
   const [bookmarks, setBookmarks] = useState(items);
   const [expandedRow, setExpandedRow] = useState(null);
   const [rewatchability, setRewatchability] = useState('');
@@ -245,13 +241,6 @@ export default function BookmarkList({
         </thead>
         <tbody>{rows}</tbody>
       </Table>
-      {hasMoreItems && bookmarks.length > 0 && (
-        <div className="text-left">
-          <Button onClick={loadMoreBookmarks} variant="link">
-            Load More
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default function MediaGrid({ media, onShowMore }) {
   };
 
   return (
-    <Container fluid className="container-layout ">
+    <Container fluid className="container-layout">
       <Row>
         {firstRowMedia.map((media, index) => (
           <Col
@@ -35,43 +35,47 @@ export default function MediaGrid({ media, onShowMore }) {
               title={media.title}
               releaseYear={new Date(media.releaseDate).getFullYear().toString()}
             />
-            {index === firstRowMedia.length - 1 &&
-              remainingMedia.length > 0 && (
-                <Button
-                  variant="link"
-                  onClick={handleShowMore}
-                  className="see-more-button"
-                >
-                  {showMore ? 'See Less' : 'See More'}
-                </Button>
-              )}
+            {index === 0 && remainingMedia.length > 0 && !showMore && (
+              <Button variant="link" onClick={handleShowMore} className="p-0">
+                See More
+              </Button>
+            )}
           </Col>
         ))}
       </Row>
       {showMore && (
-        <Row>
-          {remainingMedia.map((media, index) => (
-            <Col
-              key={index}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              xl={2}
-              className="position-relative"
-            >
-              <MediaCard
-                id={media.id}
-                imageUri={media.posterUri}
-                type={media.type}
-                title={media.title}
-                releaseYear={new Date(media.releaseDate)
-                  .getFullYear()
-                  .toString()}
-              />
+        <>
+          <Row>
+            {remainingMedia.map((media, index) => (
+              <Col
+                key={index}
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                xl={2}
+                className="position-relative"
+              >
+                <MediaCard
+                  id={media.id}
+                  imageUri={media.posterUri}
+                  type={media.type}
+                  title={media.title}
+                  releaseYear={new Date(media.releaseDate)
+                    .getFullYear()
+                    .toString()}
+                />
+              </Col>
+            ))}
+          </Row>
+          <Row>
+            <Col className="text-left">
+              <Button variant="link" onClick={handleShowMore} className="p-0">
+                See Less
+              </Button>
             </Col>
-          ))}
-        </Row>
+          </Row>
+        </>
       )}
     </Container>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
 import { formatDate, rewatchabilityMap } from '@/utils';
@@ -7,11 +7,7 @@ import { useToast } from '@/hooks';
 import { removeCompletedItem } from '@/services';
 import { MediaTypeBadge, DefaultImage } from '@/components';
 
-export default function CompletedList({
-  items,
-  loadMoreCompleted,
-  hasMoreItems,
-}) {
+export default function CompletedList({ items }) {
   const [completedItems, setCompletedItems] = useState(items);
   const { showToastMessage } = useToast();
 
@@ -101,13 +97,6 @@ export default function CompletedList({
         </thead>
         <tbody>{rows}</tbody>
       </Table>
-      {hasMoreItems && completedItems.length > 0 && (
-        <div className="text-left">
-          <Button onClick={loadMoreCompleted} variant="link">
-            Load More
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

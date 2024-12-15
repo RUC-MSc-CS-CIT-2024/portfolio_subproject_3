@@ -15,6 +15,7 @@ import {
   createFollow,
 } from '@/services';
 import { useToast, useUserData } from '@/contexts';
+import { fetchAllPages } from '@/utils';
 
 export default function PersonDetailPage() {
   const { id } = useParams();
@@ -27,21 +28,28 @@ export default function PersonDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [fetchAll, setFetchAll] = useState(false);
 
   const isFollowed = following.some(
     (follow) => follow.personId === parseInt(id),
   );
 
-  const fetchPersonData = useCallback(async (personId, page) => {
+  const fetchPersonData = useCallback(async (personId, page, fetchAll) => {
     try {
-      const response = await fetchPersonMedia(personId, page, 3);
-      setCredits((prevCredits) => {
-        const newCredits = response.items.filter(
-          (item) => !prevCredits.some((credit) => credit.id === item.id),
-        );
-        return [...prevCredits, ...newCredits];
-      });
-      setHasMoreItems(response.nextPage !== null);
+      if (fetchAll) {
+        const allCredits = await fetchAllPages(fetchPersonMedia, 3, personId);
+        setCredits(allCredits);
+        setHasMoreItems(false);
+      } else {
+        const response = await fetchPersonMedia(personId, page, 3);
+        setCredits((prevCredits) => {
+          const newCredits = response.items.filter(
+            (item) => !prevCredits.some((credit) => credit.id === item.id),
+          );
+          return [...prevCredits, ...newCredits];
+        });
+        setHasMoreItems(response.nextPage !== null);
+      }
     } catch (error) {
       console.error('Error fetching media:', error);
     }
@@ -89,8 +97,8 @@ export default function PersonDetailPage() {
   }, [id, loadPerson]);
 
   useEffect(() => {
-    fetchPersonData(id, currentPage);
-  }, [id, currentPage, fetchPersonData]);
+    fetchPersonData(id, currentPage, fetchAll);
+  }, [id, currentPage, fetchAll, fetchPersonData]);
 
   useEffect(() => {
     if (!loading && !person) {
@@ -117,7 +125,7 @@ export default function PersonDetailPage() {
   };
 
   const handleLoadMore = useCallback(() => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    setFetchAll(true);
   }, []);
 
   const handleLoadMoreCoActors = useCallback(() => {
@@ -127,13 +135,16 @@ export default function PersonDetailPage() {
     }
   }, [id, currentPage, hasMoreItems, fetchCoActorsData]);
 
-  const knownForMedia = person?.knownForMedia?.map((media) => ({
-    id: media?.id,
-    title: media?.title,
-    releaseYear: media?.releaseDate,
-    imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
-    type: media?.mediaType,
-  }));
+  const knownForMedia = person?.knownForMedia?.map((media) => {
+    console.log('Processing media:', media);
+    return {
+      id: media?.id,
+      title: media?.title,
+      releaseYear: media?.releaseDate,
+      imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
+      type: media?.mediaType,
+    };
+  });
 
   const ratings = [
     {
@@ -162,7 +173,7 @@ export default function PersonDetailPage() {
             }
           />
         </Col>
-        <Row className="mt-5">
+        <Row className="mt-5 align-items-start">
           <Col xs={12} md={3}>
             {isFollowed ? (
               <div className="alert alert-info">
@@ -182,11 +193,18 @@ export default function PersonDetailPage() {
           <Col xs={12} sm={12} md={12} lg={5}>
             <Rating ratings={ratings} noHeading />
           </Col>
-          {knownForMedia?.map((media, index) => (
-            <Col key={index} xs={12} sm={4} md={4} lg={1}>
-              <MediaCard {...media} />
-            </Col>
-          ))}
+          <Col
+            xs={12}
+            sm={12}
+            lg={4}
+            className="d-flex justify-content-between"
+          >
+            {knownForMedia?.map((media, index) => (
+              <div key={index} className="flex-fill mx-2">
+                <MediaCard {...media} clickable={false} />
+              </div>
+            ))}
+          </Col>
         </Row>
         <Row></Row>
       </Row>
@@ -196,7 +214,7 @@ export default function PersonDetailPage() {
           <CreditsList items={credits} />
           {hasMoreItems && (
             <Button onClick={handleLoadMore} variant="link">
-              Load More
+              Show all
             </Button>
           )}
         </Col>

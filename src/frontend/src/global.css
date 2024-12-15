@@ -20,13 +20,6 @@
   background-color: rgba(0, 0, 0, 1);
 }
 
-.see-more-button.btn {
-  position: absolute;
-  top: -2rem;
-  right: 0;
-  color: black;
-}
-
 .responsive-img {
   height: 68px;
 }

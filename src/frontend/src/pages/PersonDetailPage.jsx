@@ -13,6 +13,7 @@ import {
   fetchPersonMedia,
   fetchPersonCoactors,
   createFollow,
+  fetchPersonImages,
 } from '@/services';
 import { useToast, useUserData } from '@/contexts';
 import { fetchAllPages } from '@/utils';
@@ -29,6 +30,7 @@ export default function PersonDetailPage() {
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [loading, setLoading] = useState(true);
   const [fetchAll, setFetchAll] = useState(false);
+  const [personImages, setPersonImages] = useState([]);
 
   const isFollowed = following.some(
     (follow) => follow.personId === parseInt(id),
@@ -84,6 +86,8 @@ export default function PersonDetailPage() {
       const personData = await fetchPersonById(id);
       setPerson(personData);
       fetchCoActorsData(id, 1);
+      const images = await fetchPersonImages(personData.tmdbId);
+      setPersonImages(images.slice(1));
     } catch {
       showToastMessage('Error getting the person.', 'danger');
       navigate('/persons');
@@ -136,7 +140,6 @@ export default function PersonDetailPage() {
   }, [id, currentPage, hasMoreItems, fetchCoActorsData]);
 
   const knownForMedia = person?.knownForMedia?.map((media) => {
-    console.log('Processing media:', media);
     return {
       id: media?.id,
       title: media?.title,
@@ -171,6 +174,7 @@ export default function PersonDetailPage() {
             roles={
               person?.knownForDepartment ? [person?.knownForDepartment] : []
             }
+            images={personImages}
           />
         </Col>
         <Row className="mt-5 align-items-start">

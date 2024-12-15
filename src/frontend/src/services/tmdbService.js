@@ -74,3 +74,26 @@ export async function fetchPersonTMDB(tmdbId) {
     throw err;
   }
 }
+
+export async function fetchPersonImages(tmdbId, size = ImageSize.Normal) {
+  const api = new ApiClient(baseUrl, accessKey);
+  try {
+    const resp = await api.Get(`person/${tmdbId}/images`);
+    if (!resp.ok) {
+      throw new Error('Failed to fetch person images from TMDB');
+    }
+    const images = resp.value.profiles.map((image) => {
+      const imageUrlWithSize = new URL(
+        size + '/',
+        import.meta.env.VITE_TMDB_IMAGE_BASE_URL,
+      );
+      const imageUrl = new URL(image.file_path.substring(1), imageUrlWithSize)
+        .href;
+      return imageUrl;
+    });
+    return images;
+  } catch (err) {
+    console.error(`Error fetching images for TMDB ID ${tmdbId}:`, err);
+    throw err;
+  }
+}

@@ -45,7 +45,6 @@ export default function MediaInformation({
     const completedMedia = completed.find(
       (item) => item.mediaId === parseInt(mediaId),
     );
-    console.log('completedMedia:', completedMedia);
     return completedMedia?.score?.value || 'No Score Available';
   };
 

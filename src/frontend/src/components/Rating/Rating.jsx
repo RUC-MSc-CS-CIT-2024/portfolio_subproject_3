@@ -19,17 +19,19 @@ export default function Rating({ ratings }) {
       return 'Metacritic';
     } else if (source === 'rottentomatoes') {
       return 'Rotten Tomatoes';
+    } else if (source === 'User Score') {
+      return 'Your personal';
     }
     return source;
   };
 
   return (
     <>
-      <div className="d-flex w-100 mt-5">
+      <div className="d-flex flex-column flex-md-row w-100 mt-5">
         {ratings.map((rating, index) => (
           <div
             key={index}
-            className="d-flex flex-column align-items-center w-100"
+            className="d-flex flex-column align-items-center w-100 mb-3 mb-md-0"
           >
             <p className="mb-3">
               <strong>{formatSourceName(rating.source)} rating</strong>
@@ -64,12 +66,30 @@ export default function Rating({ ratings }) {
               <div className="d-flex flex-column">
                 <p className="mb-0 fs-5">
                   <span className="fw-bold">
-                    {' '}
                     {typeof rating.value === 'number'
                       ? rating.value.toFixed(1)
                       : rating.value}
                   </span>
                 </p>
+              </div>
+            ) : rating.source === 'User Score' ? (
+              <div className="d-flex align-items-center gap-2">
+                <ReactStarsRating
+                  value={1}
+                  count={1}
+                  size={30}
+                  isHalf={false}
+                  primaryColor="orange"
+                  secondaryColor="grey"
+                />
+                <div className="d-flex flex-column">
+                  <p className="mb-0 fs-5">
+                    <span className="fw-bold">{rating.value}</span>/10
+                  </p>
+                  {rating.voteCount && (
+                    <p className="mb-0">{formatVoteCount(rating.voteCount)}</p>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="d-flex flex-column">

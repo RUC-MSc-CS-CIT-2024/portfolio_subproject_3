@@ -8,6 +8,7 @@ import {
   Placeholder,
 } from 'react-bootstrap';
 import { formatDate } from '@/utils';
+import { useUserData } from '@/contexts';
 import {
   PlaceholderText,
   DefaultImage,
@@ -27,6 +28,8 @@ export default function MediaInformation({
   writer,
   producer,
   scores,
+  releases,
+  mediaId,
 }) {
   const [showMore, setShowMore] = useState(false);
 
@@ -36,6 +39,33 @@ export default function MediaInformation({
     plot?.length > 200 ? plot.substring(0, 200) + '...' : plot;
 
   const isLoading = !title;
+  const { completed } = useUserData();
+
+  const getUserScore = () => {
+    const completedMedia = completed.find(
+      (item) => item.mediaId === parseInt(mediaId),
+    );
+    console.log('completedMedia:', completedMedia);
+    return completedMedia?.score?.value || 'No Score Available';
+  };
+
+  const userScore = getUserScore();
+
+  const getCombinedRatings = () => {
+    const releaseRatings = releases
+      ? releases.map((release) => ({
+          source: 'Release Rating',
+          value: release.rated,
+        }))
+      : [];
+    const userRating =
+      userScore !== 'No Score Available'
+        ? [{ source: 'User Score', value: userScore }]
+        : [];
+    return [...(scores || []), ...releaseRatings, ...userRating];
+  };
+
+  const combinedRatings = getCombinedRatings();
 
   return (
     <Container className="container-layout">
@@ -167,7 +197,7 @@ export default function MediaInformation({
           </Row>
           <Row>
             <Col>
-              <Rating ratings={scores} />
+              <Rating ratings={combinedRatings} />
             </Col>
           </Row>
         </Col>

@@ -56,9 +56,9 @@ export default function SearchPage() {
   const handleFilterChange = useCallback(
     (newFilterCriteria) => {
       setFilterCriteria(newFilterCriteria);
-      applyFilters(mediaResults, newFilterCriteria);
+      applyFilters(mediaResults.items, newFilterCriteria);
     },
-    [mediaResults, applyFilters],
+    [mediaResults.items, applyFilters],
   );
 
   const handleSearch = (query_data) => {
@@ -66,7 +66,7 @@ export default function SearchPage() {
     setQuery(query_data);
   };
 
-  const performSearch = useCallback(
+  const performMediaSearch = useCallback(
     async (query_data) => {
       setLoading(true);
       let params = {
@@ -77,30 +77,17 @@ export default function SearchPage() {
       };
       try {
         const response = await fetchMedia(params);
+        console.log('this is the data for persons: ', response);
         setMediaResults(response);
         applyFilters(response.items, filterCriteria);
-
-        if (params.query_type !== 'Structured') {
-          let q = params.query;
-          if (params.query_type !== 'Simple') {
-            q = params.keywords.join(' ');
-          }
-          const personResponse = await fetchPersons(
-            { name: q },
-            personPage.page,
-            personPage.count,
-          );
-          setPersonResults(personResponse);
-        }
       } catch (error) {
-        console.error('Error searching:', error.message);
+        console.error('Error searching media:', error.message);
         showToastMessage(
-          error.message || 'Error occurred while searching.',
+          error.message || 'Error occurred while searching media.',
           'danger',
         );
-        setMediaResults();
+        setMediaResults({ items: [], numberOfItems: 0 });
         setFilteredResults([]);
-        setPersonResults();
       } finally {
         setLoading(false);
       }
@@ -110,18 +97,46 @@ export default function SearchPage() {
       filterCriteria,
       mediaPage.count,
       mediaPage.page,
-      personPage.count,
-      personPage.page,
       showToastMessage,
     ],
   );
 
+  const performPersonSearch = useCallback(
+    async (query_data) => {
+      setLoading(true);
+      let params = {
+        name: query_data.query,
+        page: personPage.page,
+        count: personPage.count,
+      };
+      try {
+        const response = await fetchPersons(params);
+        console.log('this is the data for persons: ', response);
+        setPersonResults(response);
+      } catch (error) {
+        console.error('Error searching persons:', error.message);
+        showToastMessage(
+          error.message || 'Error occurred while searching persons.',
+          'danger',
+        );
+        setPersonResults({ items: [], numberOfItems: 0 });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [personPage.count, personPage.page, showToastMessage],
+  );
+
   useEffect(() => {
-    performSearch(query);
-  }, [performSearch, query]);
+    performMediaSearch(query);
+  }, [performMediaSearch, query]);
+
+  useEffect(() => {
+    performPersonSearch(query);
+  }, [performPersonSearch, query]);
 
   let resultBody = <></>;
-  if (filteredResults.length === 0 || personResults.length === 0) {
+  if (filteredResults.length === 0 && personResults.items.length === 0) {
     resultBody = (
       <div className="d-flex justify-content-center align-items-center py-5">
         <h2 className="text-muted">
@@ -139,7 +154,7 @@ export default function SearchPage() {
         />
         <MediaGrid media={filteredResults} />
         {filteredResults.length > 0 &&
-          personResults.numberOfItems > personPage.count && (
+          mediaResults.numberOfItems > mediaPage.count && (
             <Pagination
               totalItems={mediaResults.numberOfItems}
               itemsPerPage={mediaPage.count}

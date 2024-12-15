@@ -134,6 +134,7 @@ export default function MediaDetailPage() {
     <Container>
       <MediaInformation
         {...mediaData}
+        mediaId={mediaId}
         director={directors}
         writer={writers}
         producer={producers}

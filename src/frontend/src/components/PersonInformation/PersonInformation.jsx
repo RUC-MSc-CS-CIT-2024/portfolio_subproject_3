@@ -6,6 +6,7 @@ import {
   Image,
   Placeholder,
   Button,
+  Carousel,
 } from 'react-bootstrap';
 import { formatDate } from '@/utils';
 import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
@@ -21,6 +22,7 @@ export default function PersonInformation({
   homepage,
   placeOfBirth,
   roles = [],
+  images = [],
 }) {
   const [showMore, setShowMore] = useState(false);
 
@@ -37,8 +39,34 @@ export default function PersonInformation({
       <Row>
         {/* Left Column: Picture */}
         <Col xs={12} md={3}>
-          {isLoading ? (
+          {isLoading && images.length > 0 ? (
             <Placeholder as={Image} className="personCard-img" />
+          ) : images.length > 0 ? (
+            <Carousel>
+              <Carousel.Item>
+                {pictureUri ? (
+                  <Image
+                    src={pictureUri}
+                    alt={`${name}'s picture`}
+                    fluid
+                    rounded
+                  />
+                ) : (
+                  <DefaultImage />
+                )}
+              </Carousel.Item>
+              {images.map((image, index) => (
+                <Carousel.Item key={index}>
+                  <Image
+                    src={image}
+                    alt={`${name} additional`}
+                    fluid
+                    rounded
+                    className="additional-image"
+                  />
+                </Carousel.Item>
+              ))}
+            </Carousel>
           ) : (
             <div className="personCard-img">
               {pictureUri ? (

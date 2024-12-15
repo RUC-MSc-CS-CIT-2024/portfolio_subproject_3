@@ -20,7 +20,7 @@ import {
 } from '@/components';
 import { useToast } from '@/contexts';
 import { extractMembersByJobCategory, fetchAllPages } from '@/utils';
-import { usePaginatedData } from '@/hooks';
+import { usePaginatedData, useAuth } from '@/hooks';
 
 const extractDirectors = (crew) =>
   extractMembersByJobCategory(crew, 'director');
@@ -69,6 +69,7 @@ const mergeRoles = (people) => {
 };
 
 export default function MediaDetailPage() {
+  const { isAuthenticated } = useAuth();
   const { id: mediaId } = useParams();
   const navigate = useNavigate();
   const { showToastMessage } = useToast();
@@ -145,7 +146,7 @@ export default function MediaDetailPage() {
       />
       <Row className="mt-5 gap-5">
         <Col xs={12} md={3}>
-          <MediaActions id={mediaId} />
+          {isAuthenticated && <MediaActions id={mediaId} />}
         </Col>
         <Col md={6}>
           <Tabs id="media-detail-tabs" className="mb-3">

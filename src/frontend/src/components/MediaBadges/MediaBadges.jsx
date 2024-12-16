@@ -1,5 +1,4 @@
 import { Badge, Row, Col } from 'react-bootstrap';
-import './MediaBadges.css';
 
 export default function MediaBadges({ badges }) {
   return (

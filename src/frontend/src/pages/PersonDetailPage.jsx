@@ -92,7 +92,7 @@ export default function PersonDetailPage() {
       setPersonImages(images.slice(1));
     } catch {
       showToastMessage('Error getting the person.', 'danger');
-      navigate('/persons');
+      navigate('/');
     } finally {
       setLoading(false);
     }

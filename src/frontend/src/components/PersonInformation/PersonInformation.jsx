@@ -7,9 +7,16 @@ import {
   Placeholder,
   Button,
   Carousel,
+  Tabs,
+  Tab,
 } from 'react-bootstrap';
 import { formatDate } from '@/utils';
-import { PlaceholderText, InfoRow, DefaultImage } from '@/components';
+import {
+  PlaceholderText,
+  InfoRow,
+  DefaultImage,
+  MediaBadges,
+} from '@/components';
 import './PersonInformation.css';
 
 export default function PersonInformation({
@@ -158,14 +165,6 @@ export default function PersonInformation({
               ) : (
                 <>
                   <InfoRow
-                    label="Also Known As"
-                    value={
-                      alsoKnownAs.length
-                        ? alsoKnownAs.join(', ')
-                        : 'No known aliases'
-                    }
-                  />
-                  <InfoRow
                     label="Place of Birth"
                     value={placeOfBirth || 'Unknown'}
                   />
@@ -181,6 +180,16 @@ export default function PersonInformation({
                       </a>
                     </div>
                   )}
+                  <Col md={6} className="pt-3">
+                    <Tabs id="media-detail-tabs" className="mb-3">
+                      <Tab eventKey="alsoknownas" title="Also Known As">
+                        <MediaBadges
+                          title="Genres"
+                          badges={alsoKnownAs?.length > 0 ? alsoKnownAs : []}
+                        />
+                      </Tab>
+                    </Tabs>
+                  </Col>
                 </>
               )}
             </Col>

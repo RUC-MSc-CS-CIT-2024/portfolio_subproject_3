@@ -16,12 +16,8 @@ export const fetchMediaById = async (id) => {
   }
 };
 
-export const fetchTitles = async (id, page, count) => {
+export const fetchTitles = async (id) => {
   const api = new ApiClient();
-  const queryParams = [
-    { key: 'page', value: page },
-    { key: 'count', value: count },
-  ];
 
   const path = `/api/media/${id}/titles`;
   try {

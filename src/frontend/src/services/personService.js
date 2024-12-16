@@ -22,13 +22,13 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   return person;
 };
 
-export const fetchPersons = async (filter, page, count) => {
+export const fetchPersons = async ({ page, count, name }) => {
   const api = new ApiClient();
+  const queryParams = [];
   try {
-    const queryParams = [];
     if (page) queryParams.push({ key: 'page', value: page });
     if (count) queryParams.push({ key: 'count', value: count });
-    if (filter?.name) queryParams.push({ key: 'name', value: filter.name });
+    if (name) queryParams.push({ key: 'name', value: name });
 
     const response = await api.Get(BASE_PATH, queryParams);
 

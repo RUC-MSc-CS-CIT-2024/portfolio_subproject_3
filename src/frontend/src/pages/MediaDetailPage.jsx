@@ -19,7 +19,7 @@ import {
   MediaTypeBadge,
 } from '@/components';
 import { useToast } from '@/contexts';
-import { extractMembersByJobCategory, fetchAllPages } from '@/utils';
+import { extractMembersByJobCategory } from '@/utils';
 import { usePaginatedData, useAuth } from '@/hooks';
 
 const extractDirectors = (crew) =>
@@ -101,10 +101,7 @@ export default function MediaDetailPage() {
       setLoading(true);
       const mediaData = await fetchMediaById(mediaId);
       setMediaData(mediaData);
-      const allTitles = await fetchAllPages(
-        (page, count) => fetchTitles(mediaId, page, count),
-        10,
-      );
+      const allTitles = await fetchTitles(mediaId);
       setTitles(allTitles);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);
@@ -120,7 +117,7 @@ export default function MediaDetailPage() {
     if (mediaId) {
       loadMedia();
     }
-  }, [mediaId, loadMedia]);
+  }, [mediaId]); // We can NOT add loadMedia as a dependency here, this will cause an infinite loop!
 
   useEffect(() => {
     if (!loading && !mediaData) {

@@ -108,7 +108,7 @@ export default function SearchPage() {
         }
       }
     },
-    [personPage.count, personPage.page, showToastMessage],
+    [personPage.count, personPage.page, query.query_type, showToastMessage],
   );
 
   useEffect(() => {

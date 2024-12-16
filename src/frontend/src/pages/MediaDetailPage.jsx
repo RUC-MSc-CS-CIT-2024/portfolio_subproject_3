@@ -101,7 +101,7 @@ export default function MediaDetailPage() {
       setLoading(true);
       const mediaData = await fetchMediaById(mediaId);
       setMediaData(mediaData);
-      const allTitles = await fetchAllPages(fetchTitles(mediaId), 10);
+      const allTitles = await fetchAllPages(() => fetchTitles(mediaId), 10);
       setTitles(allTitles);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);
@@ -117,7 +117,7 @@ export default function MediaDetailPage() {
     if (mediaId) {
       loadMedia();
     }
-  }, [mediaId, loadMedia]);
+  }, [mediaId]); // We can NOT add loadMedia as a dependency here, this will cause an infinite loop!
 
   useEffect(() => {
     if (!loading && !mediaData) {

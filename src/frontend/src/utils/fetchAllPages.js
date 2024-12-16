@@ -11,8 +11,8 @@ export const fetchAllPages = async (
     const result = personId
       ? await fetchFunction(personId, currentPage, count)
       : await fetchFunction(currentPage, count);
-    allData = [...allData, ...result.items];
-    hasMoreData = result.items.length === count;
+    allData = [...allData, ...result];
+    hasMoreData = result.length === count;
     currentPage += 1;
   }
 

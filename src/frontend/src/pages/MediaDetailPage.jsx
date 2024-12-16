@@ -19,8 +19,8 @@ import {
   MediaTypeBadge,
 } from '@/components';
 import { useToast } from '@/contexts';
-import { extractMembersByJobCategory } from '@/utils';
-import { usePaginatedData } from '@/hooks';
+import { extractMembersByJobCategory, fetchAllPages } from '@/utils';
+import { usePaginatedData, useAuth } from '@/hooks';
 
 const extractDirectors = (crew) =>
   extractMembersByJobCategory(crew, 'director');
@@ -69,6 +69,7 @@ const mergeRoles = (people) => {
 };
 
 export default function MediaDetailPage() {
+  const { isAuthenticated } = useAuth();
   const { id: mediaId } = useParams();
   const navigate = useNavigate();
   const { showToastMessage } = useToast();
@@ -100,8 +101,11 @@ export default function MediaDetailPage() {
       setLoading(true);
       const mediaData = await fetchMediaById(mediaId);
       setMediaData(mediaData);
-      const titlesData = await fetchTitles(mediaId);
-      setTitles(titlesData);
+      const allTitles = await fetchAllPages(
+        (page, count) => fetchTitles(mediaId, page, count),
+        10,
+      );
+      setTitles(allTitles);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);
     } catch (error) {
@@ -142,7 +146,7 @@ export default function MediaDetailPage() {
       />
       <Row className="mt-5 gap-5">
         <Col xs={12} md={3}>
-          <MediaActions id={mediaId} />
+          {isAuthenticated && <MediaActions id={mediaId} />}
         </Col>
         <Col md={6}>
           <Tabs id="media-detail-tabs" className="mb-3">

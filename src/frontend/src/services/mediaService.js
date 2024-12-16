@@ -25,11 +25,15 @@ export const fetchTitles = async (id, page, count) => {
 
   const path = `/api/media/${id}/titles`;
   try {
-    const response = await api.Get(path, queryParams);
-    if (!response.ok) {
+    const meatadataResponse = await api.Get(path);
+    if (!meatadataResponse.ok) {
       throw new Error(`Failed to fetch titles for media ID ${id}.`);
     }
-    return response.value;
+    const response = await api.Get(path, [
+      { key: 'page', value: 1 },
+      { key: 'count', value: meatadataResponse.value.numberOfItems },
+    ]);
+    return response.value.items;
   } catch (error) {
     console.error('Failed to fetch media titles:', error);
     throw error;

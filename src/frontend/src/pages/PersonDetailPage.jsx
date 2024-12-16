@@ -17,8 +17,10 @@ import {
 } from '@/services';
 import { useToast, useUserData } from '@/contexts';
 import { fetchAllPages } from '@/utils';
+import { useAuth } from '@/hooks';
 
 export default function PersonDetailPage() {
+  const { isAuthenticated } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToastMessage } = useToast();
@@ -158,6 +160,21 @@ export default function PersonDetailPage() {
     { source: 'Name Rating', value: person?.rating || 'No Rating Available' },
   ];
 
+  const actionButton = isFollowed ? (
+    <div className="alert alert-info">
+      You are already following {person?.name}. See people you are following:{' '}
+      <Link to="/profile/lists#following">here</Link>
+    </div>
+  ) : (
+    <Button
+      variant="outline-dark"
+      onClick={handleFollow}
+      className="w-100 mb-2 rounded"
+    >
+      Follow
+    </Button>
+  );
+
   return (
     <Container className="my-5">
       <Row className="mt-5">
@@ -179,20 +196,7 @@ export default function PersonDetailPage() {
         </Col>
         <Row className="mt-5 align-items-start">
           <Col xs={12} md={3}>
-            {isFollowed ? (
-              <div className="alert alert-info">
-                You are already following {person?.name}. See people you are
-                following: <Link to="/profile/lists#following">here</Link>
-              </div>
-            ) : (
-              <Button
-                variant="outline-dark"
-                onClick={handleFollow}
-                className="w-100 mb-2 rounded"
-              >
-                Follow
-              </Button>
-            )}
+            {isAuthenticated && actionButton}
           </Col>
           <Col xs={12} sm={12} md={12} lg={5}>
             <Rating ratings={ratings} noHeading />

@@ -43,9 +43,9 @@ export default function SearchPage() {
   const { showToastMessage } = useToast();
 
   const handleSearch = (query_data) => {
+    setQuery(query_data);
     setMediaPage({ ...mediaPage, page: 1 });
     setPersonPage({ ...personPage, page: 1 });
-    setQuery(query_data);
   };
 
   const performMediaSearch = useCallback(
@@ -72,21 +72,43 @@ export default function SearchPage() {
 
   const performPersonSearch = useCallback(
     async (query_data) => {
-      let params = {
-        name: query_data.query,
-        page: personPage.page,
-        count: personPage.count,
-      };
-
-      try {
-        const response = await fetchPersons(params);
-        setPersonResults(response);
-      } catch (error) {
-        showToastMessage(
-          error.message || 'Error occurred while searching persons.',
-          'danger',
-        );
+      if (query.query_type == 'Structured') {
+        console.log('== Structured', query.query_type);
         setPersonResults({ items: [], numberOfItems: 0 });
+      } else if (query.query_type == 'Simple') {
+        console.log('== Simple', query.query_type);
+        let params = {
+          name: query_data.query,
+          page: personPage.page,
+          count: personPage.count,
+        };
+        try {
+          const response = await fetchPersons(params);
+          setPersonResults(response);
+        } catch (error) {
+          showToastMessage(
+            error.message || 'Error occurred while searching persons.',
+            'danger',
+          );
+          setPersonResults({ items: [], numberOfItems: 0 });
+        }
+      } else if (query.query_type !== 'Simple') {
+        console.log('!== Simple', query.query_type);
+        let params = {
+          name: query_data.keywords.join(' '),
+          page: personPage.page,
+          count: personPage.count,
+        };
+        try {
+          const response = await fetchPersons(params);
+          setPersonResults(response);
+        } catch (error) {
+          showToastMessage(
+            error.message || 'Error occurred while searching persons.',
+            'danger',
+          );
+          setPersonResults({ items: [], numberOfItems: 0 });
+        }
       }
     },
     [personPage.count, personPage.page, showToastMessage],

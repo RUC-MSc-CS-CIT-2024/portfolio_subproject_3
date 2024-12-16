@@ -22,13 +22,16 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   return person;
 };
 
-export const fetchPersons = async ({page, count, name}) => {
+export const fetchPersons = async ({ page, count, name }) => {
+  console.log('name:', name);
   const api = new ApiClient();
   const queryParams = [];
   try {
-    if (query) queryParams.push({ key: 'page', value: page });
-    if (query) queryParams.push({ key: 'count', value: count });
-    if (query) queryParams.push({ key: 'name', value: name });
+    if (page) queryParams.push({ key: 'page', value: page });
+    if (count) queryParams.push({ key: 'count', value: count });
+    if (name) queryParams.push({ key: 'name', value: name });
+
+    console.log('queryParams:', queryParams);
 
     const response = await api.Get(BASE_PATH, queryParams);
 

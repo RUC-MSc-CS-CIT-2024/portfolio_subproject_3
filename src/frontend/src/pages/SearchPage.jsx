@@ -100,7 +100,7 @@ export default function SearchPage() {
     performPersonSearch(query);
   }, [performPersonSearch, query]);
 
-  let resultBody = <></>;
+  let resultBody;
   if (mediaResults.items.length === 0 && personResults.items.length === 0) {
     resultBody = (
       <div className="d-flex justify-content-center align-items-center py-5">
@@ -112,29 +112,37 @@ export default function SearchPage() {
   } else {
     resultBody = (
       <>
-        <h3 className="mt-2">Media</h3>
-        <MediaGrid media={mediaResults.items} />
-        {mediaResults.numberOfItems > mediaPage.count && (
-          <Pagination
-            totalItems={mediaResults.numberOfItems}
-            itemsPerPage={mediaPage.count}
-            currentPage={mediaPage.page}
-            onPageChange={(pageNumber) => {
-              setMediaPage({ ...mediaPage, page: pageNumber });
-            }}
-          />
+        {mediaResults.items.length > 0 && (
+          <>
+            <h3 className="mt-2">Media</h3>
+            <MediaGrid media={mediaResults.items} />
+            {mediaResults.numberOfItems > mediaPage.count && (
+              <Pagination
+                totalItems={mediaResults.numberOfItems}
+                itemsPerPage={mediaPage.count}
+                currentPage={mediaPage.page}
+                onPageChange={(pageNumber) => {
+                  setMediaPage({ ...mediaPage, page: pageNumber });
+                }}
+              />
+            )}
+          </>
         )}
-        <h3 className="mt-2">Persons</h3>
-        <PersonsGrid persons={personResults.items} />
-        {personResults.numberOfItems > personPage.count && (
-          <Pagination
-            totalItems={personResults.numberOfItems}
-            itemsPerPage={personPage.count}
-            currentPage={personPage.page}
-            onPageChange={(pageNumber) => {
-              setPersonPage({ ...personPage, page: pageNumber });
-            }}
-          />
+        {personResults.items.length > 0 && (
+          <>
+            <h3 className="mt-2">Persons</h3>
+            <PersonsGrid persons={personResults.items} />
+            {personResults.numberOfItems > personPage.count && (
+              <Pagination
+                totalItems={personResults.numberOfItems}
+                itemsPerPage={personPage.count}
+                currentPage={personPage.page}
+                onPageChange={(pageNumber) => {
+                  setPersonPage({ ...personPage, page: pageNumber });
+                }}
+              />
+            )}
+          </>
         )}
       </>
     );

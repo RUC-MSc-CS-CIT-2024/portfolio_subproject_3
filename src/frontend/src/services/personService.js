@@ -22,20 +22,17 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   return person;
 };
 
-export const fetchPersons = async (filter, page, count) => {
+export const fetchPersons = async (query) => {
   const api = new ApiClient();
+  const queryParams = [];
   try {
-    const queryParams = [
-      { key: 'page', value: 1 },
-      { key: 'count', value: 24 },
-    ];
-    if (page) queryParams.push({ key: 'page', value: page });
-    if (count) queryParams.push({ key: 'count', value: count });
-    if (filter?.name) queryParams.push({ key: 'name', value: filter.name });
+    console.log('Query:', query);
+    if (query) queryParams.push({ key: 'page', value: query.page });
+    if (query) queryParams.push({ key: 'count', value: query.count });
+    if (query) queryParams.push({ key: 'name', value: query.name });
 
-    console.log('fetchPersons queryParams:', queryParams);
+    console.log('Query params:', queryParams);
     const response = await api.Get(BASE_PATH, queryParams);
-    console.log('fetchPersons response:', response);
 
     if (!response.ok) {
       throw new Error('Failed to fetch persons.');

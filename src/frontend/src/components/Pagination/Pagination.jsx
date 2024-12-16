@@ -9,7 +9,7 @@ export default function Pagination({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page !== currentPage && page >= 1 && page <= totalPages) {
       onPageChange(page);
     }
   };

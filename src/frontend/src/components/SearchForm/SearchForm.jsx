@@ -1,4 +1,3 @@
-// SearchForm.jsx
 import { Form, Button, Dropdown } from 'react-bootstrap';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -31,13 +30,53 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
       }
 
       try {
-        const history = await getUserSearchHistory(page, 5);
-        if (page === 1) {
-          setSearchHistory(history.items);
-        } else {
-          setSearchHistory((prevHistory) => [...prevHistory, ...history.items]);
+        let uniqueHistory = [];
+        let nextPage = page;
+        let hasMore = true;
+
+        while (uniqueHistory.length < 5 && hasMore) {
+          const history = await getUserSearchHistory(nextPage, 5);
+          const newUniqueItems = history.items.filter(
+            (item, index, self) =>
+              index ===
+              self.findIndex(
+                (t) =>
+                  t.searchText.toLowerCase() === item.searchText.toLowerCase(),
+              ),
+          );
+
+          uniqueHistory = [
+            ...uniqueHistory,
+            ...newUniqueItems.filter(
+              (item) =>
+                !uniqueHistory.some(
+                  (uniqueItem) =>
+                    uniqueItem.searchText.toLowerCase() ===
+                    item.searchText.toLowerCase(),
+                ),
+            ),
+          ];
+
+          hasMore = history.nextPage !== null;
+          nextPage += 1;
         }
-        setHasMoreItems(history.nextPage !== null);
+
+        if (page === 1) {
+          setSearchHistory(uniqueHistory);
+        } else {
+          setSearchHistory((prevHistory) => [
+            ...prevHistory,
+            ...uniqueHistory.filter(
+              (item) =>
+                !prevHistory.some(
+                  (prevItem) =>
+                    prevItem.searchText.toLowerCase() ===
+                    item.searchText.toLowerCase(),
+                ),
+            ),
+          ]);
+        }
+        setHasMoreItems(hasMore);
       } catch {
         console.error('Could not fetch search history');
       }
@@ -45,15 +84,36 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
     [isAuthenticated],
   );
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (searchText) => {
     try {
-      await deleteUserSearchHistory(id);
-      setSearchHistory((prevHistory) =>
-        prevHistory.filter((item) => item.searchHistoryId !== id),
+      const itemsToDelete = searchHistory.filter(
+        (item) => item.searchText.toLowerCase() === searchText.toLowerCase(),
       );
+
+      await Promise.all(
+        itemsToDelete.map(async (item) => {
+          try {
+            await deleteUserSearchHistory(item.searchHistoryId);
+          } catch (error) {
+            if (error.message.includes('404')) {
+              console.warn(`Item with ID ${item.searchHistoryId} not found.`);
+            } else {
+              throw error;
+            }
+          }
+        }),
+      );
+
+      setSearchHistory((prevHistory) =>
+        prevHistory.filter(
+          (item) => item.searchText.toLowerCase() !== searchText.toLowerCase(),
+        ),
+      );
+
+      fetchSearchHistory(currentPage);
       setRefresh(!refresh);
     } catch (error) {
-      console.error('Error deleting the search history item:', error);
+      console.error('Error deleting the search history items:', error);
     }
   };
 
@@ -105,7 +165,7 @@ export default function SearchForm({ btnVariant = 'dark', onSearch }) {
                   className="bi bi-x text-danger"
                   style={{ cursor: 'pointer' }}
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleDelete(item.searchHistoryId)}
+                  onClick={() => handleDelete(item.searchText)}
                 />
               </Dropdown.Item>
             ))}

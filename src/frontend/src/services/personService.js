@@ -26,9 +26,9 @@ export const fetchPersons = async (query) => {
   const api = new ApiClient();
   const queryParams = [];
   try {
-    if (query) queryParams.push({ key: 'page', value: query.page });
-    if (query) queryParams.push({ key: 'count', value: query.count });
-    if (query) queryParams.push({ key: 'name', value: query.name });
+    if (query) queryParams.push({ key: 'page', value: page });
+    if (query) queryParams.push({ key: 'count', value: count });
+    if (query) queryParams.push({ key: 'name', value: name });
 
     const response = await api.Get(BASE_PATH, queryParams);
 

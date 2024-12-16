@@ -73,10 +73,8 @@ export default function SearchPage() {
   const performPersonSearch = useCallback(
     async (query_data) => {
       if (query.query_type == 'Structured') {
-        console.log('== Structured', query.query_type);
         setPersonResults({ items: [], numberOfItems: 0 });
       } else if (query.query_type == 'Simple') {
-        console.log('== Simple', query.query_type);
         let params = {
           name: query_data.query,
           page: personPage.page,
@@ -93,7 +91,6 @@ export default function SearchPage() {
           setPersonResults({ items: [], numberOfItems: 0 });
         }
       } else if (query.query_type !== 'Simple') {
-        console.log('!== Simple', query.query_type);
         let params = {
           name: query_data.keywords.join(' '),
           page: personPage.page,

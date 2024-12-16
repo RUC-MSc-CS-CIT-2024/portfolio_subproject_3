@@ -101,10 +101,7 @@ export default function MediaDetailPage() {
       setLoading(true);
       const mediaData = await fetchMediaById(mediaId);
       setMediaData(mediaData);
-      const allTitles = await fetchAllPages(
-        (page, count) => fetchTitles(mediaId, page, count),
-        10,
-      );
+      const allTitles = await fetchAllPages(fetchTitles(mediaId), 10);
       setTitles(allTitles);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);

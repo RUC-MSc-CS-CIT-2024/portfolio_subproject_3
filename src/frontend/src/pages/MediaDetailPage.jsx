@@ -19,7 +19,7 @@ import {
   MediaTypeBadge,
 } from '@/components';
 import { useToast } from '@/contexts';
-import { extractMembersByJobCategory, fetchAllPages } from '@/utils';
+import { extractMembersByJobCategory } from '@/utils';
 import { usePaginatedData, useAuth } from '@/hooks';
 
 const extractDirectors = (crew) =>
@@ -101,7 +101,7 @@ export default function MediaDetailPage() {
       setLoading(true);
       const mediaData = await fetchMediaById(mediaId);
       setMediaData(mediaData);
-      const allTitles = await fetchAllPages(() => fetchTitles(mediaId), 10);
+      const allTitles = await fetchTitles(mediaId);
       setTitles(allTitles);
       const releasesData = await fetchReleases(mediaId);
       setReleases(releasesData.items);

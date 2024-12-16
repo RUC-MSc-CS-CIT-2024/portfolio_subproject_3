@@ -22,7 +22,7 @@ const enhancePersonWithImage = async (person, imgSize = ImageSize.Normal) => {
   return person;
 };
 
-export const fetchPersons = async (query) => {
+export const fetchPersons = async ({page, count, name}) => {
   const api = new ApiClient();
   const queryParams = [];
   try {

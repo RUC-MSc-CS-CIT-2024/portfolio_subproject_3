@@ -8,7 +8,7 @@ export default function HomePage() {
     <div className="homepage">
       <Container className="h-100">
         <Row className="justify-content-center align-items-center h-100">
-          <Col xs={12} md={8} lg={6}>
+          <Col xs={12} md={8} lg={6} className="mb-5 pb-5 w-100">
             <h1 className="text-center my-5">Welcome to MovieDB</h1>
             <SearchForm
               btnVariant="dark"

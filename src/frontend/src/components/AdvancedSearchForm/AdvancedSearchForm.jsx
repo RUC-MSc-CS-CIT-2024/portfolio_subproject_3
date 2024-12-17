@@ -1,4 +1,3 @@
-// AdvancedSearchForm.jsx
 import { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Card } from 'react-bootstrap';
 import { SearchForm } from '@/components';

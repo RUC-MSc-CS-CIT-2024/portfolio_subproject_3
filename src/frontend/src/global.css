@@ -1,3 +1,7 @@
+.homepage {
+  height: calc(100vh - 56px);
+}
+
 .container-layout {
   margin-left: -12px;
   margin-right: 0;

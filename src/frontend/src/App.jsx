@@ -13,9 +13,7 @@ import {
   SignUpPage,
   UserListsPage,
   SearchPage,
-  MediaOverviewPage,
   MediaDetailPage,
-  PersonOverviewPage,
   PersonDetailPage,
 } from '@/pages';
 
@@ -36,14 +34,8 @@ export default function App() {
                     <Route path="lists" element={<UserListsPage />} />
                   </Route>
                 </Route>
-                <Route path="media">
-                  <Route index element={<MediaOverviewPage />} />
-                  <Route path=":id" element={<MediaDetailPage />} />
-                </Route>
-                <Route path="persons">
-                  <Route index element={<PersonOverviewPage />} />
-                  <Route path=":id" element={<PersonDetailPage />} />
-                </Route>
+                <Route path="media/:id" element={<MediaDetailPage />} />
+                <Route path="persons/:id" element={<PersonDetailPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

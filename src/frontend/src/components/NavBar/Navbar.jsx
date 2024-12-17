@@ -6,8 +6,8 @@ import { SearchForm, LoginForm, ToastNotification } from '@/components';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
 
-export default function NavBar({ username }) {
-  const { isAuthenticated } = useAuth();
+export default function NavBar() {
+  const { isAuthenticated, user } = useAuth();
   const { searchWithNavigation } = useSearch();
   const { showToastMessage } = useToast();
   const location = useLocation();
@@ -59,7 +59,7 @@ export default function NavBar({ username }) {
                 <Nav.Link as={Link} to="/profile">
                   <span className="d-flex gap-2">
                     <i className="bi bi-person-circle"></i>
-                    {username ? username : 'User'}
+                    {user && user.username ? user.username : 'User'}
                   </span>
                 </Nav.Link>
               </Nav>

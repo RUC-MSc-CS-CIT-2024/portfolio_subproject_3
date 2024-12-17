@@ -11,8 +11,9 @@ export default function MediaGrid({ media, onShowMore }) {
   const remainingMedia = media.slice(itemsPerRow);
 
   const handleShowMore = () => {
-    setShowMore(!showMore);
-    onShowMore?.(showMore);
+    const updatedShowMore = !showMore;
+    setShowMore(updatedShowMore);
+    onShowMore?.(updatedShowMore);
   };
 
   return (

@@ -12,8 +12,9 @@ export default function PersonsGrid({ persons, onShowMore }) {
   const remainingPersons = persons.slice(itemsPerRow);
 
   const handleShowMore = () => {
-    setShowMore(!showMore);
-    onShowMore?.(showMore);
+    const updatedShowMore = !showMore;
+    setShowMore(updatedShowMore);
+    onShowMore?.(updatedShowMore);
   };
 
   return (

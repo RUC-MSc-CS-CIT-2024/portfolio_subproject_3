@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap/';
+import { Container, Nav, Navbar, NavDropdown, Image } from 'react-bootstrap/';
 import { useAuth, useSearch, useToast } from '@/hooks';
 import { SearchForm, LoginForm, ToastNotification } from '@/components';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
+import logo from '../../../public/favicon-32x32.png';
 
 export default function NavBar() {
   const { isAuthenticated, user } = useAuth();
@@ -38,8 +39,20 @@ export default function NavBar() {
     <>
       <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
-          <Navbar.Brand as={Link} to="/">
-            MovieDB
+          <Navbar.Brand
+            as={Link}
+            to="/"
+            className="d-flex align-items-center gap-2"
+          >
+            <Image
+              src={logo}
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+              alt="MovieDB logo"
+              rounded
+            />
+            <p className="mb-0 mt-2">MovieDB</p>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">

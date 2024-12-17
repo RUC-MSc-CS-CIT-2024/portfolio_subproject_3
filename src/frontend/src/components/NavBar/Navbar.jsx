@@ -5,7 +5,7 @@ import { useAuth, useSearch, useToast } from '@/hooks';
 import { SearchForm, LoginForm, ToastNotification } from '@/components';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavBar.css';
-import logo from '../../../public/favicon-32x32.png';
+import logo from '/favicon-32x32.png';
 
 export default function NavBar() {
   const { isAuthenticated, user } = useAuth();

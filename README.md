@@ -2,12 +2,15 @@
 
 ## Hot to run (without Docker)
 
-*Requires the .NET 8 runtime as well as Node.js v22*
+> [!IMPORTANT]
+> *Requires the .NET 8 runtime as well as Node.js v20*
+> *Requires port `3000` and `5001` are avaliable on the host machine*
 
 - Create `.env.local` in `src/frontend` and set TMDB read token (alternativly set `VITE_TMDB_READ_TOKEN` environment variable)
   ```
   VITE_TMDB_READ_TOKEN=<token>
   ```
+  ![token image](docs/tmdb_token_image.png)
 - In repo root run `git submodule update --init` afterwards navigate to `src/backend/src/CitMovie.Api` and update postgres connection string in `appsettings.Development.json`
 
 The frontend is started by navigating to `src/frontend` and running `npm run dev`.

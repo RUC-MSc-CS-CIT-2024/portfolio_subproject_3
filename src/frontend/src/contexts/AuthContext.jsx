@@ -74,11 +74,15 @@ export const AuthProvider = ({ children }) => {
       const localRefreshToken = localStorage.getItem('REFRESH_TOKEN');
       if (!token && localRefreshToken) {
         // If token is not present, but refresh token is, try to refresh the token
-        const tokenResult = await refreshTokenService(localRefreshToken);
-        if (tokenResult.accessToken) {
-          setCookie('token', tokenResult.accessToken, tokenResult.expiresIn);
-          localStorage.setItem('REFRESH_TOKEN', tokenResult.refreshToken);
-          token = tokenResult.accessToken;
+        try {
+          const tokenResult = await refreshTokenService(localRefreshToken);
+          if (tokenResult.accessToken) {
+            setCookie('token', tokenResult.accessToken, tokenResult.expiresIn);
+            localStorage.setItem('REFRESH_TOKEN', tokenResult.refreshToken);
+            token = tokenResult.accessToken;
+          }
+        } catch (error) {
+          console.error('Failed to refresh token at startup:', error);
         }
       }
 

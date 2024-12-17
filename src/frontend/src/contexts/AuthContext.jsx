@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }) => {
     deleteCookie('token');
     localStorage.removeItem('REFRESH_TOKEN');
     setIsAuthenticated(false);
-    console.log('Logged out');
   }, []);
 
   const refresh = useCallback(
@@ -87,14 +86,12 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         storeUser(token);
       } else {
-        console.log('No token found, logging out');
         logout();
       }
       setLoading(false);
     })();
 
     const handleStorageChange = (e) => {
-      console.log('Storage change:', e);
       if (e.key === 'user' && e.newValue === null) {
         logout();
       }

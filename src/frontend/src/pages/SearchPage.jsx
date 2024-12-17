@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import { fetchMedia, fetchPersons } from '@/services';
 import {
@@ -41,6 +41,12 @@ export default function SearchPage() {
   });
 
   const { showToastMessage } = useToast();
+
+  const [mediaShowMore, setMediaShowMore] = useState(false);
+  const [personShowMore, setPersonShowMore] = useState(false);
+
+  const mediaRef = useRef(null);
+  const personsRef = useRef(null);
 
   const handleSearch = (query_data) => {
     setQuery(query_data);
@@ -119,6 +125,12 @@ export default function SearchPage() {
     performPersonSearch(query);
   }, [performPersonSearch, query]);
 
+  const scrollToRef = (ref) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   let resultBody;
   if (mediaResults.items.length === 0 && personResults.items.length === 0) {
     resultBody = (
@@ -133,15 +145,21 @@ export default function SearchPage() {
       <>
         {mediaResults.items.length > 0 && (
           <>
-            <h3 className="mt-2">Media</h3>
-            <MediaGrid media={mediaResults.items} />
-            {mediaResults.numberOfItems > mediaPage.count && (
+            <h3 className="mt-2" ref={mediaRef}>
+              Media
+            </h3>
+            <MediaGrid
+              media={mediaResults.items}
+              onShowMore={setMediaShowMore}
+            />
+            {mediaShowMore && mediaResults.numberOfItems > mediaPage.count && (
               <Pagination
                 totalItems={mediaResults.numberOfItems}
                 itemsPerPage={mediaPage.count}
                 currentPage={mediaPage.page}
                 onPageChange={(pageNumber) => {
                   setMediaPage({ ...mediaPage, page: pageNumber });
+                  scrollToRef(mediaRef);
                 }}
               />
             )}
@@ -149,18 +167,25 @@ export default function SearchPage() {
         )}
         {personResults.items.length > 0 && (
           <>
-            <h3 className="mt-2">Persons</h3>
-            <PersonsGrid persons={personResults.items} />
-            {personResults.numberOfItems > personPage.count && (
-              <Pagination
-                totalItems={personResults.numberOfItems}
-                itemsPerPage={personPage.count}
-                currentPage={personPage.page}
-                onPageChange={(pageNumber) => {
-                  setPersonPage({ ...personPage, page: pageNumber });
-                }}
-              />
-            )}
+            <h3 className="mt-2" ref={personsRef}>
+              Persons
+            </h3>
+            <PersonsGrid
+              persons={personResults.items}
+              onShowMore={setPersonShowMore}
+            />
+            {personShowMore &&
+              personResults.numberOfItems > personPage.count && (
+                <Pagination
+                  totalItems={personResults.numberOfItems}
+                  itemsPerPage={personPage.count}
+                  currentPage={personPage.page}
+                  onPageChange={(pageNumber) => {
+                    setPersonPage({ ...personPage, page: pageNumber });
+                    scrollToRef(personsRef);
+                  }}
+                />
+              )}
           </>
         )}
       </>

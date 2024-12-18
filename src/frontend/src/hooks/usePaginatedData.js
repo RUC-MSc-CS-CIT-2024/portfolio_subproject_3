@@ -1,32 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export default function usePaginatedData(
-  fetchData,
-  id,
-  initialPage = 1,
-  count = 12,
-) {
+export default function usePaginatedData(fetchData, id, count = 12) {
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(initialPage);
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadData = useCallback(async () => {
-    try {
-      const response = await fetchData({ id, page, count });
-      setData((prevData) =>
-        page === 1 ? response.items : [...prevData, ...response.items],
-      );
-      setHasMore(!!response.nextPage);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    }
-  }, [fetchData, id, page, count]);
+  useEffect(() => {
+    setData([]);
+    setPage(1);
+  }, [id]);
 
   useEffect(() => {
-    if (id) {
-      loadData();
+    if (!id) {
+      return;
     }
-  }, [id, page, loadData]);
+
+    (async () => {
+      try {
+        const response = await fetchData({ id, page, count });
+        setData((prevData) =>
+          page === 1 ? response.items : [...prevData, ...response.items],
+        );
+        setHasMore(response.nextPage !== null);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    })();
+  }, [id, fetchData, page, count]);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore) {

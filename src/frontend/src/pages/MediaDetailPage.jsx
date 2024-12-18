@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -76,7 +76,6 @@ export default function MediaDetailPage() {
   const [mediaData, setMediaData] = useState(null);
   const [titles, setTitles] = useState([]);
   const [releases, setReleases] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const {
     data: crew,
@@ -96,34 +95,42 @@ export default function MediaDetailPage() {
     handleLoadMore: handleLoadMoreSimilarMedia,
   } = usePaginatedData(fetchSimilarMedia, mediaId);
 
-  const loadMedia = useCallback(async () => {
-    try {
-      setLoading(true);
-      const mediaData = await fetchMediaById(mediaId);
-      setMediaData(mediaData);
-      const allTitles = await fetchTitles(mediaId);
-      setTitles(allTitles);
-      const releasesData = await fetchReleases(mediaId);
-      setReleases(releasesData.items);
-    } catch (error) {
-      console.error('Error loading media details:', error);
-      showToastMessage('Error loading media details', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [mediaId, showToastMessage]);
-
   useEffect(() => {
-    if (mediaId) {
-      loadMedia();
-    }
-  }, [mediaId]); // We can NOT add loadMedia as a dependency here, this will cause an infinite loop!
+    setMediaData(null);
+    setTitles([]);
+    setReleases([]);
 
-  useEffect(() => {
-    if (!loading && !mediaData) {
-      navigate('/NotFound');
-    }
-  }, [loading, mediaData, navigate]);
+    (async () => {
+      try {
+        const mediaData = await fetchMediaById(mediaId);
+        setMediaData(mediaData);
+      } catch (error) {
+        console.error('Error loading media details:', error);
+        showToastMessage('Error loading media details', 'error');
+        navigate('/');
+      }
+    })();
+
+    (async () => {
+      try {
+        const allTitles = await fetchTitles(mediaId);
+        setTitles(allTitles);
+      } catch (error) {
+        console.error('Error loading titles:', error);
+        showToastMessage('Error loading titles', 'error');
+      }
+    })();
+
+    (async () => {
+      try {
+        const releasesData = await fetchReleases(mediaId);
+        setReleases(releasesData.items);
+      } catch (error) {
+        console.error('Error loading releases:', error);
+        showToastMessage('Error loading releases', 'error');
+      }
+    })();
+  }, [mediaId, navigate, showToastMessage]);
 
   const directors = extractDirectors(crew);
   const writers = extractWriters(crew);

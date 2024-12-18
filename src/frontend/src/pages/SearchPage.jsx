@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Spinner } from 'react-bootstrap';
 import { fetchMedia, fetchPersons } from '@/services';
 import {
   MediaGrid,
@@ -8,11 +8,14 @@ import {
   PersonsGrid,
 } from '@/components';
 import { useToast } from '@/hooks';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
+  const [mediaLoading, setMediaLoading] = useState(true);
+  const [personLoading, setPersonLoading] = useState(true);
   const [mediaResults, setMediaResults] = useState({
     items: [],
     numberOfItems: 0,
@@ -82,6 +85,17 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
+    setMediaLoading(true);
+    setPersonLoading(true);
+    setMediaShowMore(false);
+    setPersonShowMore(false);
+    setTimeout(() => {
+      setMediaLoading(false);
+      setPersonLoading(false);
+    }, 5000);
+  }, [location]);
+
+  useEffect(() => {
     let params = {
       query_type: query_type,
       page: mediaPage.page,
@@ -90,7 +104,14 @@ export default function SearchPage() {
     if (query_type == 'Simple') {
       params.query = query;
     } else if (query_type == 'BestMatch' || query_type == 'ExactMatch') {
-      params.keywords = query.trim().split(/\s+/);
+      params.keywords = query
+        .trim()
+        .split(/\s+/)
+        .filter((term) => term.length > 0);
+      if (params.keywords.length === 0) {
+        setMediaLoading(false);
+        return;
+      }
     } else if (query_type == 'Structured') {
       params.title = title;
       params.plot = plot;
@@ -100,9 +121,7 @@ export default function SearchPage() {
 
     (async () => {
       try {
-        console.log('fetching media, params:', params);
         const response = await fetchMedia(params);
-        console.log('media response:', response);
         setMediaResults(response);
       } catch (error) {
         showToastMessage(
@@ -111,6 +130,7 @@ export default function SearchPage() {
         );
         setMediaResults({ items: [], numberOfItems: 0 });
       }
+      setMediaLoading(false);
     })();
   }, [
     character,
@@ -127,6 +147,7 @@ export default function SearchPage() {
   useEffect(() => {
     if (query_type == 'Structured') {
       setPersonResults({ items: [], numberOfItems: 0 });
+      setPersonLoading(false);
       return;
     }
     let params = {
@@ -146,6 +167,7 @@ export default function SearchPage() {
         );
         setPersonResults({ items: [], numberOfItems: 0 });
       }
+      setPersonLoading(false);
     })();
   }, [personPage.count, personPage.page, query, query_type, showToastMessage]);
 
@@ -156,7 +178,17 @@ export default function SearchPage() {
   };
 
   let resultBody;
-  if (mediaResults.items.length === 0 && personResults.items.length === 0) {
+  if (mediaLoading || personLoading) {
+    resultBody = (
+      <div className="align-middle text-center mt-5">
+        <h2>Loading...</h2>
+        <Spinner animation="grow" />
+      </div>
+    );
+  } else if (
+    mediaResults.items.length === 0 &&
+    personResults.items.length === 0
+  ) {
     resultBody = (
       <div className="d-flex justify-content-center align-items-center py-5">
         <h2 className="text-muted">

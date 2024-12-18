@@ -83,7 +83,7 @@ export default function PersonDetailPage() {
         }
       } catch {
         showToastMessage('Error getting the person.', 'danger');
-        //navigate('/');
+        navigate('/');
       } finally {
         setLoading(false);
       }

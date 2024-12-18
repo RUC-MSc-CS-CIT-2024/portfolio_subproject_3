@@ -21,6 +21,7 @@ export default function PersonsCarousel({ persons, onLoadMore, hasMoreItems }) {
       onLoadMore={onLoadMore}
       hasNextPage={hasMoreItems}
       renderItem={renderItem}
+      placeholderItem={<PersonCard />}
     />
   );
 }

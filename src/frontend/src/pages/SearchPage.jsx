@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import { fetchMedia, fetchPersons } from '@/services';
 import {
@@ -11,7 +11,7 @@ import { useToast } from '@/hooks';
 import { useSearchParams } from 'react-router-dom';
 
 export default function SearchPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [mediaResults, setMediaResults] = useState({
     items: [],
@@ -31,14 +31,12 @@ export default function SearchPage() {
     count: 24,
   });
 
-  const [query, setQuery] = useState({
-    query: searchParams.get('query') || '',
-    query_type: searchParams.get('query_type') || 'Simple',
-    title: searchParams.get('title') || '',
-    plot: searchParams.get('plot') || '',
-    character: searchParams.get('character') || '',
-    person: searchParams.get('person') || '',
-  });
+  const query = searchParams.get('query');
+  const query_type = searchParams.get('query_type') || 'Simple';
+  const title = searchParams.get('title');
+  const plot = searchParams.get('plot');
+  const character = searchParams.get('character');
+  const person = searchParams.get('person');
 
   const { showToastMessage } = useToast();
 
@@ -49,21 +47,62 @@ export default function SearchPage() {
   const personsRef = useRef(null);
 
   const handleSearch = (query_data) => {
-    setQuery(query_data);
     setMediaPage({ ...mediaPage, page: 1 });
     setPersonPage({ ...personPage, page: 1 });
+
+    setSearchParams((prev) => {
+      if (query_data.query) {
+        prev.set('query', query_data.query);
+      } else if (query_data.keywords) {
+        prev.set('query', query_data.keywords.join(' '));
+      } else {
+        prev.delete('query');
+      }
+
+      query_data.query_type
+        ? prev.set('query_type', query_data.query_type)
+        : prev.delete('query_type');
+
+      query_data.title
+        ? prev.set('title', query_data.title)
+        : prev.delete('title');
+
+      query_data.plot ? prev.set('plot', query_data.plot) : prev.delete('plot');
+
+      query_data.character
+        ? prev.set('character', query_data.character)
+        : prev.delete('character');
+
+      query_data.person
+        ? prev.set('person', query_data.person)
+        : prev.delete('person');
+
+      return prev;
+    });
   };
 
-  const performMediaSearch = useCallback(
-    async (query_data = true) => {
-      let params = {
-        ...query_data,
-        page: mediaPage.page,
-        count: mediaPage.count,
-      };
+  useEffect(() => {
+    let params = {
+      query_type: query_type,
+      page: mediaPage.page,
+      count: mediaPage.count,
+    };
+    if (query_type == 'Simple') {
+      params.query = query;
+    } else if (query_type == 'BestMatch' || query_type == 'ExactMatch') {
+      params.keywords = query.trim().split(/\s+/);
+    } else if (query_type == 'Structured') {
+      params.title = title;
+      params.plot = plot;
+      params.character = character;
+      params.person = person;
+    }
 
+    (async () => {
       try {
+        console.log('fetching media, params:', params);
         const response = await fetchMedia(params);
+        console.log('media response:', response);
         setMediaResults(response);
       } catch (error) {
         showToastMessage(
@@ -72,58 +111,43 @@ export default function SearchPage() {
         );
         setMediaResults({ items: [], numberOfItems: 0 });
       }
-    },
-    [mediaPage.count, mediaPage.page, showToastMessage],
-  );
+    })();
+  }, [
+    character,
+    mediaPage.count,
+    mediaPage.page,
+    person,
+    plot,
+    query,
+    query_type,
+    showToastMessage,
+    title,
+  ]);
 
-  const performPersonSearch = useCallback(
-    async (query_data) => {
-      if (query.query_type == 'Structured') {
+  useEffect(() => {
+    if (query_type == 'Structured') {
+      setPersonResults({ items: [], numberOfItems: 0 });
+      return;
+    }
+    let params = {
+      name: query,
+      page: personPage.page,
+      count: personPage.count,
+    };
+
+    (async () => {
+      try {
+        const response = await fetchPersons(params);
+        setPersonResults(response);
+      } catch (error) {
+        showToastMessage(
+          error.message || 'Error occurred while searching persons.',
+          'danger',
+        );
         setPersonResults({ items: [], numberOfItems: 0 });
-      } else if (query.query_type == 'Simple') {
-        let params = {
-          name: query_data.query,
-          page: personPage.page,
-          count: personPage.count,
-        };
-        try {
-          const response = await fetchPersons(params);
-          setPersonResults(response);
-        } catch (error) {
-          showToastMessage(
-            error.message || 'Error occurred while searching persons.',
-            'danger',
-          );
-          setPersonResults({ items: [], numberOfItems: 0 });
-        }
-      } else if (query.query_type !== 'Simple') {
-        let params = {
-          name: query_data.keywords.join(' '),
-          page: personPage.page,
-          count: personPage.count,
-        };
-        try {
-          const response = await fetchPersons(params);
-          setPersonResults(response);
-        } catch (error) {
-          showToastMessage(
-            error.message || 'Error occurred while searching persons.',
-            'danger',
-          );
-          setPersonResults({ items: [], numberOfItems: 0 });
-        }
       }
-    },
-    [personPage.count, personPage.page, query.query_type, showToastMessage],
-  );
-
-  useEffect(() => {
-    performMediaSearch(query);
-  }, [performMediaSearch, query]);
-
-  useEffect(() => {
-    performPersonSearch(query);
-  }, [performPersonSearch, query]);
+    })();
+  }, [personPage.count, personPage.page, query, query_type, showToastMessage]);
 
   const scrollToRef = (ref) => {
     if (ref.current) {

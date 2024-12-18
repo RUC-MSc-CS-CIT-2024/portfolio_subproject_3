@@ -8,6 +8,7 @@ export default function GeneralCarousel({
   onLoadMore,
   hasNextPage,
   renderItem,
+  placeholderItem,
 }) {
   const itemsPerRow = useItemsPerRow();
   const [index, setIndex] = useState(0);
@@ -40,24 +41,36 @@ export default function GeneralCarousel({
         interval={null}
         wrap={false}
       >
-        {groupedItems.map((group, groupIndex) => (
-          <Carousel.Item key={groupIndex}>
+        {items.length === 0 ? (
+          <Carousel.Item>
             <Row>
-              {group.map((item, itemIndex) => (
-                <Col
-                  key={`${item.id}-${itemIndex}`}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  xl={2}
-                >
-                  {renderItem(item)}
+              {Array.from({ length: 6 }, (_, idx) => idx).map((item) => (
+                <Col key={item} xs={12} sm={6} md={4} lg={3} xl={2}>
+                  {placeholderItem}
                 </Col>
               ))}
             </Row>
           </Carousel.Item>
-        ))}
+        ) : (
+          groupedItems.map((group, groupIndex) => (
+            <Carousel.Item key={groupIndex}>
+              <Row>
+                {group.map((item, itemIndex) => (
+                  <Col
+                    key={`${item.id}-${itemIndex}`}
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    xl={2}
+                  >
+                    {renderItem(item)}
+                  </Col>
+                ))}
+              </Row>
+            </Carousel.Item>
+          ))
+        )}
       </Carousel>
     </Container>
   );

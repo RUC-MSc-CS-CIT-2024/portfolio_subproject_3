@@ -18,6 +18,7 @@ export default function MediaCarousel({ media, onLoadMore, hasNextPage }) {
       onLoadMore={onLoadMore}
       hasNextPage={hasNextPage}
       renderItem={renderItem}
+      placeholderItem={<MediaCard />}
     />
   );
 }

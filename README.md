@@ -19,10 +19,19 @@ The backend is started by navigating to `src/backend/src` and running `dotnet ru
 
 ## How to run (with Docker)
 
-*Docker Desktop must be installed and running.*
+> [!IMPORTANT]
+>*Docker Desktop must be installed and running.*
 
+Set environment variable `MY_APP_TMDB_READ_TOKEN` before starting containers:
+
+PowerShell:
+```pwsh
+$env:MY_APP_TMDB_READ_TOKEN = '<read token>'
+```
+
+Bash (Linux & Mac):
 ```bash
-docker compose up -d
+MY_APP_TMDB_READ_TOKEN="<read token>"
 ```
 
 The backend uses HTTPS, this requires you to trust a dev certificate which the backend uses for SSL. This can be done with the commands below:
@@ -33,6 +42,12 @@ The backend uses HTTPS, this requires you to trust a dev certificate which the b
 ```bash
 mkdir $HOME/.aspnet/https
 dotnet dev-certs https -ep $HOME/.aspnet/https/aspnetapp.pfx -p password --trust
+```
+
+Start containers:
+
+```bash
+docker compose up -d
 ```
 
 

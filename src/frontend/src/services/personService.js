@@ -70,36 +70,37 @@ export const fetchPersonById = async (id) => {
       const tmdbDetails = await getTMDBPersonDetails(response.value.imdbId);
       tmdbId = tmdbDetails.tmdbId;
       knownFor = tmdbDetails.knownFor;
-    } catch (detailsError) {
-      console.error(`No details found for person with ID ${id}:`, detailsError);
-    }
+    } catch {} // eslint-disable-line no-empty
 
     response.value.pictureUri = imageUrl;
-    const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
+    if (tmdbId !== undefined) {
+      const tmdbData = tmdbId ? await fetchPersonTMDB(tmdbId) : {};
 
-    // Map the known_for movie data
-    const knownForMedia = knownFor?.map((media) => ({
-      id: media.id,
-      title: media.title,
-      backdropPath: media.backdrop_path,
-      originalTitle: media.original_title,
-      overview: media.overview,
-      posterPath: media.poster_path,
-      mediaType: media.media_type,
-      adult: media.adult,
-      originalLanguage: media.original_language,
-      genreIds: media.genre_ids,
-      popularity: media.popularity,
-      releaseDate: media.release_date,
-      video: media.video,
-      voteAverage: media.vote_average,
-      voteCount: media.vote_count,
-    }));
+      // Map the known_for movie data
+      const knownForMedia = knownFor?.map((media) => ({
+        id: media.id,
+        title: media.title,
+        backdropPath: media.backdrop_path,
+        originalTitle: media.original_title,
+        overview: media.overview,
+        posterPath: media.poster_path,
+        mediaType: media.media_type,
+        adult: media.adult,
+        originalLanguage: media.original_language,
+        genreIds: media.genre_ids,
+        popularity: media.popularity,
+        releaseDate: media.release_date,
+        video: media.video,
+        voteAverage: media.vote_average,
+        voteCount: media.vote_count,
+      }));
+      return mergePersonData(
+        { ...response.value, tmdbId, knownForMedia },
+        tmdbData,
+      );
+    }
 
-    return mergePersonData(
-      { ...response.value, tmdbId, knownForMedia },
-      tmdbData,
-    );
+    return { ...response.value };
   } catch (error) {
     console.error(`Error fetching person by ID (${id}):`, error);
     throw error;

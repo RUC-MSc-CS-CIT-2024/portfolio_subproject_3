@@ -77,11 +77,13 @@ export default function PersonDetailPage() {
       try {
         const personData = await fetchPersonById(id);
         setPerson(personData);
-        const images = await fetchPersonImages(personData.tmdbId);
-        setPersonImages(images.slice(1));
+        if (personData.tmdbId !== undefined) {
+          const images = await fetchPersonImages(personData.tmdbId);
+          setPersonImages(images.slice(1));
+        }
       } catch {
         showToastMessage('Error getting the person.', 'danger');
-        navigate('/');
+        //navigate('/');
       } finally {
         setLoading(false);
       }
@@ -96,7 +98,7 @@ export default function PersonDetailPage() {
           );
           return [...prevCredits, ...newCredits];
         });
-        setHasMoreItems(response.nextPage !== null);
+        setHasMoreItems(response.nextPage !== undefined);
       } catch {
         showToastMessage('Error getting the credits.', 'danger');
       }

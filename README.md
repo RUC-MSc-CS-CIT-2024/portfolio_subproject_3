@@ -2,12 +2,15 @@
 
 ## Hot to run (without Docker)
 
-*Requires the .NET 8 runtime as well as Node.js v22*
+> [!IMPORTANT]
+> *Requires the .NET 8 runtime as well as Node.js v20*
+> *Requires port `3000` and `5001` are avaliable on the host machine*
 
 - Create `.env.local` in `src/frontend` and set TMDB read token (alternativly set `VITE_TMDB_READ_TOKEN` environment variable)
   ```
   VITE_TMDB_READ_TOKEN=<token>
   ```
+  ![token image](docs/tmdb_token_image.png)
 - In repo root run `git submodule update --init` afterwards navigate to `src/backend/src/CitMovie.Api` and update postgres connection string in `appsettings.Development.json`
 
 The frontend is started by navigating to `src/frontend` and running `npm run dev`.
@@ -16,10 +19,19 @@ The backend is started by navigating to `src/backend/src` and running `dotnet ru
 
 ## How to run (with Docker)
 
-*Docker Desktop must be installed and running.*
+> [!IMPORTANT]
+>*Docker Desktop must be installed and running.*
 
+Set environment variable `MY_APP_TMDB_READ_TOKEN` before starting containers:
+
+PowerShell:
+```pwsh
+$env:MY_APP_TMDB_READ_TOKEN = '<read token>'
+```
+
+Bash (Linux & Mac):
 ```bash
-docker compose up -d
+MY_APP_TMDB_READ_TOKEN="<read token>"
 ```
 
 The backend uses HTTPS, this requires you to trust a dev certificate which the backend uses for SSL. This can be done with the commands below:
@@ -30,6 +42,12 @@ The backend uses HTTPS, this requires you to trust a dev certificate which the b
 ```bash
 mkdir $HOME/.aspnet/https
 dotnet dev-certs https -ep $HOME/.aspnet/https/aspnetapp.pfx -p password --trust
+```
+
+Start containers:
+
+```bash
+docker compose up -d
 ```
 
 

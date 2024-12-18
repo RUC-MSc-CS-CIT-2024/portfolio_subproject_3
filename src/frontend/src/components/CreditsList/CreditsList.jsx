@@ -171,7 +171,11 @@ export default function CreditsList({ items = [] }) {
             <MediaTypeBadge type={seriesMedia.type} />
           </td>
           <td className="align-middle text-capitalize">
-            Character: {characters}
+            {group[0].jobCategory === 'actor' ? (
+              characters && <p>Characters: {characters}</p>
+            ) : (
+              <p>{group[0].jobCategory}</p>
+            )}
           </td>
           <td className="align-middle"></td>
         </tr>
@@ -198,7 +202,11 @@ export default function CreditsList({ items = [] }) {
                 <MediaTypeBadge type={item.media.type} />
               </td>
               <td className="align-middle text-capitalize">
-                {item.character && <p>Character: {item.character}</p>}
+                {item.jobCategory === 'actor' ? (
+                  item.character && <p>Character: {item.character}</p>
+                ) : (
+                  <p>{item.jobCategory}</p>
+                )}
               </td>
               <td className="align-middle">
                 {formatDate(item.media.releaseDate)}

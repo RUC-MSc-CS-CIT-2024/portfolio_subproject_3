@@ -8,10 +8,11 @@ import {
   PersonsGrid,
 } from '@/components';
 import { useToast } from '@/hooks';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   const [mediaLoading, setMediaLoading] = useState(true);
   const [personLoading, setPersonLoading] = useState(true);
@@ -85,6 +86,14 @@ export default function SearchPage() {
 
   useEffect(() => {
     setMediaLoading(true);
+    setPersonLoading(true);
+    setTimeout(() => {
+      setMediaLoading(false);
+      setPersonLoading(false);
+    }, 5000);
+  }, [location]);
+
+  useEffect(() => {
     let params = {
       query_type: query_type,
       page: mediaPage.page,
@@ -93,7 +102,14 @@ export default function SearchPage() {
     if (query_type == 'Simple') {
       params.query = query;
     } else if (query_type == 'BestMatch' || query_type == 'ExactMatch') {
-      params.keywords = query.trim().split(/\s+/);
+      params.keywords = query
+        .trim()
+        .split(/\s+/)
+        .filter((term) => term.length > 0);
+      if (params.keywords.length === 0) {
+        setMediaLoading(false);
+        return;
+      }
     } else if (query_type == 'Structured') {
       params.title = title;
       params.plot = plot;
@@ -103,9 +119,7 @@ export default function SearchPage() {
 
     (async () => {
       try {
-        console.log('fetching media, params:', params);
         const response = await fetchMedia(params);
-        console.log('media response:', response);
         setMediaResults(response);
       } catch (error) {
         showToastMessage(
@@ -129,9 +143,9 @@ export default function SearchPage() {
   ]);
 
   useEffect(() => {
-    setPersonLoading(true);
     if (query_type == 'Structured') {
       setPersonResults({ items: [], numberOfItems: 0 });
+      setPersonLoading(false);
       return;
     }
     let params = {

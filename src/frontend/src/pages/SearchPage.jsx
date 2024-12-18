@@ -87,6 +87,8 @@ export default function SearchPage() {
   useEffect(() => {
     setMediaLoading(true);
     setPersonLoading(true);
+    setMediaShowMore(false);
+    setPersonShowMore(false);
     setTimeout(() => {
       setMediaLoading(false);
       setPersonLoading(false);

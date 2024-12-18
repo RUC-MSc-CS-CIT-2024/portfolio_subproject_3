@@ -29,35 +29,13 @@ export default function PersonDetailPage() {
   const [credits, setCredits] = useState([]);
   const [coActors, setCoActors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [hasMoreItems, setHasMoreItems] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [fetchAll, setFetchAll] = useState(false);
   const [personImages, setPersonImages] = useState([]);
 
   const isFollowed = following.some(
     (follow) => follow.personId === parseInt(id),
   );
-
-  const fetchPersonData = useCallback(async (personId, page, fetchAll) => {
-    try {
-      if (fetchAll) {
-        const allCredits = await fetchAllPages(fetchPersonMedia, 3, personId);
-        setCredits(allCredits);
-        setHasMoreItems(false);
-      } else {
-        const response = await fetchPersonMedia(personId, page, 3);
-        setCredits((prevCredits) => {
-          const newCredits = response.items.filter(
-            (item) => !prevCredits.some((credit) => credit.id === item.id),
-          );
-          return [...prevCredits, ...newCredits];
-        });
-        setHasMoreItems(response.nextPage !== null);
-      }
-    } catch (error) {
-      console.error('Error fetching media:', error);
-    }
-  }, []);
 
   const fetchCoActorsData = useCallback(
     async (personId, page) => {
@@ -74,7 +52,7 @@ export default function PersonDetailPage() {
               !prevCoActors.some((coactor) => coactor.id === newCoactor.id),
           ),
         ]);
-        setHasMoreItems(!!coActorsData.nextPage);
+        setHasMoreItems(coActorsData.nextPage !== null);
       } catch {
         showToastMessage('Error getting the co-actors.', 'danger');
       }
@@ -82,42 +60,53 @@ export default function PersonDetailPage() {
     [showToastMessage],
   );
 
-  const loadPerson = useCallback(async () => {
-    setLoading(true);
-    try {
-      const personData = await fetchPersonById(id);
-      setPerson(personData);
-      fetchCoActorsData(id, 1);
-      const images = await fetchPersonImages(personData.tmdbId);
-      setPersonImages(images.slice(1));
-    } catch {
-      showToastMessage('Error getting the person.', 'danger');
-      navigate('/');
-    } finally {
-      setLoading(false);
-    }
-  }, [id, navigate, showToastMessage, fetchCoActorsData]);
+  const fetchAllCredits = useCallback(async () => {
+    const allCredits = await fetchAllPages(fetchPersonMedia, 3, id);
+    setCredits(allCredits);
+    setHasMoreItems(false);
+  }, [id]);
+
+  const loadPerson = useCallback(
+    async (personId) => {
+      setLoading(true);
+      try {
+        const personData = await fetchPersonById(personId);
+        setPerson(personData);
+        fetchCoActorsData(personId, 1);
+        const images = await fetchPersonImages(personData.tmdbId);
+        setPersonImages(images.slice(1));
+
+        const response = await fetchPersonMedia(personId, 1, 3);
+        setCredits((prevCredits) => {
+          const newCredits = response.items.filter(
+            (item) => !prevCredits.some((credit) => credit.id === item.id),
+          );
+          return [...prevCredits, ...newCredits];
+        });
+        setHasMoreItems(response.nextPage !== null);
+      } catch {
+        showToastMessage('Error getting the person.', 'danger');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchCoActorsData, showToastMessage, navigate],
+  );
 
   useEffect(() => {
-    loadPerson();
+    setCoActors([]);
+    setCredits([]);
+    setHasMoreItems(true);
+
+    loadPerson(id);
   }, [id, loadPerson]);
-
-  useEffect(() => {
-    fetchPersonData(id, currentPage, fetchAll);
-  }, [id, currentPage, fetchAll, fetchPersonData]);
 
   useEffect(() => {
     if (!loading && !person) {
       navigate('/NotFound');
     }
   }, [loading, person, navigate]);
-
-  useEffect(() => {
-    setCoActors([]);
-    setCredits([]);
-    setCurrentPage(1);
-    setHasMoreItems(true);
-  }, [id]);
 
   const handleFollow = async () => {
     try {
@@ -129,10 +118,6 @@ export default function PersonDetailPage() {
       showToastMessage('Error following the person', 'danger');
     }
   };
-
-  const handleLoadMore = useCallback(() => {
-    setFetchAll(true);
-  }, []);
 
   const handleLoadMoreCoActors = useCallback(() => {
     if (hasMoreItems) {
@@ -222,7 +207,7 @@ export default function PersonDetailPage() {
           <h5>Credits</h5>
           <CreditsList items={credits} />
           {hasMoreItems && (
-            <Button onClick={handleLoadMore} variant="link">
+            <Button onClick={fetchAllCredits} variant="link">
               Show all
             </Button>
           )}

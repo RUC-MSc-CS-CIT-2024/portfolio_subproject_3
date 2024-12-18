@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { formatDate } from '@/utils';
@@ -46,6 +47,7 @@ export default function CreditsList({ items = [] }) {
     group
       .map((item) => item.character)
       .filter(Boolean)
+      .filter((e, i, self) => i === self.indexOf(e))
       .join(', ');
 
   const isSameMedia = (group) => {
@@ -74,49 +76,65 @@ export default function CreditsList({ items = [] }) {
           </div>
         )}
         <div className="single-title">
-          <p>{item.media.title}</p>
+          <Link to={`/media/${item.media.id}`}>{item.media.title}</Link>
         </div>
       </td>
       <td className="align-middle">
         <MediaTypeBadge type={item.media.type} />
       </td>
       <td className="align-middle text-capitalize">
-        {item.character && <p>Character: {item.character}</p>}
+        {item.jobCategory === 'actor' ? (
+          item.character && <p>Character: {item.character}</p>
+        ) : (
+          <p>{item.jobCategory}</p>
+        )}
       </td>
       <td className="align-middle">{formatDate(item.media.releaseDate)}</td>
     </tr>
   );
 
   const renderGroupRow = (key, group, index) => {
-    const seriesMedia = mediaData[group[0].media.seriesId] || group[0].media;
     const characters = getCharacters(group);
-    return isSameMedia(group) ? (
-      <tr key={index} className="single-row">
-        <td className="d-flex align-items-center">
-          {seriesMedia.posterUri ? (
-            <img
-              className="mx-2 responsive-img"
-              src={seriesMedia.posterUri}
-              height={68}
-            />
-          ) : (
-            <div className="default-image-container mx-2">
-              <DefaultImage />
+    if (isSameMedia(group)) {
+      const media = group[0].media;
+      return (
+        <tr key={index} className="single-row">
+          <td className="d-flex align-items-center">
+            {media.posterUri ? (
+              <img
+                className="mx-2 responsive-img"
+                src={media.posterUri}
+                height={68}
+              />
+            ) : (
+              <div className="default-image-container mx-2">
+                <DefaultImage />
+              </div>
+            )}
+            <div className="single-title">
+              <Link to={`/media/${media.id}`}>{media.title}</Link>
             </div>
-          )}
-          <div className="single-title">
-            <p>{seriesMedia.title}</p>
-          </div>
-        </td>
-        <td className="align-middle">
-          <MediaTypeBadge type={seriesMedia.type} />
-        </td>
-        <td className="align-middle text-capitalize">
-          {characters && <p>Character: {characters}</p>}
-        </td>
-        <td className="align-middle">{formatDate(seriesMedia.releaseDate)}</td>
-      </tr>
-    ) : (
+          </td>
+          <td className="align-middle">
+            <MediaTypeBadge type={media.type} />
+          </td>
+          <td className="align-middle text-capitalize">
+            {group[0].jobCategory === 'actor' ? (
+              characters && <p>Characters: {characters}</p>
+            ) : (
+              <p>{group[0].jobCategory}</p>
+            )}
+          </td>
+          <td className="align-middle">{formatDate(media.releaseDate)}</td>
+        </tr>
+      );
+    }
+
+    const seriesMedia = mediaData[group[0].media.seriesId];
+    if (!seriesMedia) {
+      return null;
+    }
+    return (
       <>
         <tr
           key={index}
@@ -137,7 +155,9 @@ export default function CreditsList({ items = [] }) {
             )}
             <div className="flex-grow-1">
               <p>
-                {seriesMedia.title}{' '}
+                <Link to={`/media/${seriesMedia.seriesId}`}>
+                  {seriesMedia.title}
+                </Link>{' '}
                 {group.length > 1 ? `(${group.length} titles)` : '(1 title)'}
               </p>
             </div>
@@ -150,7 +170,9 @@ export default function CreditsList({ items = [] }) {
           <td className="align-middle">
             <MediaTypeBadge type={seriesMedia.type} />
           </td>
-          <td className="align-middle text-capitalize"></td>
+          <td className="align-middle text-capitalize">
+            Character: {characters}
+          </td>
           <td className="align-middle"></td>
         </tr>
         {expandedGroups[key] &&

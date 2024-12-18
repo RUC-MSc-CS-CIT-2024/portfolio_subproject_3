@@ -1,4 +1,11 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   getCurrentUserBookmarks,
   getCurrentUserCompleted,
@@ -15,8 +22,11 @@ export const UserDataProvider = ({ children }) => {
   const [completed, setCompleted] = useState([]);
   const [following, setFollowing] = useState([]);
 
-  const fetchData = async () => {
+  const refreshUserData = useCallback(async () => {
     if (!isAuthenticated) {
+      setBookmarks([]);
+      setCompleted([]);
+      setFollowing([]);
       return;
     }
     const bookmarkResult = await fetchAllPages(getCurrentUserBookmarks);
@@ -26,28 +36,26 @@ export const UserDataProvider = ({ children }) => {
     setBookmarks(bookmarkResult);
     setCompleted(completedResult);
     setFollowing(followingResult);
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    refreshUserData();
+  }, [refreshUserData]);
 
-  const refreshUserData = () => {
-    fetchData();
-  };
+  const contextValue = useMemo(() => {
+    return {
+      bookmarks,
+      completed,
+      following,
+      setBookmarks,
+      setCompleted,
+      setFollowing,
+      refreshUserData,
+    };
+  }, [bookmarks, completed, following, refreshUserData]);
 
   return (
-    <UserDataContext.Provider
-      value={{
-        bookmarks,
-        completed,
-        following,
-        setBookmarks,
-        setCompleted,
-        setFollowing,
-        refreshUserData,
-      }}
-    >
+    <UserDataContext.Provider value={contextValue}>
       {children}
     </UserDataContext.Provider>
   );

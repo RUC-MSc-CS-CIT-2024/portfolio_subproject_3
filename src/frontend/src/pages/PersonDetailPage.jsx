@@ -66,17 +66,30 @@ export default function PersonDetailPage() {
     setHasMoreItems(false);
   }, [id]);
 
-  const loadPerson = useCallback(
-    async (personId) => {
-      setLoading(true);
+  useEffect(() => {
+    setCoActors([]);
+    setCredits([]);
+    setHasMoreItems(true);
+
+    fetchCoActorsData(id, 1);
+
+    (async () => {
       try {
-        const personData = await fetchPersonById(personId);
+        const personData = await fetchPersonById(id);
         setPerson(personData);
-        fetchCoActorsData(personId, 1);
         const images = await fetchPersonImages(personData.tmdbId);
         setPersonImages(images.slice(1));
+      } catch {
+        showToastMessage('Error getting the person.', 'danger');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    })();
 
-        const response = await fetchPersonMedia(personId, 1, 3);
+    (async () => {
+      try {
+        const response = await fetchPersonMedia(id, 1, 3);
         setCredits((prevCredits) => {
           const newCredits = response.items.filter(
             (item) => !prevCredits.some((credit) => credit.id === item.id),
@@ -85,22 +98,10 @@ export default function PersonDetailPage() {
         });
         setHasMoreItems(response.nextPage !== null);
       } catch {
-        showToastMessage('Error getting the person.', 'danger');
-        navigate('/');
-      } finally {
-        setLoading(false);
+        showToastMessage('Error getting the credits.', 'danger');
       }
-    },
-    [fetchCoActorsData, showToastMessage, navigate],
-  );
-
-  useEffect(() => {
-    setCoActors([]);
-    setCredits([]);
-    setHasMoreItems(true);
-
-    loadPerson(id);
-  }, [id, loadPerson]);
+    })();
+  }, [fetchCoActorsData, id, navigate, showToastMessage]);
 
   useEffect(() => {
     if (!loading && !person) {

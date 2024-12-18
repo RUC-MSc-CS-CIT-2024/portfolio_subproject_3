@@ -32,3 +32,16 @@ services:
     depends_on:
       db:
         condition: service_healthy 
+  frontend:
+    build:
+      context: src/frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3030
+    environment: 
+      - MY_APP_API_BASE_URL=https://localhost:5001/api/
+      - MY_APP_TMDB_BASE_URL=https://api.themoviedb.org/3/
+      - MY_APP_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p/
+      - MY_APP_TMDB_READ_TOKEN=${MY_APP_TMDB_READ_TOKEN}
+    depends_on:
+      - api

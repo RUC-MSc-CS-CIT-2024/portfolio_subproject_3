@@ -141,15 +141,16 @@ export default function PersonDetailPage() {
     }
   }, [id, currentPage, hasMoreItems, fetchCoActorsData]);
 
-  const knownForMedia = person?.knownForMedia?.map((media) => {
-    return {
-      id: media?.id,
-      title: media?.title,
-      releaseYear: media?.releaseDate,
-      imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
-      type: media?.mediaType,
-    };
-  });
+  const knownForMedia =
+    person?.knownForMedia?.map((media) => {
+      return {
+        id: media?.id,
+        title: media?.title,
+        releaseYear: media?.releaseDate,
+        imageUri: `https://image.tmdb.org/t/p/w500${media?.posterPath}`,
+        type: media?.mediaType,
+      };
+    }) ?? Array.from({ length: 3 }, (value) => value).map(() => {});
 
   const ratings = [
     {

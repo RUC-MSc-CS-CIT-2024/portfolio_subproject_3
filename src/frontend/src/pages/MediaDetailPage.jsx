@@ -171,32 +171,28 @@ export default function MediaDetailPage() {
       <Row className="mt-5">
         <Col>
           <Tabs defaultActiveKey="crew" id="crew-cast-tabs" className="mb-3">
-            {mergedCrew.length > 0 && (
-              <Tab eventKey="crew" title="Crew">
-                <PersonsCarousel
-                  persons={mergedCrew.map((person) => ({
-                    ...person,
-                    id: person.personId,
-                    name: person.personName,
-                  }))}
-                  onLoadMore={handleLoadMoreCrew}
-                  hasNextPage={hasMoreCrew}
-                />
-              </Tab>
-            )}
-            {mergedCast.length > 0 && (
-              <Tab eventKey="cast" title="Cast">
-                <PersonsCarousel
-                  persons={mergedCast.map((person) => ({
-                    ...person,
-                    id: person.personId,
-                    name: person.personName,
-                  }))}
-                  onLoadMore={handleLoadMoreCast}
-                  hasNextPage={hasMoreCast}
-                />
-              </Tab>
-            )}
+            <Tab eventKey="crew" title="Crew">
+              <PersonsCarousel
+                persons={mergedCrew.map((person) => ({
+                  ...person,
+                  id: person.personId,
+                  name: person.personName,
+                }))}
+                onLoadMore={handleLoadMoreCrew}
+                hasNextPage={hasMoreCrew}
+              />
+            </Tab>
+            <Tab eventKey="cast" title="Cast">
+              <PersonsCarousel
+                persons={mergedCast.map((person) => ({
+                  ...person,
+                  id: person.personId,
+                  name: person.personName,
+                }))}
+                onLoadMore={handleLoadMoreCast}
+                hasNextPage={hasMoreCast}
+              />
+            </Tab>
           </Tabs>
         </Col>
       </Row>
